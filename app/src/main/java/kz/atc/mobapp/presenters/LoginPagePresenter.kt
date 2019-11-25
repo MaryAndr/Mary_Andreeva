@@ -20,7 +20,7 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
         val authorizeIntent: Observable<LoginPagePartialState> =
             intent(LoginPageView::authorizeIntent)
                 .flatMap { authData ->
-                    UserInteractor().completeAuthorization(authData)
+                    UserInteractor().completeAuthorization(authData, ctx)
                         .onErrorResumeNext { error: Throwable ->
                             var errMessage = error.localizedMessage
                             if (error is HttpException) {
@@ -34,9 +34,17 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
                 .retry()
                 .subscribeOn(Schedulers.io())
 
+        val checkAuthIntent: Observable<LoginPagePartialState> =
+            intent(LoginPageView::checkAuthIntent)
+                .flatMap {
+                    UserInteractor().isAuthenticated(ctx)
+                }
+                .subscribeOn(Schedulers.io())
+
         val reenterIntent: Observable<LoginPagePartialState> =
             intent(LoginPageView::reenterIntent)
-                .map<LoginPagePartialState> { LoginPagePartialState.DefaultState }
+                .map<LoginPagePartialState> {
+                    LoginPagePartialState.DefaultState }
                 .subscribeOn(Schedulers.io())
 
         val initialState = LoginPageState(
@@ -47,7 +55,7 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
             defaultState = true
         )
         val allIntents: Observable<LoginPagePartialState> =
-            Observable.merge(authorizeIntent, reenterIntent).observeOn(
+            Observable.merge(authorizeIntent, reenterIntent, checkAuthIntent).observeOn(
                 AndroidSchedulers.mainThread()
             )
 

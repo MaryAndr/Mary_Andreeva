@@ -1,33 +1,43 @@
 package kz.atc.mobapp.fragments
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.material.textfield.TextInputLayout
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxbinding2.view.RxView
-import com.jakewharton.rxbinding2.view.clicks
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_login.*
 
 import kz.atc.mobapp.R
 import kz.atc.mobapp.models.AuthModel
 import kz.atc.mobapp.presenters.LoginPagePresenter
 import kz.atc.mobapp.states.LoginPageState
+import kz.atc.mobapp.utils.Constants
 import kz.atc.mobapp.utils.PhoneTextWatcher
+import kz.atc.mobapp.utils.PreferenceHelper
+import kz.atc.mobapp.utils.PreferenceHelper.set
 import kz.atc.mobapp.utils.TextConverter
 import kz.atc.mobapp.views.LoginPageView
-import java.util.concurrent.TimeUnit
-
 
 class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPageView {
 
+    private lateinit var checkAuthTrigger: BehaviorSubject<Int>
+
+
+    override fun checkAuthIntent(): Observable<Int> {
+        return checkAuthTrigger
+    }
+
     override fun reenterIntent(): Observable<CharSequence> {
         return Observable.merge(
-            RxTextView.textChanges(etLoginPhone),
-            RxTextView.textChanges(etPassword)
+            RxTextView.textChanges(etLoginPhone).skipInitialValue(),
+            RxTextView.textChanges(etPassword).skipInitialValue()
         )
     }
 
@@ -51,21 +61,25 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
     override fun render(state: LoginPageState) {
         when {
             state.errorStateShown -> {
-                tvAuthErr.visibility = View.VISIBLE
-                tvAuthErr.text = state.errorMessage
-                etLoginPhone.setBackgroundResource(R.drawable.login_et_shape_error)
-                etPassword.setBackgroundResource(R.drawable.login_et_shape_error)
+
+                layoutTextInputPhone.error = " "
+                layoutTextInput.error = state.errorMessage
             }
             state.successFullyAuthorized -> {
                 tvAuthErr.visibility = View.VISIBLE
                 tvAuthErr.text = "AUTHORIZED"
             }
             state.defaultState -> {
-                tvAuthErr.visibility = View.GONE
-                etLoginPhone.setBackgroundResource(R.drawable.login_et_shape)
-                etPassword.setBackgroundResource(R.drawable.login_et_shape)
+                layoutTextInputPhone.boxStrokeColor = Color.parseColor("#fa6600")
+                layoutTextInput.boxStrokeColor = Color.parseColor("#fa6600")
+                layoutTextInputPhone.error = ""
+                layoutTextInput.error = ""
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(
@@ -80,7 +94,11 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
-
+//        val prefs = PreferenceHelper.customPrefs(context!!, Constants.AUTH_PREF_NAME)
+//        prefs[Constants.AUTH_TOKEN] = null
+        layoutTextInputPhone.boxStrokeColor = Color.parseColor("#fa6600")
+        layoutTextInput.boxStrokeColor = Color.parseColor("#fa6600")
+        checkAuthTrigger = BehaviorSubject.createDefault(0)
         etLoginPhone.addTextChangedListener(PhoneTextWatcher(etLoginPhone))
     }
 }

@@ -9,6 +9,8 @@ interface LoginPageView : MvpView {
 
     fun checkInternetConnectivityIntent(): Observable<Unit>
 
+    fun checkAuthIntent(): Observable<Int>
+
     fun authorizeIntent(): Observable<AuthModel>
 
     fun reenterIntent(): Observable<CharSequence>
