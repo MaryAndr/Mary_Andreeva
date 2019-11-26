@@ -21,6 +21,10 @@ interface AuthServices {
     fun userTypeCheck(@Query("username") username: String): Observable<UserType>
 
     @Multipart
+    @POST("/lk/v1/user/password")
+    fun sendSMS(@Part("username") username: RequestBody?) : Observable<Unit>
+
+    @Multipart
     @POST("/oauth/token")
     fun auth(
         @Part("grant_type") grantType: RequestBody, @Part("username") username: RequestBody?,

@@ -9,5 +9,23 @@
         android:id="@+id/loginFragment"
         android:name="kz.atc.mobapp.fragments.LoginFragment"
         android:label="fragment_login"
-        tools:layout="@layout/fragment_login" />
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_sendSMSFragment"
+            app:destination="@id/sendSMSFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/sendSMSFragment"
+        android:name="kz.atc.mobapp.fragments.SendSMSFragment"
+        android:label="fragment_send_sms"
+        tools:layout="@layout/fragment_send_sms" >
+        <action
+            android:id="@+id/action_sendSMSFragment_to_enterSMSPassFragment"
+            app:destination="@id/enterSMSPassFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/enterSMSPassFragment"
+        android:name="kz.atc.mobapp.fragments.EnterSMSPassFragment"
+        android:label="fragment_enter_smspass"
+        tools:layout="@layout/fragment_enter_smspass" />
 </navigation>

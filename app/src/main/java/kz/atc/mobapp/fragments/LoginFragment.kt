@@ -2,16 +2,20 @@ package kz.atc.mobapp.fragments
 
 import android.graphics.Color
 import android.os.Bundle
+import android.service.carrier.CarrierMessagingService
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.textfield.TextInputLayout
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_login.*
 
 import kz.atc.mobapp.R
@@ -45,6 +49,7 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
     override fun authorizeIntent(): Observable<AuthModel> {
         return RxView.clicks(buttonAuth)
             .map<AuthModel> {
+                Log.d("Debug", "SEND SMS TRIGGERED")
                 AuthModel(
                     TextConverter().getOnlyDigits(etLoginPhone.text.toString()),
                     etPassword.text.toString()
@@ -78,8 +83,9 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onResume() {
+        super.onResume()
+        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
     override fun onCreateView(
@@ -100,5 +106,10 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
         layoutTextInput.boxStrokeColor = Color.parseColor("#fa6600")
         checkAuthTrigger = BehaviorSubject.createDefault(0)
         etLoginPhone.addTextChangedListener(PhoneTextWatcher(etLoginPhone))
+
+        RxView.clicks(tvSendSms).subscribe {
+            val navController = NavHostFragment.findNavController(this)
+            navController.navigate(R.id.sendSMSFragment)
+        }
     }
 }

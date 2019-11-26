@@ -9,4 +9,6 @@
     <string name="password">Пароль</string>
     <string name="send_sms">Получить пароль по SMS</string>
     <string name="blankText">N/A</string>
+    <string name="get_pass">Получить пароль</string>
+    <string name="passFromSms">Пароль из смс</string>
 </resources>
