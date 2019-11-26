@@ -1,13 +1,17 @@
 package kz.atc.mobapp.presenters
 
 import android.content.Context
+import android.util.Log
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kz.atc.mobapp.presenters.interactors.UserInteractor
 import kz.atc.mobapp.states.EnterSMSPagePartialState
 import kz.atc.mobapp.states.EnterSMSPageState
 import kz.atc.mobapp.views.EnterSMSPassView
+import okhttp3.MediaType
+import okhttp3.RequestBody
 import java.util.concurrent.TimeUnit
 
 class EnterSMSPassPagePresenter(val ctx: Context) :
@@ -17,14 +21,46 @@ class EnterSMSPassPagePresenter(val ctx: Context) :
 
         var resendIntent: Observable<EnterSMSPagePartialState> =
             intent(EnterSMSPassView::resendSMSIntent)
-                .subscribeOn(Schedulers.io())
+                .startWith{
+                    UserInteractor().userService.sendSMS(
+                        RequestBody.create(
+                            MediaType.parse("text/plain"),
+                            "9024900998"
+                        )
+                    ).flatMap {
+                        Observable.just(EnterSMSPagePartialState.SmsResendedState)
+                    }.subscribeOn(Schedulers.io())
+                }
                 .flatMap {
+                    Log.d("INFO", "Resend Triggered")
                     resendTimer()
                 }
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
 
-        val initialState = EnterSMSPageState(false, false, false, false, null, null)
-        val stateObservable = resendIntent.scan(initialState, this::viewStateReducer)
+        var resendApiIntent: Observable<EnterSMSPagePartialState> =
+            intent(EnterSMSPassView::resendSMSIntent)
+                .flatMap {
+                    UserInteractor().userService.sendSMS(
+                        RequestBody.create(
+                            MediaType.parse("text/plain"),
+                            it
+                        )
+                    ).flatMap {
+                        resendTimer()
+                    }.subscribeOn(Schedulers.io())
+                }
+        val initialState = EnterSMSPageState(
+            false,
+            showError = false,
+            smsResended = false,
+            autorize = false,
+            errorMessage = null,
+            countdown = null
+        )
+        val allIntents = resendApiIntent
+            .observeOn(AndroidSchedulers.mainThread())
+
+        val stateObservable = allIntents.scan(initialState, this::viewStateReducer)
 
         subscribeViewState(stateObservable, EnterSMSPassView::render)
 
@@ -61,8 +97,8 @@ class EnterSMSPassPagePresenter(val ctx: Context) :
                 previousState.errorMessage = null
                 return previousState
             }
-            is EnterSMSPagePartialState.ShowResendTv -> {
-                previousState.showResendText = true
+            is EnterSMSPagePartialState.SmsResendedState -> {
+                previousState.smsResended = true
                 return previousState
             }
         }

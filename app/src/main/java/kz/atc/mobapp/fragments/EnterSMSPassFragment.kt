@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import com.hannesdorfmann.mosby3.mvi.MviFragment
@@ -26,16 +27,17 @@ import kz.atc.mobapp.views.EnterSMSPassView
 class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePresenter>(),
     EnterSMSPassView {
 
+    lateinit var userName: String
     override fun render(state: EnterSMSPageState) {
         when {
-            state.showResendText -> {
-                resendSmsTv.setText("Ресенд")
+            state.smsResended -> {
+                Toast.makeText(context!!, "Sms resended", Toast.LENGTH_SHORT).show()
             }
             state.showTimer -> {
                 if (state.countdown == 0.toLong()) {
-                    resendSmsTv.setText("Resend")
+                    resendSmsTv.setText("Отправить пароль повторно")
                 } else {
-                    resendSmsTv.setText(state.countdown.toString())
+                    resendSmsTv.setText("Повторно пароль можно отправить через 00:"+ state.countdown.toString())
                 }
             }
         }
@@ -43,8 +45,8 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
 
     override fun createPresenter() = EnterSMSPassPagePresenter(context!!)
 
-    override fun resendSMSIntent(): Observable<TextView> {
-        return RxView.clicks(resendSmsTv).map { resendSmsTv }
+    override fun resendSMSIntent(): Observable<String> {
+        return RxView.clicks(resendSmsTv).map { userName }
     }
 
     override fun onResume() {
@@ -66,7 +68,7 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val username = arguments!!.getString("username")
-        Log.d("debug", username)
+        userName = arguments!!.getString("username")
+        Log.d("debug", userName)
     }
 }

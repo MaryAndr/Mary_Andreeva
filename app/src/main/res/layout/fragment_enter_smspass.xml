@@ -36,6 +36,7 @@
     <Button
         android:id="@+id/buttonEnterSms"
         android:layout_width="0dp"
+
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
         android:layout_marginBottom="92dp"
@@ -85,9 +86,10 @@
 
     <TextView
         android:id="@+id/resendSmsTv"
-        android:layout_width="177dp"
+        android:layout_width="0dp"
         android:layout_height="18dp"
-        android:layout_marginTop="41dp"
+        android:gravity="center"
+        android:layout_marginTop="25dp"
         android:text="Отправить пароль повторно"
         android:textColor="#FA6600"
         android:textSize="13sp"

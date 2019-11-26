@@ -6,7 +6,7 @@ sealed class EnterSMSPagePartialState {
 
     data class ErrorState(val error: String) : EnterSMSPagePartialState()
 
-    object ShowResendTv : EnterSMSPagePartialState()
+    object SmsResendedState : EnterSMSPagePartialState()
 
     object Authorized : EnterSMSPagePartialState()
 

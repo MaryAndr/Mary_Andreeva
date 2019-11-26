@@ -7,7 +7,7 @@ import kz.atc.mobapp.states.EnterSMSPageState
 
 interface EnterSMSPassView : MvpView  {
 
-    fun resendSMSIntent() : Observable<TextView>
+    fun resendSMSIntent() : Observable<String>
 
     fun render(state: EnterSMSPageState)
 
