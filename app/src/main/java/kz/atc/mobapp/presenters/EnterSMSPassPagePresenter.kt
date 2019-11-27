@@ -1,7 +1,6 @@
 package kz.atc.mobapp.presenters
 
 import android.content.Context
-import android.util.Log
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -41,6 +40,12 @@ class EnterSMSPassPagePresenter(val ctx: Context) :
                         resendTimer()
                     }.subscribeOn(Schedulers.io())
                 }
+
+        var firstAttemptIntent: Observable<EnterSMSPagePartialState> =
+            intent(EnterSMSPassView::firstAttemptIntent)
+                .flatMap { resendTimer() }
+
+
         val initialState = EnterSMSPageState(
             false,
             showError = false,
@@ -49,7 +54,7 @@ class EnterSMSPassPagePresenter(val ctx: Context) :
             errorMessage = null,
             countdown = null
         )
-        val allIntents = Observable.merge(resendApiIntent, authorizationAuth)
+        val allIntents = Observable.merge(resendApiIntent, authorizationAuth, firstAttemptIntent)
             .observeOn(AndroidSchedulers.mainThread())
 
         val stateObservable = allIntents.scan(initialState, this::viewStateReducer)
@@ -59,8 +64,8 @@ class EnterSMSPassPagePresenter(val ctx: Context) :
     }
 
     private fun resendTimer(): Observable<EnterSMSPagePartialState> {
-        val start: Long = 30
-        return Observable.interval(1, TimeUnit.SECONDS)
+        val start: Long = 45
+        return Observable.interval(0,1, TimeUnit.SECONDS)
             .map { i -> start - i }
             .take(start + 1)
             .flatMap<EnterSMSPagePartialState> {
@@ -91,6 +96,9 @@ class EnterSMSPassPagePresenter(val ctx: Context) :
             }
             is EnterSMSPagePartialState.SmsResendedState -> {
                 previousState.smsResended = true
+                return previousState
+            }
+            is EnterSMSPagePartialState.BlankState -> {
                 return previousState
             }
         }

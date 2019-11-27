@@ -41,7 +41,7 @@
         android:layout_marginTop="25dp"
         android:layout_marginBottom="92dp"
         android:background="@drawable/oval_button"
-        android:text="@string/get_pass"
+        android:text="@string/enter_button"
         android:textColor="@color/cardview_light_background"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"

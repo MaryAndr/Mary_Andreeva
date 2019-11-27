@@ -2,30 +2,22 @@ package kz.atc.mobapp.fragments
 
 import android.graphics.Color
 import android.os.Bundle
-import android.service.carrier.CarrierMessagingService
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
-import com.google.android.material.textfield.TextInputLayout
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_login.*
-
 import kz.atc.mobapp.R
 import kz.atc.mobapp.models.AuthModel
 import kz.atc.mobapp.presenters.LoginPagePresenter
 import kz.atc.mobapp.states.LoginPageState
-import kz.atc.mobapp.utils.Constants
 import kz.atc.mobapp.utils.PhoneTextWatcher
-import kz.atc.mobapp.utils.PreferenceHelper
-import kz.atc.mobapp.utils.PreferenceHelper.set
 import kz.atc.mobapp.utils.TextConverter
 import kz.atc.mobapp.views.LoginPageView
 
@@ -65,7 +57,6 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
     override fun render(state: LoginPageState) {
         when {
             state.errorStateShown -> {
-
                 layoutTextInputPhone.error = " "
                 layoutTextInput.error = state.errorMessage
             }

@@ -12,6 +12,8 @@ interface EnterSMSPassView : MvpView  {
 
     fun authorizeIntent() : Observable<AuthModel>
 
+    fun firstAttemptIntent() : Observable<Int>
+
     fun render(state: EnterSMSPageState)
 
 }

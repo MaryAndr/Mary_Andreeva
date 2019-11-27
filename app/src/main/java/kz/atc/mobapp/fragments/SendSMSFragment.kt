@@ -1,11 +1,11 @@
 package kz.atc.mobapp.fragments
 
 import android.os.Bundle
-import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.hannesdorfmann.mosby3.mvi.MviFragment
@@ -13,7 +13,6 @@ import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_send_sms.*
-
 import kz.atc.mobapp.R
 import kz.atc.mobapp.presenters.SendSMSPagePresenter
 import kz.atc.mobapp.states.SendSMSPageState
@@ -61,6 +60,7 @@ class SendSMSFragment : MviFragment<SendSMSScreenView, SendSMSPagePresenter>(), 
     override fun onResume() {
         super.onResume()
         (activity as AppCompatActivity).supportActionBar?.show()
+//        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         var tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
 
         tvTitle.text = "Вход по паролю из SMS"

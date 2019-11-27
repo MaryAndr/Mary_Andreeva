@@ -83,8 +83,7 @@ class UserInteractor {
         return when {
             !authToken.isNullOrEmpty() -> Observable.just(LoginPagePartialState.Authorized)
             else -> {
-                Log.d("debug", "here")
-                Observable.just(LoginPagePartialState.ErrorState("Not Authorized"))
+                Observable.just(LoginPagePartialState.DefaultState)
             }
         }
     }

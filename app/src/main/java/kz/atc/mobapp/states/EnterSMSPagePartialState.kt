@@ -8,6 +8,8 @@ sealed class EnterSMSPagePartialState {
 
     object SmsResendedState : EnterSMSPagePartialState()
 
+    object BlankState : EnterSMSPagePartialState()
+
     object Authorized : EnterSMSPagePartialState()
 
 }
