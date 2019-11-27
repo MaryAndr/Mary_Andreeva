@@ -6,6 +6,7 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import kz.atc.mobapp.api.AuthServices
 import kz.atc.mobapp.models.AuthModel
+import kz.atc.mobapp.states.EnterSMSPagePartialState
 import kz.atc.mobapp.utils.PreferenceHelper.set
 import kz.atc.mobapp.utils.PreferenceHelper.get
 import kz.atc.mobapp.states.LoginPagePartialState
@@ -20,7 +21,10 @@ class UserInteractor {
         AuthServices.create()
     }
 
-    fun completeAuthorization(authData: AuthModel, ctx: Context): Observable<LoginPagePartialState> {
+    fun completeAuthorization(
+        authData: AuthModel,
+        ctx: Context
+    ): Observable<LoginPagePartialState> {
         return when {
             authData.password.isBlank() -> Observable.just(LoginPagePartialState.ErrorState("Пароль не может быть пустым"))
             authData.username.isBlank() -> Observable.just(LoginPagePartialState.ErrorState("Номер не может быть пустым"))
@@ -29,9 +33,13 @@ class UserInteractor {
                     Observable.just(LoginPagePartialState.ErrorState("Вы не являетесь пользователем мобильной связи"))
                 } else {
                     userService.auth(
-                        RequestBody.create(MediaType.parse("text/plain"),"password"),RequestBody.create(MediaType.parse("text/plain"), authData.username)
-                        , RequestBody.create(MediaType.parse("text/plain"), authData.password), null).flatMap { oAuthResult ->
-                        if (!oAuthResult.access_token.isBlank() &&  !oAuthResult.refresh_token.isBlank() && !oAuthResult.jti.isBlank()) {
+                        RequestBody.create(MediaType.parse("text/plain"), "password"),
+                        RequestBody.create(MediaType.parse("text/plain"), authData.username)
+                        ,
+                        RequestBody.create(MediaType.parse("text/plain"), authData.password),
+                        null
+                    ).flatMap { oAuthResult ->
+                        if (!oAuthResult.access_token.isBlank() && !oAuthResult.refresh_token.isBlank() && !oAuthResult.jti.isBlank()) {
                             val prefs = PreferenceHelper.customPrefs(ctx, Constants.AUTH_PREF_NAME)
                             prefs[Constants.AUTH_TOKEN] = oAuthResult.access_token
                             prefs[Constants.AUTH_REFRESH_TOKEN] = oAuthResult.refresh_token
@@ -45,15 +53,39 @@ class UserInteractor {
         }
     }
 
+    fun smsAuthorization(authData: AuthModel, ctx: Context): Observable<EnterSMSPagePartialState> {
+        return when {
+            authData.password.isBlank() -> Observable.just(EnterSMSPagePartialState.ErrorState("Пароль не может быть пустым"))
+            else -> userService.auth(
+                RequestBody.create(MediaType.parse("text/plain"), "password"),
+                RequestBody.create(MediaType.parse("text/plain"), authData.username),
+                RequestBody.create(MediaType.parse("text/plain"), authData.password),
+                null
+            ).flatMap { oAuthResult ->
+                if (!oAuthResult.access_token.isBlank() && !oAuthResult.refresh_token.isBlank() && !oAuthResult.jti.isBlank()) {
+                    val prefs = PreferenceHelper.customPrefs(ctx, Constants.AUTH_PREF_NAME)
+                    prefs[Constants.AUTH_TOKEN] = oAuthResult.access_token
+                    prefs[Constants.AUTH_REFRESH_TOKEN] = oAuthResult.refresh_token
+                    Observable.just(EnterSMSPagePartialState.Authorized)
+                } else {
+                    Observable.just(EnterSMSPagePartialState.ErrorState("Что-то пошло не так"))
+                }
+            }
 
-    fun isAuthenticated(ctx: Context) : Observable<LoginPagePartialState> {
+        }
+    }
+
+
+    fun isAuthenticated(ctx: Context): Observable<LoginPagePartialState> {
         val prefs = PreferenceHelper.customPrefs(ctx, Constants.AUTH_PREF_NAME)
         val authToken: String? = prefs[Constants.AUTH_TOKEN]
 
         return when {
             !authToken.isNullOrEmpty() -> Observable.just(LoginPagePartialState.Authorized)
-            else ->{ Log.d("debug", "here")
-                Observable.just(LoginPagePartialState.ErrorState("Not Authorized"))}
+            else -> {
+                Log.d("debug", "here")
+                Observable.just(LoginPagePartialState.ErrorState("Not Authorized"))
+            }
         }
     }
 

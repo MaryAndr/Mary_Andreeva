@@ -1,20 +1,22 @@
 package kz.atc.mobapp.presenters
 
 import android.content.Context
-import android.util.Log
+import com.google.gson.Gson
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kz.atc.mobapp.models.ErrorJson
 import kz.atc.mobapp.presenters.interactors.UserInteractor
 import kz.atc.mobapp.states.LoginPagePartialState
 import kz.atc.mobapp.states.LoginPageState
-import kz.atc.mobapp.utils.HttpErrorHandler
 import kz.atc.mobapp.views.LoginPageView
 import retrofit2.HttpException
 
+
 class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, LoginPageState>() {
 
+    private val gson = Gson()
 
     override fun bindIntents() {
         val authorizeIntent: Observable<LoginPagePartialState> =
@@ -24,8 +26,15 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
                         .onErrorResumeNext { error: Throwable ->
                             var errMessage = error.localizedMessage
                             if (error is HttpException) {
-                                if (error.code() == 409) {
-                                    errMessage = "Вы не являетесь пользователем мобильной связи"
+                                errMessage = if (error.code() == 409) {
+                                    "Вы не являетесь пользователем мобильной связи"
+                                } else {
+                                    val errorBody = error.response()!!.errorBody()
+
+                                    val adapter =
+                                        gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                                    val errorObj = adapter.fromJson(errorBody!!.string())
+                                    errorObj.error_description
                                 }
                             }
                             Observable.just(LoginPagePartialState.ErrorState(errMessage))

@@ -9,6 +9,7 @@ import io.reactivex.schedulers.Schedulers
 import kz.atc.mobapp.presenters.interactors.UserInteractor
 import kz.atc.mobapp.states.EnterSMSPagePartialState
 import kz.atc.mobapp.states.EnterSMSPageState
+import kz.atc.mobapp.utils.TextConverter
 import kz.atc.mobapp.views.EnterSMSPassView
 import okhttp3.MediaType
 import okhttp3.RequestBody
@@ -19,23 +20,14 @@ class EnterSMSPassPagePresenter(val ctx: Context) :
 
     override fun bindIntents() {
 
-        var resendIntent: Observable<EnterSMSPagePartialState> =
-            intent(EnterSMSPassView::resendSMSIntent)
-                .startWith{
-                    UserInteractor().userService.sendSMS(
-                        RequestBody.create(
-                            MediaType.parse("text/plain"),
-                            "9024900998"
-                        )
-                    ).flatMap {
-                        Observable.just(EnterSMSPagePartialState.SmsResendedState)
-                    }.subscribeOn(Schedulers.io())
+        var authorizationAuth: Observable<EnterSMSPagePartialState> =
+            intent(EnterSMSPassView::authorizeIntent)
+                .flatMap { authData ->
+                    UserInteractor().smsAuthorization(authData, ctx).subscribeOn(Schedulers.io())
                 }
-                .flatMap {
-                    Log.d("INFO", "Resend Triggered")
-                    resendTimer()
-                }
+                .retry()
                 .subscribeOn(Schedulers.io())
+
 
         var resendApiIntent: Observable<EnterSMSPagePartialState> =
             intent(EnterSMSPassView::resendSMSIntent)
@@ -43,7 +35,7 @@ class EnterSMSPassPagePresenter(val ctx: Context) :
                     UserInteractor().userService.sendSMS(
                         RequestBody.create(
                             MediaType.parse("text/plain"),
-                            it
+                            TextConverter().getOnlyDigits(it)
                         )
                     ).flatMap {
                         resendTimer()
@@ -57,7 +49,7 @@ class EnterSMSPassPagePresenter(val ctx: Context) :
             errorMessage = null,
             countdown = null
         )
-        val allIntents = resendApiIntent
+        val allIntents = Observable.merge(resendApiIntent, authorizationAuth)
             .observeOn(AndroidSchedulers.mainThread())
 
         val stateObservable = allIntents.scan(initialState, this::viewStateReducer)

@@ -49,7 +49,6 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
     override fun authorizeIntent(): Observable<AuthModel> {
         return RxView.clicks(buttonAuth)
             .map<AuthModel> {
-                Log.d("Debug", "SEND SMS TRIGGERED")
                 AuthModel(
                     TextConverter().getOnlyDigits(etLoginPhone.text.toString()),
                     etPassword.text.toString()
@@ -71,8 +70,6 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
                 layoutTextInput.error = state.errorMessage
             }
             state.successFullyAuthorized -> {
-                tvAuthErr.visibility = View.VISIBLE
-                tvAuthErr.text = "AUTHORIZED"
             }
             state.defaultState -> {
                 layoutTextInputPhone.boxStrokeColor = Color.parseColor("#fa6600")

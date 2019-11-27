@@ -46,7 +46,7 @@ class SendSMSFragment : MviFragment<SendSMSScreenView, SendSMSPagePresenter>(), 
             }
             is SendSMSPageState.SmsSend -> {
                 val bundle = Bundle()
-                bundle.putString("username",TextConverter().getOnlyDigits(etSendSMSPhone.text.toString()))
+                bundle.putString("username",etSendSMSPhone.text.toString())
                 navController = NavHostFragment.findNavController(this)
                 navController!!.navigate(R.id.enterSMSPassFragment, bundle)
             }
