@@ -39,10 +39,16 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
     }
 
     private lateinit var userName: String
+
     override fun render(state: EnterSMSPageState) {
         when {
             state.smsResended -> {
                 Toast.makeText(context!!, "Sms resended", Toast.LENGTH_SHORT).show()
+            }
+            state.autorize -> {
+                Log.d("Auth intent", "TRIGGERED")
+                Toast.makeText(context!!, "Authorized", Toast.LENGTH_SHORT).show()
+                state.autorize = false
             }
             state.showTimer -> {
                 when {
@@ -53,7 +59,9 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
                     }
                     else -> {
                         resendSmsTv.text =
-                            "Повторно пароль можно отправить через " + TimeUtils().secondsToString(state.countdown!!)
+                            "Повторно пароль можно отправить через " + TimeUtils().secondsToString(
+                                state.countdown!!
+                            )
                         resendSmsTv.setTextColor(Color.parseColor("#919196"))
 
                         resendSmsTv.isClickable = false
@@ -61,16 +69,14 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
                     }
                 }
             }
-            state.autorize -> {
-                Toast.makeText(context!!, "Authorized", Toast.LENGTH_SHORT).show()
-            }
+
         }
     }
 
     override fun createPresenter() = EnterSMSPassPagePresenter(context!!)
 
     override fun resendSMSIntent(): Observable<String> {
-        return RxView.clicks(resendSmsTv).throttleFirst (5, TimeUnit.SECONDS).map { userName }
+        return RxView.clicks(resendSmsTv).throttleFirst(5, TimeUnit.SECONDS).map { userName }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

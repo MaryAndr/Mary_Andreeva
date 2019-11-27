@@ -70,7 +70,7 @@ class UserInteractor {
                 } else {
                     Observable.just(EnterSMSPagePartialState.ErrorState("Что-то пошло не так"))
                 }
-            }
+            }.subscribeOn(Schedulers.io())
 
         }
     }

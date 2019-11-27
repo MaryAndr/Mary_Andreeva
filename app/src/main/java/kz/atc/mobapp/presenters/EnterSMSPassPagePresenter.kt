@@ -1,10 +1,13 @@
 package kz.atc.mobapp.presenters
 
 import android.content.Context
+import android.util.Log
+import com.google.gson.Gson
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kz.atc.mobapp.models.ErrorJson
 import kz.atc.mobapp.presenters.interactors.UserInteractor
 import kz.atc.mobapp.states.EnterSMSPagePartialState
 import kz.atc.mobapp.states.EnterSMSPageState
@@ -12,20 +15,37 @@ import kz.atc.mobapp.utils.TextConverter
 import kz.atc.mobapp.views.EnterSMSPassView
 import okhttp3.MediaType
 import okhttp3.RequestBody
+import retrofit2.HttpException
 import java.util.concurrent.TimeUnit
 
 class EnterSMSPassPagePresenter(val ctx: Context) :
     MviBasePresenter<EnterSMSPassView, EnterSMSPageState>() {
+    private val gson = Gson()
+
 
     override fun bindIntents() {
 
         var authorizationAuth: Observable<EnterSMSPagePartialState> =
             intent(EnterSMSPassView::authorizeIntent)
                 .flatMap { authData ->
-                    UserInteractor().smsAuthorization(authData, ctx).subscribeOn(Schedulers.io())
+                    UserInteractor().smsAuthorization(authData, ctx)
+                        .onErrorResumeNext { error: Throwable ->
+                            var errMessage = error.localizedMessage
+                            if (error is HttpException) {
+                                errMessage = if (error.code() == 409) {
+                                    "Вы не являетесь пользователем мобильной связи"
+                                } else {
+                                    val errorBody = error.response()!!.errorBody()
+
+                                    val adapter =
+                                        gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                                    val errorObj = adapter.fromJson(errorBody!!.string())
+                                    errorObj.error_description
+                                }
+                            }
+                            Observable.just(EnterSMSPagePartialState.ErrorState(errMessage))
+                        }
                 }
-                .retry()
-                .subscribeOn(Schedulers.io())
 
 
         var resendApiIntent: Observable<EnterSMSPagePartialState> =
@@ -65,7 +85,7 @@ class EnterSMSPassPagePresenter(val ctx: Context) :
 
     private fun resendTimer(): Observable<EnterSMSPagePartialState> {
         val start: Long = 45
-        return Observable.interval(0,1, TimeUnit.SECONDS)
+        return Observable.interval(0, 1, TimeUnit.SECONDS)
             .map { i -> start - i }
             .take(start + 1)
             .flatMap<EnterSMSPagePartialState> {
@@ -90,6 +110,7 @@ class EnterSMSPassPagePresenter(val ctx: Context) :
                 return previousState
             }
             is EnterSMSPagePartialState.Authorized -> {
+                Log.d("state", "Auth")
                 previousState.autorize = true
                 previousState.errorMessage = null
                 return previousState
