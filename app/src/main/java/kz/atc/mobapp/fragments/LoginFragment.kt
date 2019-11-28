@@ -57,8 +57,13 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
     override fun render(state: LoginPageState) {
         when {
             state.errorStateShown -> {
-                layoutTextInputPhone.error = " "
-                layoutTextInput.error = state.errorMessage
+                if (state.errorMessage == "Номер не может быть пустым") {
+                    layoutTextInputPhone.error = state.errorMessage
+                    layoutTextInput.error = " "
+                } else {
+                    layoutTextInputPhone.error = " "
+                    layoutTextInput.error = state.errorMessage
+                }
             }
             state.successFullyAuthorized -> {
             }
