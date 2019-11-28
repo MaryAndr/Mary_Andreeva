@@ -5,6 +5,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.app.ActionBar
 import androidx.navigation.fragment.NavHostFragment
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.view.MenuItem
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,5 +21,15 @@ class MainActivity : AppCompatActivity() {
         getSupportActionBar()!!.setCustomView(R.layout.abs_layout);
         supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment? ?: return
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import com.hannesdorfmann.mosby3.mvi.MviFragment
@@ -45,7 +46,13 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
             state.smsResended -> {
                 Toast.makeText(context!!, "Sms resended", Toast.LENGTH_SHORT).show()
             }
+            state.showError -> {
+//                errorDialog(state.errorMessage!!)
+                layoutTextInputEnterPassSms.error = state.errorMessage
+                state.showError = false
+            }
             state.autorize -> {
+                layoutTextInputEnterPassSms.error = ""
                 Log.d("Auth intent", "TRIGGERED")
                 Toast.makeText(context!!, "Authorized", Toast.LENGTH_SHORT).show()
                 state.autorize = false
@@ -87,7 +94,8 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
     override fun onResume() {
         super.onResume()
         (activity as AppCompatActivity).supportActionBar?.show()
-
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_backbutton)
         var tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         tvTitle.text = "Вход по паролю из SMS"
     }
@@ -100,11 +108,25 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
         return inflater.inflate(R.layout.fragment_enter_smspass, container, false)
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         userName = arguments!!.getString("username")
         tvPhoneSmsSend.text = "Пароль отправлен на номер $userName"
 
         Log.d("debug", userName)
+    }
+
+
+
+    private fun errorDialog(errorMessage: String) {
+        val builder = AlertDialog.Builder(context!!)
+        builder.setTitle("Что-то пошло не так")
+        builder.setMessage("Обратитесь в службу поддержки по телефону " +
+                "8 800 555-33-77")
+        builder.setNegativeButton("Ok") { dialog, which ->
+            dialog.dismiss()
+        }
+        builder.show()
     }
 }
