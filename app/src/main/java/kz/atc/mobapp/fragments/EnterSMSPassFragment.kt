@@ -49,7 +49,6 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
             state.showError -> {
 //                errorDialog(state.errorMessage!!)
                 layoutTextInputEnterPassSms.error = state.errorMessage
-                state.showError = false
             }
             state.autorize -> {
                 layoutTextInputEnterPassSms.error = ""
