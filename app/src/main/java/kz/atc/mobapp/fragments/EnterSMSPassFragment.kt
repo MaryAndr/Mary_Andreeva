@@ -55,7 +55,6 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
                 layoutTextInputEnterPassSms.error = ""
                 Log.d("Auth intent", "TRIGGERED")
                 Toast.makeText(context!!, "Authorized", Toast.LENGTH_SHORT).show()
-                state.autorize = false
             }
             state.showTimer -> {
                 when {

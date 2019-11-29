@@ -102,21 +102,27 @@ class EnterSMSPassPagePresenter(val ctx: Context) :
             is EnterSMSPagePartialState.ShowTimerState -> {
                 previousState.showTimer = true
                 previousState.countdown = changes.countDown
+                previousState.showError = false
+                previousState.autorize = false
                 return previousState
             }
             is EnterSMSPagePartialState.ErrorState -> {
                 previousState.errorMessage = changes.error
                 previousState.showError = true
+                previousState.autorize = false
                 return previousState
             }
             is EnterSMSPagePartialState.Authorized -> {
                 Log.d("state", "Auth")
                 previousState.autorize = true
                 previousState.errorMessage = null
+                previousState.showError = false
                 return previousState
             }
             is EnterSMSPagePartialState.SmsResendedState -> {
                 previousState.smsResended = true
+                previousState.showError = false
+                previousState.autorize = false
                 return previousState
             }
             is EnterSMSPagePartialState.BlankState -> {
