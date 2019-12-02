@@ -10,8 +10,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
-        android:layout_width="330dp"
-        android:layout_height="259dp"
+        android:layout_width="380dp"
+        android:layout_height="300dp"
         android:layout_marginTop="54dp"
         android:background="@drawable/ultimate_path"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -19,23 +19,25 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0" >
+        app:layout_constraintVertical_bias="0">
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="63dp"
-            android:layout_marginLeft="63dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="208dp"
-            android:layout_marginRight="208dp"
-            android:layout_marginBottom="215dp"
-            android:text="TextView"
+            android:layout_height="22dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="25dp"
+            android:text=" +7 902 490-00-99"
+            android:textColor="@android:color/background_dark"
+            android:textSize="20dp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView
