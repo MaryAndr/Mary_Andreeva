@@ -11,4 +11,8 @@
     <string name="blankText">N/A</string>
     <string name="get_pass">Получить пароль</string>
     <string name="passFromSms">Пароль из смс</string>
+    <string name="title_activity_main_page">MainPageActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>

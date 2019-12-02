@@ -1,5 +1,6 @@
 package kz.atc.mobapp.fragments
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_login.*
+import kz.atc.mobapp.MainPageActivity
 import kz.atc.mobapp.R
 import kz.atc.mobapp.models.AuthModel
 import kz.atc.mobapp.presenters.LoginPagePresenter
@@ -66,6 +68,8 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
                 }
             }
             state.successFullyAuthorized -> {
+                val intent = Intent (activity, MainPageActivity::class.java)
+                activity?.startActivity(intent)
             }
             state.defaultState -> {
                 layoutTextInputPhone.boxStrokeColor = Color.parseColor("#fa6600")
