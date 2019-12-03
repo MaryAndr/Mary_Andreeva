@@ -31,7 +31,9 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
     override fun render(state: MainPageState) {
         when {
             state.mainDataLoaded -> {
-                Toast.makeText(context!!, state.mainData?.phoneNumber, Toast.LENGTH_SHORT).show()
+                val phoneNumber = state.mainData?.phoneNumber
+                val strTemp = "+7 ${phoneNumber?.substring(0,3)} ${phoneNumber?.substring(3,6)}-${phoneNumber?.substring(6,8)}-${phoneNumber?.substring(8,10)}"
+                Toast.makeText(context!!, strTemp, Toast.LENGTH_SHORT).show()
             }
         }
     }
