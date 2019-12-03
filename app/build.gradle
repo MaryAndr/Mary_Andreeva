@@ -48,6 +48,9 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.0.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.0.0'
 
+    implementation "com.akexorcist:RoundCornerProgressBar:2.0.3"
+
+
     implementation "com.jakewharton.rxbinding2:rxbinding-kotlin:$rxBindingVersion"
     implementation "com.jakewharton.rxbinding2:rxbinding-support-v4-kotlin:$rxBindingVersion"
     implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7-kotlin:$rxBindingVersion"

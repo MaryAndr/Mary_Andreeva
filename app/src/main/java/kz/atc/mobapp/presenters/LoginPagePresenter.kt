@@ -43,12 +43,12 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
                 .retry()
                 .subscribeOn(Schedulers.io())
 
-        val checkAuthIntent: Observable<LoginPagePartialState> =
-            intent(LoginPageView::checkAuthIntent)
-                .flatMap {
-                    UserInteractor().isAuthenticated(ctx)
-                }
-                .subscribeOn(Schedulers.io())
+//        val checkAuthIntent: Observable<LoginPagePartialState> =
+//            intent(LoginPageView::checkAuthIntent)
+//                .flatMap {
+//                    UserInteractor().isAuthenticated(ctx)
+//                }
+//                .subscribeOn(Schedulers.io())
 
         val reenterIntent: Observable<LoginPagePartialState> =
             intent(LoginPageView::reenterIntent)
@@ -63,8 +63,13 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
             successFullyAuthorized = false,
             defaultState = true
         )
+//        val allIntents: Observable<LoginPagePartialState> =
+//            Observable.merge(authorizeIntent, reenterIntent, checkAuthIntent).observeOn(
+//                AndroidSchedulers.mainThread()
+//            )
+
         val allIntents: Observable<LoginPagePartialState> =
-            Observable.merge(authorizeIntent, reenterIntent, checkAuthIntent).observeOn(
+            Observable.merge(authorizeIntent, reenterIntent).observeOn(
                 AndroidSchedulers.mainThread()
             )
 
