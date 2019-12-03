@@ -12,6 +12,12 @@
     </style>
 
 
+    <style name="BottomNavigation">
+        <item name="android:background">@color/bottonavbackcolor</item>
+        <item name="itemIconTint">@drawable/bottomnav_color_selector</item>
+        <item name="itemTextColor">@drawable/bottomnav_color_selector</item>
+    </style>
+
     <style name="AppThemeWithABar" parent="Theme.MaterialComponents.Light.DarkActionBar.Bridge">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>

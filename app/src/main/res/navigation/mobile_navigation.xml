@@ -6,7 +6,7 @@
     app:startDestination="@id/mainPageFragment2">
     <fragment
         android:id="@+id/mainPageFragment2"
-        android:name="kz.atc.mobapp.fragments.MainPageFragment"
+        android:name="kz.atc.mobapp.fragments.main.MainPageFragment"
         android:label="fragment_main_page"
         tools:layout="@layout/fragment_main_page" />
 </navigation>

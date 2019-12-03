@@ -2,7 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/background">
         <shape android:shape="rectangle">
-            <corners android:radius="6dp"/>
+            <corners android:radius="4dp"/>
             <solid android:color="#d8d8d8" />
         </shape>
     </item>
@@ -14,7 +14,7 @@
                     android:clipOrientation="vertical"
                     android:gravity="bottom">
                     <shape android:shape="rectangle">
-                        <corners android:radius="6dp"/>
+                        <corners android:radius="4dp"/>
                         <solid android:color="#fa6600" />
                     </shape>
                 </scale>

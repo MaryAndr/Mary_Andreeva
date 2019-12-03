@@ -9,6 +9,9 @@ import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.view.MenuItem
+import kz.atc.mobapp.utils.Constants
+import kz.atc.mobapp.utils.PreferenceHelper
+import kz.atc.mobapp.utils.PreferenceHelper.set
 
 
 class MainActivity : AppCompatActivity() {
@@ -20,7 +23,8 @@ class MainActivity : AppCompatActivity() {
         getSupportActionBar()!!.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar()!!.setCustomView(R.layout.abs_layout);
         supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment? ?: return
-
+//        val prefs = PreferenceHelper.customPrefs(this, Constants.AUTH_PREF_NAME)
+//        prefs[Constants.AUTH_TOKEN] = null
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
