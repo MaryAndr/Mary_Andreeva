@@ -1,6 +1,7 @@
 package kz.atc.mobapp.presenters.interactors
 
 import android.content.Context
+import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import kz.atc.mobapp.api.SubscriberServices
@@ -16,9 +17,20 @@ class SubscriberInteractor(ctx: Context) {
 
 
     fun preLoadData(): Observable<MainPagePartialState> {
-
+        val accumData = MainPagaAccumData()
         return subService.getSubInfo().flatMap { subInfo ->
-            Observable.just(MainPagePartialState.ShowDataState(MainPagaAccumData(subInfo.msisdn)))
+            accumData.phoneNumber = subInfo.msisdn
+            subService.getSubTariff().flatMap { subTariff ->
+                accumData.tariffName = subTariff.tariff.name
+                accumData.chargeDate = subTariff.charge_date
+                subService.getSubBalance().flatMap { subBalance ->
+                    accumData.balance = subBalance.value
+                    subService.getSubRemains().flatMap { subRemains ->
+                        accumData.remains = subRemains
+                        Observable.just(MainPagePartialState.ShowDataState(accumData))
+                    }
+                }
+            }
         }
     }
 }

@@ -26,7 +26,7 @@ class TokenAuthenticator(val ctx: Context) : Authenticator {
             val refreshedToken = UserInteractor().userService.auth(
                 RequestBody.create(
                     MediaType.parse("text/plain"),
-                    "refresh"
+                    "refresh_token"
                 ), null, null, RequestBody.create(MediaType.parse("text/plain"), refreshToken)
             )
                 .subscribeOn(Schedulers.io())
@@ -36,7 +36,6 @@ class TokenAuthenticator(val ctx: Context) : Authenticator {
             prefs[Constants.AUTH_REFRESH_TOKEN] = refreshedToken.refresh_token
 
             return newRequestWithAccessToken(response.request(), refreshedToken.access_token)
-
         }
 
     }

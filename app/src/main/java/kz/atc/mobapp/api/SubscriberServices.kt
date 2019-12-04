@@ -3,7 +3,10 @@ package kz.atc.mobapp.api
 import android.content.Context
 import android.util.Log
 import io.reactivex.Observable
+import kz.atc.mobapp.models.RemainsResponse
+import kz.atc.mobapp.models.SubBalanceResponse
 import kz.atc.mobapp.models.SubInfoResponse
+import kz.atc.mobapp.models.TariffResponse
 import kz.atc.mobapp.oauth.TokenAuthenticator
 import kz.atc.mobapp.utils.*
 import kz.atc.mobapp.utils.PreferenceHelper.get
@@ -20,12 +23,20 @@ interface SubscriberServices {
     @GET("/lk/v1/subscriber/info")
     fun getSubInfo(): Observable<SubInfoResponse>
 
+    @GET("/lk/v1/subscriber/tariff")
+    fun getSubTariff(): Observable<TariffResponse>
+
+    @GET("/lk/v1/subscriber/balance")
+    fun getSubBalance(): Observable<SubBalanceResponse>
+
+    @GET("/lk/v1/subscriber/remains")
+    fun getSubRemains(): Observable<List<RemainsResponse>>
+
     companion object {
         fun create(ctx: Context): SubscriberServices {
             val logging = HttpLoggingInterceptor()
             val prefs = PreferenceHelper.customPrefs(ctx, Constants.AUTH_PREF_NAME)
             val authToken: String? = prefs[Constants.AUTH_TOKEN]
-            Log.d("TOKEN", authToken)
 
             logging.level = HttpLoggingInterceptor.Level.BODY
 
