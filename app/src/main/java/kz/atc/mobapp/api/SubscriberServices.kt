@@ -3,10 +3,7 @@ package kz.atc.mobapp.api
 import android.content.Context
 import android.util.Log
 import io.reactivex.Observable
-import kz.atc.mobapp.models.RemainsResponse
-import kz.atc.mobapp.models.SubBalanceResponse
-import kz.atc.mobapp.models.SubInfoResponse
-import kz.atc.mobapp.models.TariffResponse
+import kz.atc.mobapp.models.*
 import kz.atc.mobapp.oauth.TokenAuthenticator
 import kz.atc.mobapp.utils.*
 import kz.atc.mobapp.utils.PreferenceHelper.get
@@ -16,6 +13,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface SubscriberServices {
@@ -31,6 +29,9 @@ interface SubscriberServices {
 
     @GET("/lk/v1/subscriber/remains")
     fun getSubRemains(): Observable<List<RemainsResponse>>
+
+    @GET("/lk/v1/catalog/tariff/{id}")
+    fun getCatalogTariff(@Path("id") id: Int): Observable<CatalogTariffResponse>
 
     companion object {
         fun create(ctx: Context): SubscriberServices {

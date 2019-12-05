@@ -14,6 +14,7 @@ import kotlinx.android.synthetic.main.fragment_main_page.view.*
 
 import kz.atc.mobapp.R
 import kz.atc.mobapp.models.RemainsResponse
+import kz.atc.mobapp.models.main.IndicatorHolder
 import kz.atc.mobapp.presenters.main.MainPagePresenter
 import kz.atc.mobapp.states.main.MainPageState
 import kz.atc.mobapp.utils.MathUtils
@@ -25,6 +26,7 @@ import kz.atc.mobapp.views.main.MainPageView
 
 class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
     MainPageView {
+
     override fun createPresenter() = MainPagePresenter(context!!)
 
     private lateinit var preLoadTrigger: BehaviorSubject<Int>
@@ -51,45 +53,58 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         dataView.visibility = View.VISIBLE
         pgMainData.visibility = View.GONE
         tvAbonNumber.text = TextConverter().getFormattedPhone(phoneNumber!!)
-        tvTariffName.text = state.mainData?.tariffName
+        tvTariffName.text = state.mainData?.tariffData?.tariff?.name
         tvChargeDate.text = TimeUtils().debitDate(state.mainData?.chargeDate!!)
-        tvAbonBalance.text = "${state.mainData?.balance.toString()} ${resources.getString(R.string.rub_value)}"
-        loadBars(state.mainData?.remains!!)
+        tvAbonBalance.text =
+            "${state.mainData?.balance.toString()} ${resources.getString(R.string.rub_value)}"
+        loadBars(state.mainData?.indicatorHolder!!)
     }
 
-    private fun loadBars(remains: List<RemainsResponse>) {
-        remains.forEach {
-            if(it.type == "DATA" && it.services.primary) {
+    private fun loadBars(indicatorHolder: MutableMap<String, IndicatorHolder>) {
+        if (indicatorHolder.containsKey("DATA")) {
+            if (!indicatorHolder["DATA"]!!.unlim && indicatorHolder["DATA"]!!.valueUnit == null) {
                 dataView.groupData.visibility = View.VISIBLE
-                var rest = it.rest_amount
-                var total = it.total_amount
+                var rest = indicatorHolder["DATA"]?.rest!!
+                var total = indicatorHolder["DATA"]?.total!!
 
-                pbInternet.progress = MathUtils().calculatePercent(rest,total)
+                pbInternet.progress = indicatorHolder["DATA"]?.percent!!
 
-                tvDataRestAmount.text = "${StringUtils().unitValueConverter(rest).value} ${StringUtils().unitValueConverter(rest).unit}"
-                tvDataTotalAmount.text =  "из ${StringUtils().unitValueConverter(total).value} ${StringUtils().unitValueConverter(total).unit}"
+                tvDataRestAmount.text =
+                    "${StringUtils().unitValueConverter(rest).value} ${StringUtils().unitValueConverter(
+                        rest
+                    ).unit}"
+                tvDataTotalAmount.text =
+                    "из ${StringUtils().unitValueConverter(total).value} ${StringUtils().unitValueConverter(
+                        total
+                    ).unit}"
+            } else if (indicatorHolder["DATA"]!!.unlim) {
+                tvDataRestAmount.text = "Безлимит"
+                tvDataTotalAmount.text = "Интернет"
+            } else if (indicatorHolder["DATA"]!!.valueUnit != null) {
+                tvDataRestAmount.text = indicatorHolder["DATA"]!!.valueUnit
+                tvDataTotalAmount.text = "Интернет"
             }
-            if(it.type == "VOICE" && it.services.primary) {
-                dataView.groupPhone.visibility = View.VISIBLE
-                var rest = it.rest_amount
-                var total = it.total_amount
+        }
+        if (indicatorHolder.containsKey("VOICE")) {
+            dataView.groupPhone.visibility = View.VISIBLE
+            var rest = indicatorHolder["VOICE"]?.rest!!
+            var total = indicatorHolder["VOICE"]?.total!!
 
 
-                pbPhone.progress = MathUtils().calculatePercent(rest,total)
+            pbPhone.progress = indicatorHolder["VOICE"]?.percent!!
 
-                tvVoiceRestAmount.text = "$rest Мин"
-                tvVoiceTotalAmount.text = "из $total Мин"
-            }
-            if(it.type == "SMS" && it.services.primary) {
-                dataView.groupSMS.visibility = View.VISIBLE
-                var rest = it.rest_amount
-                var total = it.total_amount
+            tvVoiceRestAmount.text = "$rest Мин"
+            tvVoiceTotalAmount.text = "из $total Мин"
+        }
+        if (indicatorHolder.containsKey("SMS")) {
+            dataView.groupSMS.visibility = View.VISIBLE
+            var rest = indicatorHolder["SMS"]?.rest!!
+            var total = indicatorHolder["SMS"]?.total!!
 
-                pbSms.progress = MathUtils().calculatePercent(rest,total)
+            pbSms.progress = indicatorHolder["SMS"]?.percent!!
 
-                tvSMSRestAmount.text =  "$rest SMS"
-                tvSmsTotalAmount.text = "из $total SMS"
-            }
+            tvSMSRestAmount.text = "$rest SMS"
+            tvSmsTotalAmount.text = "из $total SMS"
         }
     }
 
