@@ -33,12 +33,11 @@ class SplashScreen : MviActivity<SplashScreenView,SplashScreenPresenter>(), Spla
         if(state.active) {
             Log.d("Debug", "Network is up")
             val homeIntent = Intent(this@SplashScreen, MainActivity::class.java)
-            Toast.makeText(this, "Network is up", Toast.LENGTH_SHORT).show()
             startActivity(homeIntent)
             finish()
         } else {
             Log.d("Debug", "Network is off")
-            Toast.makeText(this, "Network is off", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Отсутствует соединение с интернетом", Toast.LENGTH_SHORT).show()
 //            exitProcess(0)
         }
     }

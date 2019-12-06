@@ -33,6 +33,9 @@ interface SubscriberServices {
     @GET("/lk/v1/catalog/tariff/{id}")
     fun getCatalogTariff(@Path("id") id: Int): Observable<CatalogTariffResponse>
 
+    @GET("/lk/v1/subscriber/exchange")
+    fun getExchangeInfo() : Observable<ExchangeResponse>
+
     companion object {
         fun create(ctx: Context): SubscriberServices {
             val logging = HttpLoggingInterceptor()

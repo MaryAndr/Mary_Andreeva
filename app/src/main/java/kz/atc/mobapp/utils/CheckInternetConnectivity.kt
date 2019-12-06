@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 object CheckInternetConnectivity {
 
     fun getNetworkStatus(ctx: Context): Observable<SplashScreenState> {
-        return Observable.interval(5, TimeUnit.SECONDS).flatMap {
+        return Observable.interval(0,5, TimeUnit.SECONDS).flatMap {
             checkInternetConnectivity(ctx)
                 .map<SplashScreenState> {
                     SplashScreenState.InternetState(it)

@@ -1,11 +1,10 @@
 package kz.atc.mobapp.fragments.main
 
-import android.opengl.Visibility
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
@@ -13,11 +12,9 @@ import kotlinx.android.synthetic.main.fragment_main_page.*
 import kotlinx.android.synthetic.main.fragment_main_page.view.*
 
 import kz.atc.mobapp.R
-import kz.atc.mobapp.models.RemainsResponse
 import kz.atc.mobapp.models.main.IndicatorHolder
 import kz.atc.mobapp.presenters.main.MainPagePresenter
 import kz.atc.mobapp.states.main.MainPageState
-import kz.atc.mobapp.utils.MathUtils
 import kz.atc.mobapp.utils.StringUtils
 import kz.atc.mobapp.utils.TextConverter
 import kz.atc.mobapp.utils.TimeUtils
@@ -52,9 +49,16 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         val phoneNumber = state.mainData?.phoneNumber
         dataView.visibility = View.VISIBLE
         pgMainData.visibility = View.GONE
+        imgservices.visibility = View.VISIBLE
+        tvservices.visibility = View.VISIBLE
+
+        if(state.mainData?.subExchange?.available!!) {
+            imgmin_gb.visibility = View.VISIBLE
+            tvmin_gb.visibility = View.VISIBLE
+        }
         tvAbonNumber.text = TextConverter().getFormattedPhone(phoneNumber!!)
         tvTariffName.text = state.mainData?.tariffData?.tariff?.name
-        tvChargeDate.text = TimeUtils().debitDate(state.mainData?.chargeDate!!)
+        tvChargeDate.text = state.mainData?.chargeDate!!
         tvAbonBalance.text =
             "${state.mainData?.balance.toString()} ${resources.getString(R.string.rub_value)}"
         loadBars(state.mainData?.indicatorHolder!!)
@@ -63,12 +67,13 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
     private fun loadBars(indicatorHolder: MutableMap<String, IndicatorHolder>) {
         if (indicatorHolder.containsKey("DATA")) {
             if (!indicatorHolder["DATA"]!!.unlim && indicatorHolder["DATA"]!!.valueUnit == null) {
-                dataView.groupData.visibility = View.VISIBLE
+                dataView.pbInternet.visibility = View.VISIBLE
+                dataView.tvDataRestAmount.visibility = View.VISIBLE
+                dataView.tvDataTotalAmount.visibility = View.VISIBLE
+
                 var rest = indicatorHolder["DATA"]?.rest!!
                 var total = indicatorHolder["DATA"]?.total!!
-
                 pbInternet.progress = indicatorHolder["DATA"]?.percent!!
-
                 tvDataRestAmount.text =
                     "${StringUtils().unitValueConverter(rest).value} ${StringUtils().unitValueConverter(
                         rest
@@ -78,33 +83,68 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                         total
                     ).unit}"
             } else if (indicatorHolder["DATA"]!!.unlim) {
+                dataView.pbInternet.visibility = View.INVISIBLE
+                dataView.tvDataRestAmount.visibility = View.VISIBLE
+                dataView.tvDataTotalAmount.visibility = View.VISIBLE
                 tvDataRestAmount.text = "Безлимит"
                 tvDataTotalAmount.text = "Интернет"
             } else if (indicatorHolder["DATA"]!!.valueUnit != null) {
+                dataView.pbInternet.visibility = View.INVISIBLE
+                dataView.tvDataRestAmount.visibility = View.VISIBLE
+                dataView.tvDataTotalAmount.visibility = View.VISIBLE
                 tvDataRestAmount.text = indicatorHolder["DATA"]!!.valueUnit
                 tvDataTotalAmount.text = "Интернет"
             }
         }
         if (indicatorHolder.containsKey("VOICE")) {
-            dataView.groupPhone.visibility = View.VISIBLE
-            var rest = indicatorHolder["VOICE"]?.rest!!
-            var total = indicatorHolder["VOICE"]?.total!!
-
-
-            pbPhone.progress = indicatorHolder["VOICE"]?.percent!!
-
-            tvVoiceRestAmount.text = "$rest Мин"
-            tvVoiceTotalAmount.text = "из $total Мин"
+            if (!indicatorHolder["VOICE"]!!.unlim && indicatorHolder["VOICE"]!!.valueUnit == null) {
+                dataView.pbPhone.visibility = View.VISIBLE
+                dataView.tvVoiceRestAmount.visibility = View.VISIBLE
+                dataView.tvVoiceTotalAmount.visibility = View.VISIBLE
+                var rest = indicatorHolder["VOICE"]?.rest!!
+                var total = indicatorHolder["VOICE"]?.total!!
+                pbPhone.progress = indicatorHolder["VOICE"]?.percent!!
+                tvVoiceRestAmount.text = "$rest Мин"
+                tvVoiceTotalAmount.text = "из $total Мин"
+            } else if (indicatorHolder["VOICE"]!!.unlim) {
+                dataView.pbPhone.visibility = View.INVISIBLE
+                dataView.tvVoiceRestAmount.visibility = View.VISIBLE
+                dataView.tvVoiceTotalAmount.visibility = View.VISIBLE
+                pbPhone.visibility = View.INVISIBLE
+                tvVoiceRestAmount.text = "Безлимит"
+                tvVoiceTotalAmount.text = "Остальные исходящие"
+            } else if (indicatorHolder["VOICE"]!!.valueUnit != null) {
+                dataView.pbPhone.visibility = View.INVISIBLE
+                dataView.tvVoiceRestAmount.visibility = View.VISIBLE
+                dataView.tvVoiceTotalAmount.visibility = View.VISIBLE
+                dataView.pbPhone.visibility = View.INVISIBLE
+                tvDataRestAmount.text = indicatorHolder["VOICE"]!!.valueUnit
+                tvDataTotalAmount.text = "Исходящие звонки"
+            }
         }
         if (indicatorHolder.containsKey("SMS")) {
-            dataView.groupSMS.visibility = View.VISIBLE
-            var rest = indicatorHolder["SMS"]?.rest!!
-            var total = indicatorHolder["SMS"]?.total!!
-
-            pbSms.progress = indicatorHolder["SMS"]?.percent!!
-
-            tvSMSRestAmount.text = "$rest SMS"
-            tvSmsTotalAmount.text = "из $total SMS"
+            if (!indicatorHolder["SMS"]!!.unlim && indicatorHolder["SMS"]!!.valueUnit == null) {
+                dataView.pbSms.visibility = View.VISIBLE
+                dataView.tvSMSRestAmount.visibility = View.VISIBLE
+                dataView.tvSmsTotalAmount.visibility = View.VISIBLE
+                var rest = indicatorHolder["SMS"]?.rest!!
+                var total = indicatorHolder["SMS"]?.total!!
+                pbSms.progress = indicatorHolder["SMS"]?.percent!!
+                tvSMSRestAmount.text = "$rest SMS"
+                tvSmsTotalAmount.text = "из $total SMS"
+            } else if (indicatorHolder["SMS"]!!.unlim) {
+                dataView.pbSms.visibility = View.INVISIBLE
+                dataView.tvSMSRestAmount.visibility = View.VISIBLE
+                dataView.tvSmsTotalAmount.visibility = View.VISIBLE
+                tvSMSRestAmount.text = "Безлимит"
+                tvSmsTotalAmount.text = "SMS"
+            } else if (indicatorHolder["SMS"]!!.valueUnit != null) {
+                dataView.pbSms.visibility = View.INVISIBLE
+                dataView.tvSMSRestAmount.visibility = View.VISIBLE
+                dataView.tvSmsTotalAmount.visibility = View.VISIBLE
+                tvSMSRestAmount.text = indicatorHolder["SMS"]!!.valueUnit
+                tvSmsTotalAmount.text = "SMS"
+            }
         }
     }
 
@@ -130,9 +170,24 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dataView.groupSMS.visibility = View.INVISIBLE
-        dataView.groupData.visibility = View.INVISIBLE
-        dataView.groupPhone.visibility = View.INVISIBLE
+        dataView.pbInternet.visibility = View.INVISIBLE
+        dataView.tvDataRestAmount.visibility = View.INVISIBLE
+        dataView.tvDataTotalAmount.visibility = View.INVISIBLE
+
+        dataView.pbSms.visibility = View.INVISIBLE
+        dataView.tvSMSRestAmount.visibility = View.INVISIBLE
+        dataView.tvSmsTotalAmount.visibility = View.INVISIBLE
+
+        dataView.pbPhone.visibility = View.INVISIBLE
+        dataView.tvVoiceRestAmount.visibility = View.INVISIBLE
+        dataView.tvVoiceTotalAmount.visibility = View.INVISIBLE
+
+
+        imgmin_gb.visibility = View.INVISIBLE
+        tvmin_gb.visibility = View.INVISIBLE
+
+        imgservices.visibility = View.INVISIBLE
+        tvservices.visibility = View.INVISIBLE
     }
 
 }
