@@ -177,9 +177,9 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
 //        dataView.tvVoiceRestAmount.visibility = View.INVISIBLE
 //        dataView.tvVoiceTotalAmount.visibility = View.INVISIBLE
 
-        groupData.visibility = View.GONE
-        groupVoice.visibility = View.GONE
-        groupSMS.visibility = View.GONE
+        groupData.visibility = View.INVISIBLE
+        groupVoice.visibility = View.INVISIBLE
+        groupSMS.visibility = View.INVISIBLE
         layoutGbToMin.visibility = View.GONE
         layoutServices.visibility = View.GONE
     }
