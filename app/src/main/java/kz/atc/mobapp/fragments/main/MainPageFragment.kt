@@ -57,7 +57,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         }
         tvAbonNumber.text = TextConverter().getFormattedPhone(phoneNumber!!)
         if (state.mainData?.tariffData?.tariff?.name != null) {
-            tvTariffName.text = "Тариф \"$state.mainData?.tariffData?.tariff?.name\""
+            tvTariffName.text = "Тариф \"${state.mainData?.tariffData?.tariff?.name}\""
         } else {
             tvTariffName.text = state.mainData?.tariffData?.tariff?.name
         }
@@ -106,6 +106,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
             }
         }
         if (indicatorHolder.containsKey("VOICE")) {
+            Log.d("HERE", "VOICES")
             if (!indicatorHolder["VOICE"]!!.unlim && indicatorHolder["VOICE"]!!.valueUnit == null) {
                 groupVoice.visibility = View.VISIBLE
                 var rest = indicatorHolder["VOICE"]?.rest!!
@@ -131,8 +132,8 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                     240f,
                     resources.displayMetrics
                 ).toInt()
-                tvDataRestAmount.text = indicatorHolder["VOICE"]!!.valueUnit
-                tvDataTotalAmount.text = "Исходящие звонки"
+                tvVoiceRestAmount.text = indicatorHolder["VOICE"]!!.valueUnit
+                tvVoiceTotalAmount.text = "Исходящие звонки"
             }
         }
         if (indicatorHolder.containsKey("SMS")) {

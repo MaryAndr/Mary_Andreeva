@@ -107,6 +107,7 @@ class SubscriberInteractor(ctx: Context) {
         val outputMap: MutableMap<String, IndicatorHolder> = mutableMapOf()
         remains?.filter { predicate -> predicate.services.primary }?.forEach {
             if (it.type == "DATA") {
+                Log.d("HERE", "DATA")
                 var rest = it.rest_amount
                 var total = it.total_amount
                 val indicatorData =
@@ -114,6 +115,7 @@ class SubscriberInteractor(ctx: Context) {
                 outputMap?.put("DATA", indicatorData)
             }
             if (it.type == "VOICE") {
+                Log.d("HERE", "VOICES")
                 var rest = it.rest_amount
                 var total = it.total_amount
                 val indicatorData =
@@ -121,6 +123,7 @@ class SubscriberInteractor(ctx: Context) {
                 outputMap?.put("VOICE", indicatorData)
             }
             if (it.type == "SMS") {
+                Log.d("HERE", "SMS")
                 var rest = it.rest_amount
                 var total = it.total_amount
                 val indicatorData =
@@ -131,36 +134,42 @@ class SubscriberInteractor(ctx: Context) {
         tariff.options.filter { predicate -> predicate.primary }.forEach {
             val indicatorHolder = IndicatorHolder(null, null, null, true)
             if (it.type == "DATA" && !outputMap.containsKey("DATA")) {
+                Log.d("HERE", "DATA1")
                 outputMap?.put("DATA", indicatorHolder)
             }
             if (it.type == "VOICE" && !outputMap.containsKey("VOICE")) {
+                Log.d("HERE", "VOICES1")
                 outputMap?.put("VOICE", indicatorHolder)
             }
             if (it.type == "SMS" && !outputMap.containsKey("SMS")) {
+                Log.d("HERE", "SMS1")
                 outputMap?.put("SMS", indicatorHolder)
             }
         }
         catalogTariff?.attributes?.forEach {
-            if (it.system_name == "internet_gb_count" && !outputMap.containsKey("DATA")) {
+            if (it.system_name == "internet_mb_cost" && !outputMap.containsKey("DATA")) {
+                Log.d("HERE", "DATA2")
                 val value = if (it.value.trim() == "Безлимит") {
                     it.value
-                } else it.value + it.unit
+                } else it.value + " " + it.unit
                 val indicatorHolder =
                     IndicatorHolder(null, null, null, false, value)
                 outputMap?.put("DATA", indicatorHolder)
             }
             if (it.system_name == "minute_cost" && !outputMap.containsKey("VOICE")) {
+                Log.d("HERE", "VOICES2")
                 val value = if (it.value.trim() == "Безлимит") {
                     it.value
-                } else it.value + it.unit
+                } else it.value + " " + it.unit
                 val indicatorHolder =
                     IndicatorHolder(null, null, null, false, value)
                 outputMap?.put("VOICE", indicatorHolder)
             }
             if (it.system_name == "sms_count" && !outputMap.containsKey("SMS")) {
+                Log.d("HERE", "SMS2")
                 val value = if (it.value.trim() == "Безлимит") {
                     it.value
-                } else it.value + it.unit
+                } else it.value + " " + it.unit
                 val indicatorHolder =
                     IndicatorHolder(null, null, null, false, value)
                 outputMap?.put("SMS", indicatorHolder)
