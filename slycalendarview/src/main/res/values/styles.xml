@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="SlyCalendarDialogStyle" parent="Base.Theme.AppCompat.Dialog">
+        <item name="android:windowMinWidthMajor">100%</item>
+        <item name="android:windowMinWidthMinor">100%</item>
+    </style>
+
+
+    <style name="SlyCalendarTimeDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/slycalendar_defHeaderColor</item>
+        <item name="colorControlNormal">@color/slycalendar_defHeaderColor</item>
+    </style>
+</resources>

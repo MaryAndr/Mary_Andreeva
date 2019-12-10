@@ -52,11 +52,15 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         pgMainData.visibility = View.GONE
         layoutServices.visibility = View.VISIBLE
 
-        if(state.mainData?.subExchange?.available!!) {
+        if (state.mainData?.subExchange?.available!!) {
             layoutGbToMin.visibility = View.VISIBLE
         }
         tvAbonNumber.text = TextConverter().getFormattedPhone(phoneNumber!!)
-        tvTariffName.text = state.mainData?.tariffData?.tariff?.name
+        if (state.mainData?.tariffData?.tariff?.name != null) {
+            tvTariffName.text = "Тариф \"$state.mainData?.tariffData?.tariff?.name\""
+        } else {
+            tvTariffName.text = state.mainData?.tariffData?.tariff?.name
+        }
         tvChargeDate.text = state.mainData?.chargeDate!!
         tvAbonBalance.text =
             "${state.mainData?.balance.toString()} ${resources.getString(R.string.rub_value)}"
@@ -82,13 +86,21 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
             } else if (indicatorHolder["DATA"]!!.unlim) {
                 groupData.visibility = View.VISIBLE
                 dataView.pbInternet.visibility = View.GONE
-                dataView.layoutParams.height =  TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 240f, resources.displayMetrics).toInt()
+                dataView.layoutParams.height = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    240f,
+                    resources.displayMetrics
+                ).toInt()
                 tvDataRestAmount.text = "Безлимит"
                 tvDataTotalAmount.text = "Интернет"
             } else if (indicatorHolder["DATA"]!!.valueUnit != null) {
                 groupData.visibility = View.VISIBLE
                 dataView.pbInternet.visibility = View.GONE
-                dataView.layoutParams.height =  TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 240f, resources.displayMetrics).toInt()
+                dataView.layoutParams.height = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    240f,
+                    resources.displayMetrics
+                ).toInt()
                 tvDataRestAmount.text = indicatorHolder["DATA"]!!.valueUnit
                 tvDataTotalAmount.text = "Интернет"
             }
@@ -104,13 +116,21 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
             } else if (indicatorHolder["VOICE"]!!.unlim) {
                 groupVoice.visibility = View.VISIBLE
                 dataView.pbPhone.visibility = View.GONE
-                dataView.layoutParams.height =  TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 240f, resources.displayMetrics).toInt()
+                dataView.layoutParams.height = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    240f,
+                    resources.displayMetrics
+                ).toInt()
                 tvVoiceRestAmount.text = "Безлимит"
                 tvVoiceTotalAmount.text = "Остальные исходящие"
             } else if (indicatorHolder["VOICE"]!!.valueUnit != null) {
                 groupVoice.visibility = View.VISIBLE
                 dataView.pbPhone.visibility = View.GONE
-                dataView.layoutParams.height =  TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 240f, resources.displayMetrics).toInt()
+                dataView.layoutParams.height = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    240f,
+                    resources.displayMetrics
+                ).toInt()
                 tvDataRestAmount.text = indicatorHolder["VOICE"]!!.valueUnit
                 tvDataTotalAmount.text = "Исходящие звонки"
             }
@@ -126,19 +146,31 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
             } else if (indicatorHolder["SMS"]!!.unlim) {
                 groupSMS.visibility = View.VISIBLE
                 dataView.pbSms.visibility = View.GONE
-                dataView.layoutParams.height =  TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 240f, resources.displayMetrics).toInt()
+                dataView.layoutParams.height = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    240f,
+                    resources.displayMetrics
+                ).toInt()
                 tvSMSRestAmount.text = "Безлимит"
                 tvSmsTotalAmount.text = "SMS"
             } else if (indicatorHolder["SMS"]!!.valueUnit != null) {
                 groupSMS.visibility = View.VISIBLE
                 dataView.pbSms.visibility = View.GONE
-                dataView.layoutParams.height =  TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 240f, resources.displayMetrics).toInt()
+                dataView.layoutParams.height = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    240f,
+                    resources.displayMetrics
+                ).toInt()
                 tvSMSRestAmount.text = indicatorHolder["SMS"]!!.valueUnit
                 tvSmsTotalAmount.text = "SMS"
             }
         }
-        if(indicatorHolder.isEmpty()) {
-            dataView.layoutParams.height =  TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 180f, resources.displayMetrics).toInt()
+        if (indicatorHolder.isEmpty()) {
+            dataView.layoutParams.height = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                180f,
+                resources.displayMetrics
+            ).toInt()
             dataView.setBackgroundDrawable(resources.getDrawable(R.drawable.small_path))
         }
     }

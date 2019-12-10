@@ -224,7 +224,7 @@
                     <TextView
                         android:id="@+id/tvVoiceTotalAmount"
                         android:layout_width="wrap_content"
-                        android:layout_height="15dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center|left"
 
                         android:text="из 1000 Мин"
@@ -373,33 +373,33 @@
 
     </LinearLayout>
 
-                <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="105dp"
-                    android:layout_height="29dp"
-                    android:layout_marginStart="14dp"
-                    android:layout_marginLeft="14dp"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0"
-                    app:srcCompat="@drawable/ic_logo" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/imageView2"-->
+<!--                    android:layout_width="105dp"-->
+<!--                    android:layout_height="29dp"-->
+<!--                    android:layout_marginStart="14dp"-->
+<!--                    android:layout_marginLeft="14dp"-->
+<!--                    android:layout_marginTop="8dp"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintHorizontal_bias="0"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:layout_constraintVertical_bias="0.0"-->
+<!--                    app:srcCompat="@drawable/ic_logo" />-->
 
-                <ImageView
-                    android:id="@+id/imageView3"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toEndOf="@+id/imageView2"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0"
-                    app:srcCompat="@drawable/ic_profile_pic" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/imageView3"-->
+<!--                    android:layout_width="28dp"-->
+<!--                    android:layout_height="28dp"-->
+<!--                    android:layout_marginTop="8dp"-->
+<!--                    android:layout_marginEnd="16dp"-->
+<!--                    android:layout_marginRight="16dp"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintHorizontal_bias="1.0"-->
+<!--                    app:layout_constraintStart_toEndOf="@+id/imageView2"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:layout_constraintVertical_bias="0"-->
+<!--                    app:srcCompat="@drawable/ic_profile_pic" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>

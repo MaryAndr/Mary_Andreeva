@@ -142,18 +142,27 @@ class SubscriberInteractor(ctx: Context) {
         }
         catalogTariff?.attributes?.forEach {
             if (it.system_name == "internet_gb_count" && !outputMap.containsKey("DATA")) {
+                val value = if (it.value.trim() == "Безлимит") {
+                    it.value
+                } else it.value + it.unit
                 val indicatorHolder =
-                    IndicatorHolder(null, null, null, false, it.value + it.unit)
+                    IndicatorHolder(null, null, null, false, value)
                 outputMap?.put("DATA", indicatorHolder)
             }
             if (it.system_name == "minute_cost" && !outputMap.containsKey("VOICE")) {
+                val value = if (it.value.trim() == "Безлимит") {
+                    it.value
+                } else it.value + it.unit
                 val indicatorHolder =
-                    IndicatorHolder(null, null, null, false, it.value + it.unit)
+                    IndicatorHolder(null, null, null, false, value)
                 outputMap?.put("VOICE", indicatorHolder)
             }
             if (it.system_name == "sms_count" && !outputMap.containsKey("SMS")) {
+                val value = if (it.value.trim() == "Безлимит") {
+                    it.value
+                } else it.value + it.unit
                 val indicatorHolder =
-                    IndicatorHolder(null, null, null, false, it.value + it.unit)
+                    IndicatorHolder(null, null, null, false, value)
                 outputMap?.put("SMS", indicatorHolder)
             }
         }
