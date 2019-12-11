@@ -165,7 +165,7 @@ class SubscriberInteractor(ctx: Context) {
                     IndicatorHolder(null, null, null, false, value)
                 outputMap?.put("VOICE", indicatorHolder)
             }
-            if (it.system_name == "sms_count" && !outputMap.containsKey("SMS")) {
+            if (it.system_name == "sms_cost" && !outputMap.containsKey("SMS")) {
                 Log.d("HERE", "SMS2")
                 val value = if (it.value.trim() == "Безлимит") {
                     it.value
