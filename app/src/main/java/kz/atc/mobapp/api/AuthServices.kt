@@ -3,6 +3,7 @@ package kz.atc.mobapp.api
 import io.reactivex.Observable
 import kz.atc.mobapp.models.OAuthModel
 import kz.atc.mobapp.models.UserType
+import kz.atc.mobapp.models.catalogTariff.CatalogTariffResponse
 import kz.atc.mobapp.utils.AuthenticationInterceptor
 import kz.atc.mobapp.utils.ContentTypeInterceptor
 import okhttp3.OkHttpClient
@@ -23,6 +24,9 @@ interface AuthServices {
     @Multipart
     @POST("/lk/v1/user/password")
     fun sendSMS(@Part("username") username: RequestBody?) : Observable<Unit>
+
+    @GET("/lk/v1/catalog/tariff")
+    fun getCatalogTariff(@Query("trpl_id") id: Int): Observable<CatalogTariffResponse>
 
     @Multipart
     @POST("/oauth/token")

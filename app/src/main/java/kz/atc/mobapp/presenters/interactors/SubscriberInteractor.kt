@@ -7,8 +7,9 @@ import io.reactivex.Observable
 import io.reactivex.functions.Function4
 import io.reactivex.functions.Function5
 import io.reactivex.schedulers.Schedulers
+import kz.atc.mobapp.api.AuthServices
 import kz.atc.mobapp.api.SubscriberServices
-import kz.atc.mobapp.models.CatalogTariffResponse
+import kz.atc.mobapp.models.catalogTariff.CatalogTariffResponse
 import kz.atc.mobapp.models.RemainsResponse
 import kz.atc.mobapp.models.SubBalanceResponse
 import kz.atc.mobapp.models.TariffResponse
@@ -24,6 +25,10 @@ class SubscriberInteractor(ctx: Context) {
 
     private val subService by lazy {
         SubscriberServices.create(ctx)
+    }
+
+    val userService by lazy {
+        AuthServices.create()
     }
 
 
@@ -68,7 +73,8 @@ class SubscriberInteractor(ctx: Context) {
                 accumData.balance = subBal.value
                 accumData.remains = subRem
                 if (subT.tariff != null) {
-                    subService.getCatalogTariff(subT.tariff.id).flatMap { catTar ->
+                    userService.getCatalogTariff(subT.tariff.id).flatMap { catTar ->
+                        Log.d("DEBUG", "HERE")
                         accumData.indicatorHolder = calculateIndicators(subT, subRem, catTar)
                         Observable.just(MainPagePartialState.ShowDataState(accumData))
                     }.blockingFirst()
@@ -132,21 +138,25 @@ class SubscriberInteractor(ctx: Context) {
             }
         }
         tariff.options.filter { predicate -> predicate.primary }.forEach {
-            val indicatorHolder = IndicatorHolder(null, null, null, true)
+
             if (it.type == "DATA" && !outputMap.containsKey("DATA")) {
+                val indicatorHolder = IndicatorHolder(null, null, null, true,null,it.name)
                 Log.d("HERE", "DATA1")
                 outputMap?.put("DATA", indicatorHolder)
             }
             if (it.type == "VOICE" && !outputMap.containsKey("VOICE")) {
+                val indicatorHolder = IndicatorHolder(null, null, null, true,null,it.name)
                 Log.d("HERE", "VOICES1")
                 outputMap?.put("VOICE", indicatorHolder)
             }
             if (it.type == "SMS" && !outputMap.containsKey("SMS")) {
+                val indicatorHolder = IndicatorHolder(null, null, null, true,null,it.name)
                 Log.d("HERE", "SMS1")
                 outputMap?.put("SMS", indicatorHolder)
             }
         }
-        catalogTariff?.attributes?.forEach {
+
+        catalogTariff?.tariffs?.first()?.attributes?.forEach {
             if (it.system_name == "internet_mb_cost" && !outputMap.containsKey("DATA")) {
                 Log.d("HERE", "DATA2")
                 val value = if (it.value.trim() == "Безлимит") {

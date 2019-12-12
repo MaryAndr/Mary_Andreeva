@@ -92,7 +92,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                     resources.displayMetrics
                 ).toInt()
                 tvDataRestAmount.text = "Безлимит"
-                tvDataTotalAmount.text = "Интернет"
+                tvDataTotalAmount.text = indicatorHolder["DATA"]?.optionsName
             } else if (indicatorHolder["DATA"]!!.valueUnit != null) {
                 groupData.visibility = View.VISIBLE
                 dataView.pbInternet.visibility = View.GONE
@@ -123,7 +123,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                     resources.displayMetrics
                 ).toInt()
                 tvVoiceRestAmount.text = "Безлимит"
-                tvVoiceTotalAmount.text = "Остальные исходящие"
+                tvVoiceTotalAmount.text = indicatorHolder["VOICE"]?.optionsName
             } else if (indicatorHolder["VOICE"]!!.valueUnit != null) {
                 groupVoice.visibility = View.VISIBLE
                 dataView.pbPhone.visibility = View.GONE
@@ -153,7 +153,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                     resources.displayMetrics
                 ).toInt()
                 tvSMSRestAmount.text = "Безлимит"
-                tvSmsTotalAmount.text = "SMS"
+                tvSmsTotalAmount.text = indicatorHolder["SMS"]?.optionsName
             } else if (indicatorHolder["SMS"]!!.valueUnit != null) {
                 groupSMS.visibility = View.VISIBLE
                 dataView.pbSms.visibility = View.GONE
