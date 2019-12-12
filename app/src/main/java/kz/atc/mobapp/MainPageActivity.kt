@@ -1,12 +1,16 @@
 package kz.atc.mobapp
 
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import androidx.appcompat.app.ActionBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import kotlinx.android.synthetic.main.activity_main_page.*
+import kz.atc.mobapp.fragments.main.CostsAndReplenishment
 import kz.atc.mobapp.fragments.main.MainPageFragment
 import kz.atc.mobapp.utils.Constants
 import kz.atc.mobapp.utils.PreferenceHelper
@@ -22,6 +26,12 @@ class MainPageActivity : AppCompatActivity() {
                     .commit()
                 return@OnNavigationItemSelectedListener true
             }
+            R.id.navigation_costs -> {
+                val fragment = CostsAndReplenishment()
+                supportFragmentManager.beginTransaction().replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
+                    .commit()
+                return@OnNavigationItemSelectedListener true
+            }
         }
         false
     }
@@ -31,16 +41,10 @@ class MainPageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_page)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
-        supportActionBar?.hide()
-        val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_tariff, R.id.navigation_costs, R.id.navigation_help
-            )
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        supportActionBar!!.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.costs)))
+        supportActionBar!!.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
+        supportActionBar!!.setCustomView(R.layout.abs_layout)
+
+        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
 }

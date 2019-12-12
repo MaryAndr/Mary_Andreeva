@@ -15,7 +15,11 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainPageActivity"
-            android:label="@string/title_activity_main_page"></activity>
+            android:label="@string/title_activity_main_page"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/MainPageTheme"
+            ></activity>
         <activity
             android:name=".SplashScreen"
             android:configChanges="orientation"

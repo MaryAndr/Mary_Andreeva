@@ -19,8 +19,8 @@ class MainActivity : AppCompatActivity() {
         supportActionBar!!.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM;
         supportActionBar!!.setCustomView(R.layout.abs_layout);
         supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment? ?: return
-        val prefs = PreferenceHelper.customPrefs(this, Constants.AUTH_PREF_NAME)
-        prefs[Constants.AUTH_TOKEN] = null
+//        val prefs = PreferenceHelper.customPrefs(this, Constants.AUTH_PREF_NAME)
+//        prefs[Constants.AUTH_TOKEN] = null
 
     }
 

@@ -6,6 +6,8 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
@@ -33,6 +35,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         return preLoadTrigger
     }
 
+
     override fun render(state: MainPageState) {
         when {
             state.loading -> {
@@ -42,7 +45,6 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
             state.mainDataLoaded -> {
                 renderFirstLoad(state)
             }
-
         }
     }
 
@@ -86,21 +88,11 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
             } else if (indicatorHolder["DATA"]!!.unlim) {
                 groupData.visibility = View.VISIBLE
                 dataView.pbInternet.visibility = View.GONE
-                dataView.layoutParams.height = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    240f,
-                    resources.displayMetrics
-                ).toInt()
                 tvDataRestAmount.text = "Безлимит"
                 tvDataTotalAmount.text = indicatorHolder["DATA"]?.optionsName
             } else if (indicatorHolder["DATA"]!!.valueUnit != null) {
                 groupData.visibility = View.VISIBLE
                 dataView.pbInternet.visibility = View.GONE
-                dataView.layoutParams.height = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    240f,
-                    resources.displayMetrics
-                ).toInt()
                 tvDataRestAmount.text = indicatorHolder["DATA"]!!.valueUnit
                 tvDataTotalAmount.text = "Интернет"
             }
@@ -117,21 +109,11 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
             } else if (indicatorHolder["VOICE"]!!.unlim) {
                 groupVoice.visibility = View.VISIBLE
                 dataView.pbPhone.visibility = View.GONE
-                dataView.layoutParams.height = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    240f,
-                    resources.displayMetrics
-                ).toInt()
                 tvVoiceRestAmount.text = "Безлимит"
                 tvVoiceTotalAmount.text = indicatorHolder["VOICE"]?.optionsName
             } else if (indicatorHolder["VOICE"]!!.valueUnit != null) {
                 groupVoice.visibility = View.VISIBLE
                 dataView.pbPhone.visibility = View.GONE
-                dataView.layoutParams.height = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    240f,
-                    resources.displayMetrics
-                ).toInt()
                 tvVoiceRestAmount.text = indicatorHolder["VOICE"]!!.valueUnit
                 tvVoiceTotalAmount.text = "Исходящие звонки"
             }
@@ -147,24 +129,21 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
             } else if (indicatorHolder["SMS"]!!.unlim) {
                 groupSMS.visibility = View.VISIBLE
                 dataView.pbSms.visibility = View.GONE
-                dataView.layoutParams.height = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    240f,
-                    resources.displayMetrics
-                ).toInt()
                 tvSMSRestAmount.text = "Безлимит"
                 tvSmsTotalAmount.text = indicatorHolder["SMS"]?.optionsName
             } else if (indicatorHolder["SMS"]!!.valueUnit != null) {
                 groupSMS.visibility = View.VISIBLE
                 dataView.pbSms.visibility = View.GONE
-                dataView.layoutParams.height = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    240f,
-                    resources.displayMetrics
-                ).toInt()
                 tvSMSRestAmount.text = indicatorHolder["SMS"]!!.valueUnit
                 tvSmsTotalAmount.text = "SMS"
             }
+        }
+        if (pbInternet.visibility == View.GONE && pbPhone.visibility == View.GONE && pbSms.visibility == View.GONE) {
+            dataView.layoutParams.height = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                240f,
+                resources.displayMetrics
+            ).toInt()
         }
         if (indicatorHolder.isEmpty()) {
             dataView.layoutParams.height = TypedValue.applyDimension(
@@ -184,6 +163,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
 
     override fun onResume() {
         super.onResume()
+        (activity as AppCompatActivity).supportActionBar?.hide()
         pgMainData.visibility = View.GONE
         preLoadTrigger.onNext(1)
     }

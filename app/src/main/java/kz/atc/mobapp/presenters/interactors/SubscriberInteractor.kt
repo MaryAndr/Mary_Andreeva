@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.view.View
 import io.reactivex.Observable
+import io.reactivex.functions.Function3
 import io.reactivex.functions.Function4
 import io.reactivex.functions.Function5
 import io.reactivex.schedulers.Schedulers
@@ -15,10 +16,12 @@ import kz.atc.mobapp.models.SubBalanceResponse
 import kz.atc.mobapp.models.TariffResponse
 import kz.atc.mobapp.models.main.IndicatorHolder
 import kz.atc.mobapp.models.main.MainPagaAccumData
+import kz.atc.mobapp.states.main.CostAndReplenishmentPartialState
 import kz.atc.mobapp.states.main.MainPagePartialState
 import kz.atc.mobapp.utils.MathUtils
 import kz.atc.mobapp.utils.StringUtils
 import kz.atc.mobapp.utils.TimeUtils
+import kotlin.Function3 as Function31
 
 class SubscriberInteractor(ctx: Context) {
 
@@ -29,6 +32,32 @@ class SubscriberInteractor(ctx: Context) {
 
     val userService by lazy {
         AuthServices.create()
+    }
+
+    fun costsMainData(): Observable<CostAndReplenishmentPartialState> {
+        val subInfo = subService.getSubInfo().onErrorReturn {
+            null
+        }
+
+        val subBalance = subService.getSubBalance().onErrorReturn {
+            null
+        }
+
+        val subTariff = subService.getSubTariff().onErrorReturn {
+            null
+        }
+        return Observable.combineLatest(
+            subInfo,
+            subTariff,
+            subBalance,
+            Function3 { subInfo, subT, subBal ->
+                val accumData = MainPagaAccumData()
+                accumData.tariffData = subT
+                accumData.phoneNumber = subInfo.msisdn
+                accumData.balance = subBal.value
+                CostAndReplenishmentPartialState.ShowMainDataState(accumData)
+            })
+
     }
 
 

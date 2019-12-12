@@ -12,6 +12,17 @@
     </style>
 
 
+    <style name="MainPageTheme" parent="Theme.MaterialComponents.Light.Bridge">
+        <!-- Customize your theme here. -->
+        <item name="actionBarSize">60dp</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorPrimaryDark</item>
+        <item name="buttonStyle">@style/yourButtonStyle</item>
+        <item name="android:statusBarColor" tools:ignore="NewApi">@color/defaultBorderColor</item>
+    </style>
+
+
     <style name="BottomNavigation">
         <item name="android:background">@color/bottonavbackcolor</item>
         <item name="itemIconTint">@drawable/bottomnav_color_selector</item>

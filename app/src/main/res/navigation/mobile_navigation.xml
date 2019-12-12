@@ -3,10 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/mainPageFragment2">
+    app:startDestination="@id/mainPage">
     <fragment
-        android:id="@+id/mainPageFragment2"
+        android:id="@+id/mainPage"
         android:name="kz.atc.mobapp.fragments.main.MainPageFragment"
         android:label="fragment_main_page"
         tools:layout="@layout/fragment_main_page" />
+    <fragment
+        android:id="@+id/costsAndReplenishment"
+        android:name="kz.atc.mobapp.fragments.main.CostsAndReplenishment"
+        android:label="fragment_costs_and_replenishment"
+        tools:layout="@layout/fragment_costs_and_replenishment" />
 </navigation>
