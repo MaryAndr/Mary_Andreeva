@@ -72,19 +72,23 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
     private fun loadBars(indicatorHolder: MutableMap<String, IndicatorHolder>) {
         if (indicatorHolder.containsKey("DATA")) {
             if (!indicatorHolder["DATA"]!!.unlim && indicatorHolder["DATA"]!!.valueUnit == null) {
-                groupData.visibility = View.VISIBLE
 
                 var rest = indicatorHolder["DATA"]?.rest!!
                 var total = indicatorHolder["DATA"]?.total!!
-                pbInternet.progress = indicatorHolder["DATA"]?.percent!!
-                tvDataRestAmount.text =
-                    "${StringUtils().unitValueConverter(rest).value} ${StringUtils().unitValueConverter(
-                        rest
-                    ).unit}"
-                tvDataTotalAmount.text =
-                    "из ${StringUtils().unitValueConverter(total).value} ${StringUtils().unitValueConverter(
-                        total
-                    ).unit}"
+
+                if (rest != 0 && total != 0) {
+                    groupData.visibility = View.VISIBLE
+
+                    pbInternet.progress = indicatorHolder["DATA"]?.percent!!
+                    tvDataRestAmount.text =
+                        "${StringUtils().unitValueConverter(rest).value} ${StringUtils().unitValueConverter(
+                            rest
+                        ).unit}"
+                    tvDataTotalAmount.text =
+                        "из ${StringUtils().unitValueConverter(total).value} ${StringUtils().unitValueConverter(
+                            total
+                        ).unit}"
+                }
             } else if (indicatorHolder["DATA"]!!.unlim) {
                 groupData.visibility = View.VISIBLE
                 dataView.pbInternet.visibility = View.GONE
@@ -100,12 +104,15 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         if (indicatorHolder.containsKey("VOICE")) {
             Log.d("HERE", "VOICES")
             if (!indicatorHolder["VOICE"]!!.unlim && indicatorHolder["VOICE"]!!.valueUnit == null) {
-                groupVoice.visibility = View.VISIBLE
                 var rest = indicatorHolder["VOICE"]?.rest!!
                 var total = indicatorHolder["VOICE"]?.total!!
-                pbPhone.progress = indicatorHolder["VOICE"]?.percent!!
-                tvVoiceRestAmount.text = "$rest Мин"
-                tvVoiceTotalAmount.text = "из $total Мин"
+
+                if (rest != 0 && total != 0) {
+                    groupVoice.visibility = View.VISIBLE
+                    pbPhone.progress = indicatorHolder["VOICE"]?.percent!!
+                    tvVoiceRestAmount.text = "$rest Мин"
+                    tvVoiceTotalAmount.text = "из $total Мин"
+                }
             } else if (indicatorHolder["VOICE"]!!.unlim) {
                 groupVoice.visibility = View.VISIBLE
                 dataView.pbPhone.visibility = View.GONE
@@ -120,12 +127,15 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         }
         if (indicatorHolder.containsKey("SMS")) {
             if (!indicatorHolder["SMS"]!!.unlim && indicatorHolder["SMS"]!!.valueUnit == null) {
-                groupSMS.visibility = View.VISIBLE
                 var rest = indicatorHolder["SMS"]?.rest!!
                 var total = indicatorHolder["SMS"]?.total!!
-                pbSms.progress = indicatorHolder["SMS"]?.percent!!
-                tvSMSRestAmount.text = "$rest SMS"
-                tvSmsTotalAmount.text = "из $total SMS"
+
+                if (rest != 0 && total != 0) {
+                    groupSMS.visibility = View.VISIBLE
+                    pbSms.progress = indicatorHolder["SMS"]?.percent!!
+                    tvSMSRestAmount.text = "$rest SMS"
+                    tvSmsTotalAmount.text = "из $total SMS"
+                }
             } else if (indicatorHolder["SMS"]!!.unlim) {
                 groupSMS.visibility = View.VISIBLE
                 dataView.pbSms.visibility = View.GONE

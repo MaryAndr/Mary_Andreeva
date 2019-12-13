@@ -149,9 +149,9 @@
                 <ProgressBar
                     android:id="@+id/pbInternet"
                     style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="18dp"
+                    android:layout_width="20dp"
                     android:layout_height="36dp"
-                    android:layout_weight="0.5"
+                    android:layout_weight="0.1"
                     android:max="100"
                     android:progress="50"
                     android:progressDrawable="@drawable/tariff_progress_bar" />
@@ -196,9 +196,9 @@
                 <ProgressBar
                     android:id="@+id/pbPhone"
                     style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="18dp"
+                    android:layout_width="20dp"
                     android:layout_height="36dp"
-                    android:layout_weight="0.5"
+                    android:layout_weight="0.1"
                     android:max="100"
                     android:progress="80"
                     android:progressDrawable="@drawable/tariff_progress_bar" />
@@ -244,9 +244,9 @@
                 <ProgressBar
                     android:id="@+id/pbSms"
                     style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="18dp"
+                    android:layout_width="20dp"
                     android:layout_height="36dp"
-                    android:layout_weight="0.5"
+                    android:layout_weight="0.1"
 
                     android:max="100"
                     android:progress="50"
