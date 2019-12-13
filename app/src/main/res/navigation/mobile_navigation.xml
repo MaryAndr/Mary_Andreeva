@@ -14,4 +14,9 @@
         android:name="kz.atc.mobapp.fragments.main.CostsAndReplenishment"
         android:label="fragment_costs_and_replenishment"
         tools:layout="@layout/fragment_costs_and_replenishment" />
+    <fragment
+        android:id="@+id/costsEmailFragment"
+        android:name="kz.atc.mobapp.fragments.main.CostsEmailFragment"
+        android:label="fragment_costs_email"
+        tools:layout="@layout/fragment_costs_email" />
 </navigation>

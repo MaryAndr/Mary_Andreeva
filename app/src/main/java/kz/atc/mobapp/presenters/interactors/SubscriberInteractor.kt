@@ -17,6 +17,7 @@ import kz.atc.mobapp.models.TariffResponse
 import kz.atc.mobapp.models.main.IndicatorHolder
 import kz.atc.mobapp.models.main.MainPagaAccumData
 import kz.atc.mobapp.states.main.CostAndReplenishmentPartialState
+import kz.atc.mobapp.states.main.CostsEmailState
 import kz.atc.mobapp.states.main.MainPagePartialState
 import kz.atc.mobapp.utils.MathUtils
 import kz.atc.mobapp.utils.StringUtils
@@ -33,6 +34,13 @@ class SubscriberInteractor(ctx: Context) {
     val userService by lazy {
         AuthServices.create()
     }
+
+    fun msisdnLoad(): Observable<CostsEmailState> {
+        return subService.getSubInfo().flatMap {
+            Observable.just(CostsEmailState.MsisdnShown(it.msisdn))
+        }
+    }
+
 
     fun costsMainData(): Observable<CostAndReplenishmentPartialState> {
         val subInfo = subService.getSubInfo().onErrorReturn {
@@ -169,17 +177,17 @@ class SubscriberInteractor(ctx: Context) {
         tariff.options.filter { predicate -> predicate.primary }.forEach {
 
             if (it.type == "DATA" && !outputMap.containsKey("DATA")) {
-                val indicatorHolder = IndicatorHolder(null, null, null, true,null,it.name)
+                val indicatorHolder = IndicatorHolder(null, null, null, true, null, it.name)
                 Log.d("HERE", "DATA1")
                 outputMap?.put("DATA", indicatorHolder)
             }
             if (it.type == "VOICE" && !outputMap.containsKey("VOICE")) {
-                val indicatorHolder = IndicatorHolder(null, null, null, true,null,it.name)
+                val indicatorHolder = IndicatorHolder(null, null, null, true, null, it.name)
                 Log.d("HERE", "VOICES1")
                 outputMap?.put("VOICE", indicatorHolder)
             }
             if (it.type == "SMS" && !outputMap.containsKey("SMS")) {
-                val indicatorHolder = IndicatorHolder(null, null, null, true,null,it.name)
+                val indicatorHolder = IndicatorHolder(null, null, null, true, null, it.name)
                 Log.d("HERE", "SMS1")
                 outputMap?.put("SMS", indicatorHolder)
             }

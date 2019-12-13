@@ -1,6 +1,7 @@
 package kz.atc.mobapp.presenters.main
 
 import android.content.Context
+import android.util.Log
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -23,9 +24,26 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
                     subService.costsMainData().subscribeOn(Schedulers.io())
                 }
 
-        val initialState = CostAndReplenishmentState(false,null,false,null)
+        var costsShownIntent: Observable<CostAndReplenishmentPartialState> =
+            intent(CostAndReplenishmentView::showCostsIntent)
+                .map<CostAndReplenishmentPartialState> {
+                    Log.d("Debug", "Costs Layout Triggered")
+                    CostAndReplenishmentPartialState.ShowCostsLayout
+                }
 
-        val allIntents = mainDataLoadIntent
+        var replenishmentShownIntent : Observable<CostAndReplenishmentPartialState> =
+            intent(CostAndReplenishmentView::showReplenishmentIntent)
+                .map<CostAndReplenishmentPartialState> {
+                    CostAndReplenishmentPartialState.ShowReplenishmentLayout
+                }
+
+        val initialState = CostAndReplenishmentState(
+            false, null, false, replenishmentShown = false,
+            errorShown = false,
+            errorText = null
+        )
+
+        val allIntents = Observable.merge(mainDataLoadIntent, costsShownIntent, replenishmentShownIntent)
             .observeOn(AndroidSchedulers.mainThread())
 
         val stateObservable = allIntents.scan(initialState, this::viewStateReducer)
@@ -43,6 +61,25 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
                 previousState.errorText = null
                 previousState.mainDataLoaded = true
                 previousState.mainData = changes.data
+                Log.d("Debug", "DATA")
+                return previousState
+            }
+            is CostAndReplenishmentPartialState.ShowCostsLayout -> {
+                previousState.errorShown = false
+                previousState.errorText = null
+                previousState.costsShown = true
+                previousState.mainDataLoaded = false
+                previousState.replenishmentShown = false
+                Log.d("Debug", "COSTS")
+                return previousState
+            }
+            is CostAndReplenishmentPartialState.ShowReplenishmentLayout -> {
+                previousState.errorShown = false
+                previousState.errorText = null
+                previousState.costsShown = false
+                previousState.mainDataLoaded = false
+                previousState.replenishmentShown = true
+                Log.d("Debug", "REPLENISHMENT")
                 return previousState
             }
         }

@@ -6,4 +6,8 @@ sealed class CostAndReplenishmentPartialState {
 
     data class ShowMainDataState(val data: MainPagaAccumData) : CostAndReplenishmentPartialState()
 
+    object ShowCostsLayout : CostAndReplenishmentPartialState()
+
+    object ShowReplenishmentLayout : CostAndReplenishmentPartialState()
+
 }

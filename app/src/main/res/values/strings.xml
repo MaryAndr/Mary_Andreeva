@@ -16,4 +16,5 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="rub_value">₽</string>
+    <string name="enter_email">Укажите e-mail</string>
 </resources>
