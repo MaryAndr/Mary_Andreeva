@@ -38,6 +38,7 @@ class CostsAndReplenishment :
     private lateinit var showCostsTrigger: BehaviorSubject<Int>
 
     private lateinit var showReplenishmentTrigger: BehaviorSubject<Int>
+
     private var navController: NavController? = null
 
     override fun mainDataLoadIntent(): Observable<Int> {
@@ -59,7 +60,6 @@ class CostsAndReplenishment :
                 renderMainData(state)
             }
             state.costsShown -> {
-                Log.d("dd", "shown")
                 costsLayout.visibility = View.VISIBLE
             }
             state.replenishmentShown -> {
@@ -121,11 +121,9 @@ class CostsAndReplenishment :
         costsAndReplenishmentGroup.setOnCheckedChangeListener { _, checkedId ->
             val radio: RadioButton = view.findViewById(checkedId)
             if (radio.id == R.id.costsButton) {
-                Log.d("dfd", "LOL")
                 showCostsTrigger.onNext(1)
             } else {
                 showReplenishmentTrigger.onNext(1)
-
             }
         }
     }

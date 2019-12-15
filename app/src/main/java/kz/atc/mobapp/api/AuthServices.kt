@@ -1,6 +1,7 @@
 package kz.atc.mobapp.api
 
 import io.reactivex.Observable
+import kz.atc.mobapp.models.EmailCosts
 import kz.atc.mobapp.models.OAuthModel
 import kz.atc.mobapp.models.UserType
 import kz.atc.mobapp.models.catalogTariff.CatalogTariffResponse
@@ -34,6 +35,7 @@ interface AuthServices {
         @Part("grant_type") grantType: RequestBody, @Part("username") username: RequestBody?,
         @Part("password") password: RequestBody?, @Part("refresh_token") refreshToken: RequestBody?
     ) : Observable<OAuthModel>
+
 
 //    @POST("/oauth/token")
 //    fun auth(@FieldMap requestBody: HashMap<String,String>

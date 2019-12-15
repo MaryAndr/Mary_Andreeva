@@ -12,9 +12,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface SubscriberServices {
 
@@ -30,9 +28,11 @@ interface SubscriberServices {
     @GET("/lk/v1/subscriber/remains")
     fun getSubRemains(): Observable<List<RemainsResponse>>
 
-
     @GET("/lk/v1/subscriber/exchange")
     fun getExchangeInfo() : Observable<ExchangeResponse>
+
+    @POST("/lk/v1/subscriber/details")
+    fun sendDetalization(@Body emailDetal: EmailCosts) : Observable<EmailCosts>
 
     companion object {
         fun create(ctx: Context): SubscriberServices {

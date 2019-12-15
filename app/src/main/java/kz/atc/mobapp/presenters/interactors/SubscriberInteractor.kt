@@ -10,10 +10,8 @@ import io.reactivex.functions.Function5
 import io.reactivex.schedulers.Schedulers
 import kz.atc.mobapp.api.AuthServices
 import kz.atc.mobapp.api.SubscriberServices
+import kz.atc.mobapp.models.*
 import kz.atc.mobapp.models.catalogTariff.CatalogTariffResponse
-import kz.atc.mobapp.models.RemainsResponse
-import kz.atc.mobapp.models.SubBalanceResponse
-import kz.atc.mobapp.models.TariffResponse
 import kz.atc.mobapp.models.main.IndicatorHolder
 import kz.atc.mobapp.models.main.MainPagaAccumData
 import kz.atc.mobapp.states.main.CostAndReplenishmentPartialState
@@ -22,6 +20,7 @@ import kz.atc.mobapp.states.main.MainPagePartialState
 import kz.atc.mobapp.utils.MathUtils
 import kz.atc.mobapp.utils.StringUtils
 import kz.atc.mobapp.utils.TimeUtils
+import java.util.*
 import kotlin.Function3 as Function31
 
 class SubscriberInteractor(ctx: Context) {
@@ -31,13 +30,34 @@ class SubscriberInteractor(ctx: Context) {
         SubscriberServices.create(ctx)
     }
 
-    val userService by lazy {
+    private val userService by lazy {
         AuthServices.create()
+    }
+
+
+    fun sendDetalEmail(emailDetalModel: EmailDetalModel): Observable<CostsEmailState> {
+        val emailCosts = EmailCosts()
+        val dates = emailDetalModel.period.split("-")
+        if (dates.size > 1) {
+            emailCosts.date_from = TimeUtils().changeFormat(dates[0], "dd.MM.yyyy", "yyyy-MM-dd")
+            emailCosts.date_to = TimeUtils().changeFormat(dates[1], "dd.MM.yyyy", "yyyy-MM-dd")
+        } else {
+            emailCosts.date_from = TimeUtils().changeFormat(emailDetalModel.period, "dd.MM.yyyy", "yyyy-MM-dd")
+            emailCosts.date_to = TimeUtils().changeFormat(emailDetalModel.period, "dd.MM.yyyy", "yyyy-MM-dd")
+        }
+        emailCosts.emails!!.add(emailDetalModel.email)
+
+        return subService.sendDetalization(emailCosts).flatMap {
+            Observable.just(CostsEmailState.EmailSent)
+        }
     }
 
     fun msisdnLoad(): Observable<CostsEmailState> {
         return subService.getSubInfo().flatMap {
-            Observable.just(CostsEmailState.MsisdnShown(it.msisdn))
+            val monthAgo = Calendar.getInstance()
+            monthAgo.add(Calendar.DAY_OF_MONTH, -30)
+            val period = "${TimeUtils().dateToString(monthAgo)}-${TimeUtils().dateToString(Calendar.getInstance())}"
+            Observable.just(CostsEmailState.MsisdnShown(it.msisdn,period))
         }
     }
 
@@ -121,25 +141,6 @@ class SubscriberInteractor(ctx: Context) {
                 }
             })
 
-
-//        return subService.getSubInfo().flatMap { subInfo ->
-//            accumData.phoneNumber = subInfo.msisdn
-//            subService.getSubTariff().flatMap { subTariff ->
-//                accumData.tariffData = subTariff
-//                accumData.chargeDate = subTariff.charge_date
-//                subService.getSubBalance().flatMap { subBalance ->
-//                    accumData.balance = subBalance.value
-//                    subService.getSubRemains().flatMap { subRemains ->
-//                        accumData.remains = subRemains
-//                        subService.getCatalogTariff(subTariff.tariff.id).flatMap { catalogTariff ->
-//                            accumData.indicatorHolder =
-//                                calculateIndicators(subTariff, subRemains, catalogTariff)
-//                            Observable.just(MainPagePartialState.ShowDataState(accumData))
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
 
     private fun calculateIndicators(

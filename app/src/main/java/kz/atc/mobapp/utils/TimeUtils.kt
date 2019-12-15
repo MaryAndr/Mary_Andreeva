@@ -2,6 +2,7 @@ package kz.atc.mobapp.utils
 
 import android.util.Log
 import java.lang.Exception
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.*
@@ -28,6 +29,21 @@ class TimeUtils {
         return String.format("%02d:%02d", pTime / 60, pTime % 60)
     }
 
+    fun changeFormat(defDate: String, formatFrom: String, formatTo: String) : String? {
+
+        val sdf = SimpleDateFormat(formatFrom)
+        var convertedDate: Date? = null
+        var formattedDate: String? = null
+        try {
+            convertedDate = sdf.parse(defDate)
+            formattedDate = SimpleDateFormat(formatTo).format(convertedDate)
+        } catch (e: ParseException) {
+            e.printStackTrace()
+        }
+
+        return formattedDate
+    }
+
     fun debitDate(dateStr: String): String {
         return try {
             val parser = SimpleDateFormat("yyyy-MM-dd")
@@ -39,6 +55,10 @@ class TimeUtils {
         } catch (ex: Exception) {
             "Некорректное значение"
         }
+    }
 
+    fun dateToString(cal: Calendar): String {
+        val parser = SimpleDateFormat("dd.MM.yyyy")
+        return parser.format(cal.time)
     }
 }
