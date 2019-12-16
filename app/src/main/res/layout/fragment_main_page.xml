@@ -176,7 +176,7 @@
                     <TextView
                         android:id="@+id/tvDataTotalAmount"
                         android:layout_width="wrap_content"
-                        android:layout_height="15dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="left"
                         android:text="из 115 ГБ"
                         android:textSize="12sp" />
@@ -272,7 +272,7 @@
                     <TextView
                         android:id="@+id/tvSmsTotalAmount"
                         android:layout_width="wrap_content"
-                        android:layout_height="15dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center|left"
                         android:text="из 1000 SMS"
                         android:textSize="12sp" />
