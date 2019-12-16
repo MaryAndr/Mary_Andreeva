@@ -97,6 +97,13 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 ).toInt()
                 tvDataRestAmount.text = "Безлимит"
                 tvDataTotalAmount.text = indicatorHolder["DATA"]?.optionsName
+                if (indicatorHolder["DATA"]?.optionsName!!.length > 25) {
+                    tvDataTotalAmount.textSize = TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_PX,
+                        11f,
+                        resources.displayMetrics
+                    )
+                }
             } else if (indicatorHolder["DATA"]!!.valueUnit != null) {
                 groupData.visibility = View.VISIBLE
                 dataView.pbInternet.visibility = View.GONE
@@ -131,6 +138,13 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 ).toInt()
                 tvVoiceRestAmount.text = "Безлимит"
                 tvVoiceTotalAmount.text = indicatorHolder["VOICE"]?.optionsName
+                if (indicatorHolder["VOICE"]?.optionsName!!.length > 25) {
+                    tvVoiceTotalAmount.textSize = TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_PX,
+                        11f,
+                        resources.displayMetrics
+                    )
+                }
             } else if (indicatorHolder["VOICE"]!!.valueUnit != null) {
                 groupVoice.visibility = View.VISIBLE
                 dataView.pbPhone.visibility = View.GONE
@@ -164,6 +178,13 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 ).toInt()
                 tvSMSRestAmount.text = "Безлимит"
                 tvSmsTotalAmount.text = indicatorHolder["SMS"]?.optionsName
+                if (indicatorHolder["SMS"]?.optionsName!!.length > 25) {
+                    tvSmsTotalAmount.textSize = TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_PX,
+                        11f,
+                        resources.displayMetrics
+                    )
+                }
             } else if (indicatorHolder["SMS"]!!.valueUnit != null) {
                 groupSMS.visibility = View.VISIBLE
                 dataView.pbSms.visibility = View.GONE
