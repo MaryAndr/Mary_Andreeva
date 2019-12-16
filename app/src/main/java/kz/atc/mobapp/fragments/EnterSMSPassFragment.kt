@@ -1,5 +1,6 @@
 package kz.atc.mobapp.fragments
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +16,7 @@ import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_enter_smspass.*
+import kz.atc.mobapp.MainPageActivity
 import kz.atc.mobapp.R
 import kz.atc.mobapp.models.AuthModel
 import kz.atc.mobapp.presenters.EnterSMSPassPagePresenter
@@ -53,7 +55,8 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
             state.autorize -> {
                 layoutTextInputEnterPassSms.error = ""
                 Log.d("Auth intent", "TRIGGERED")
-                Toast.makeText(context!!, "Authorized", Toast.LENGTH_SHORT).show()
+                val intent = Intent (activity, MainPageActivity::class.java)
+                activity?.startActivity(intent)
             }
             state.showTimer -> {
                 when {
