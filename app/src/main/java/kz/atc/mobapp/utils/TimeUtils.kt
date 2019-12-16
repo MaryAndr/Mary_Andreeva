@@ -4,7 +4,6 @@ import android.util.Log
 import java.lang.Exception
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.*
 
 class TimeUtils {
@@ -23,6 +22,22 @@ class TimeUtils {
             "9" to "октября",
             "10" to "ноября",
             "11" to "декабря"
+        )
+
+    private val mapOfMonthOriginal =
+        mapOf(
+            "0" to "Январь",
+            "1" to "Февраль",
+            "2" to "Март",
+            "3" to "Апрель",
+            "4" to "Май",
+            "5" to "Июнь",
+            "6" to "Июль",
+            "7" to "Август",
+            "8" to "Сентябрь",
+            "9" to "Октябрь",
+            "10" to "Ноябрь",
+            "11" to "Декабрь"
         )
 
     fun secondsToString(pTime: Long): String {
@@ -57,8 +72,26 @@ class TimeUtils {
         }
     }
 
+    fun getMonthAndYearFromDate(date: String): String {
+        val d = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(date)
+        val cal = Calendar.getInstance()
+        cal.time = d
+        return "${mapOfMonthOriginal[cal.get(Calendar.MONTH).toString()]}, ${cal.get(Calendar.YEAR)}"
+    }
+
+    fun getDateForListView(date: String) : String {
+        val d = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(date)
+        return  SimpleDateFormat("dd.MM.yyyy',' HH:mm").format(d)
+    }
+
     fun dateToString(cal: Calendar): String {
         val parser = SimpleDateFormat("dd.MM.yyyy")
         return parser.format(cal.time)
+    }
+
+    fun returnPeriodMinusThreeMonth(): String {
+        val threeMonthAgo = Calendar.getInstance()
+        threeMonthAgo.add(Calendar.MONTH, -3)
+        return "${TimeUtils().dateToString(threeMonthAgo)}-${TimeUtils().dateToString(Calendar.getInstance())}"
     }
 }

@@ -1,9 +1,9 @@
 package kz.atc.mobapp.api
 
 import android.content.Context
-import android.util.Log
 import io.reactivex.Observable
 import kz.atc.mobapp.models.*
+import kz.atc.mobapp.models.main.SubPaymentsResponse
 import kz.atc.mobapp.oauth.TokenAuthenticator
 import kz.atc.mobapp.utils.*
 import kz.atc.mobapp.utils.PreferenceHelper.get
@@ -33,6 +33,9 @@ interface SubscriberServices {
 
     @POST("/lk/v1/subscriber/details")
     fun sendDetalization(@Body emailDetal: EmailCosts) : Observable<EmailCosts>
+
+    @GET("/lk/v1/subscriber/payments")
+    fun getSubPayments(@Query("date_from") dateFrom: String?, @Query("date_to") dateTo: String?) : Observable<List<SubPaymentsResponse>>
 
     companion object {
         fun create(ctx: Context): SubscriberServices {

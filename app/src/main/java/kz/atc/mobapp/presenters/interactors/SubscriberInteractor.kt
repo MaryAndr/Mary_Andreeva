@@ -18,6 +18,7 @@ import kz.atc.mobapp.states.main.CostAndReplenishmentPartialState
 import kz.atc.mobapp.states.main.CostsEmailState
 import kz.atc.mobapp.states.main.MainPagePartialState
 import kz.atc.mobapp.utils.MathUtils
+import kz.atc.mobapp.utils.StringDateComparator
 import kz.atc.mobapp.utils.StringUtils
 import kz.atc.mobapp.utils.TimeUtils
 import java.util.*
@@ -34,6 +35,32 @@ class SubscriberInteractor(ctx: Context) {
         AuthServices.create()
     }
 
+    fun getReplenishmentData(period: String): Observable<CostAndReplenishmentPartialState> {
+        val dates = period.split("-")
+        var dateFrom: String?
+        var dateTo: String?
+        if (dates.size > 1) {
+            dateFrom = TimeUtils().changeFormat(
+                dates[0],
+                "dd.MM.yyyy",
+                "yyyy-MM-dd"
+            )
+            dateTo = TimeUtils().changeFormat(dates[1], "dd.MM.yyyy", "yyyy-MM-dd")
+
+        } else {
+            dateFrom = TimeUtils().changeFormat(period, "dd.MM.yyyy", "yyyy-MM-dd")
+            dateTo = TimeUtils().changeFormat(period, "dd.MM.yyyy", "yyyy-MM-dd")
+        }
+
+        return subService.getSubPayments(
+            dateFrom
+            , dateTo
+        ).flatMap {
+            var sortedList = it
+            Collections.sort(sortedList, StringDateComparator())
+            Observable.just(CostAndReplenishmentPartialState.ShowReplenishmentData(sortedList))
+        }
+    }
 
     fun sendDetalEmail(emailDetalModel: EmailDetalModel): Observable<CostsEmailState> {
         val emailCosts = EmailCosts()
@@ -42,8 +69,10 @@ class SubscriberInteractor(ctx: Context) {
             emailCosts.date_from = TimeUtils().changeFormat(dates[0], "dd.MM.yyyy", "yyyy-MM-dd")
             emailCosts.date_to = TimeUtils().changeFormat(dates[1], "dd.MM.yyyy", "yyyy-MM-dd")
         } else {
-            emailCosts.date_from = TimeUtils().changeFormat(emailDetalModel.period, "dd.MM.yyyy", "yyyy-MM-dd")
-            emailCosts.date_to = TimeUtils().changeFormat(emailDetalModel.period, "dd.MM.yyyy", "yyyy-MM-dd")
+            emailCosts.date_from =
+                TimeUtils().changeFormat(emailDetalModel.period, "dd.MM.yyyy", "yyyy-MM-dd")
+            emailCosts.date_to =
+                TimeUtils().changeFormat(emailDetalModel.period, "dd.MM.yyyy", "yyyy-MM-dd")
         }
         emailCosts.emails!!.add(emailDetalModel.email)
 
@@ -56,8 +85,9 @@ class SubscriberInteractor(ctx: Context) {
         return subService.getSubInfo().flatMap {
             val monthAgo = Calendar.getInstance()
             monthAgo.add(Calendar.DAY_OF_MONTH, -30)
-            val period = "${TimeUtils().dateToString(monthAgo)}-${TimeUtils().dateToString(Calendar.getInstance())}"
-            Observable.just(CostsEmailState.MsisdnShown(it.msisdn,period))
+            val period =
+                "${TimeUtils().dateToString(monthAgo)}-${TimeUtils().dateToString(Calendar.getInstance())}"
+            Observable.just(CostsEmailState.MsisdnShown(it.msisdn, period))
         }
     }
 

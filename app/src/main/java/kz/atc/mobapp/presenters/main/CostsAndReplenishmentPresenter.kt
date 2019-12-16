@@ -26,24 +26,39 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
 
         var costsShownIntent: Observable<CostAndReplenishmentPartialState> =
             intent(CostAndReplenishmentView::showCostsIntent)
-                .map<CostAndReplenishmentPartialState> {
+                .flatMap {
                     Log.d("Debug", "Costs Layout Triggered")
-                    CostAndReplenishmentPartialState.ShowCostsLayout
+                    Observable.just(CostAndReplenishmentPartialState.ShowCostsLayout)
                 }
 
-        var replenishmentShownIntent : Observable<CostAndReplenishmentPartialState> =
+        var replenishmentShownIntent: Observable<CostAndReplenishmentPartialState> =
             intent(CostAndReplenishmentView::showReplenishmentIntent)
-                .map<CostAndReplenishmentPartialState> {
-                    CostAndReplenishmentPartialState.ShowReplenishmentLayout
+                .flatMap {
+                    Log.d("Debug", "Rep Layout Triggered")
+                    Observable.just(CostAndReplenishmentPartialState.ShowReplenishmentLayout)
                 }
+
+        var replenishmentDataShownIntent: Observable<CostAndReplenishmentPartialState> =
+            intent(CostAndReplenishmentView::getReplenishmentDataIntent)
+                .flatMap {
+                    subService.getReplenishmentData(it).subscribeOn(Schedulers.io())
+                }
+
 
         val initialState = CostAndReplenishmentState(
             false, null, false, replenishmentShown = false,
             errorShown = false,
-            errorText = null
+            errorText = null,
+            replenishmentDataLoaded = false,
+            replenishmentData = null
         )
 
-        val allIntents = Observable.merge(mainDataLoadIntent, costsShownIntent, replenishmentShownIntent)
+        val allIntents = Observable.merge(
+            mainDataLoadIntent,
+            costsShownIntent,
+            replenishmentShownIntent,
+            replenishmentDataShownIntent
+        )
             .observeOn(AndroidSchedulers.mainThread())
 
         val stateObservable = allIntents.scan(initialState, this::viewStateReducer)
@@ -61,6 +76,8 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
                 previousState.errorText = null
                 previousState.mainDataLoaded = true
                 previousState.mainData = changes.data
+                previousState.replenishmentDataLoaded = false
+
                 Log.d("Debug", "DATA")
                 return previousState
             }
@@ -70,6 +87,8 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
                 previousState.costsShown = true
                 previousState.mainDataLoaded = false
                 previousState.replenishmentShown = false
+                previousState.replenishmentDataLoaded = false
+
                 Log.d("Debug", "COSTS")
                 return previousState
             }
@@ -79,7 +98,18 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
                 previousState.costsShown = false
                 previousState.mainDataLoaded = false
                 previousState.replenishmentShown = true
+                previousState.replenishmentDataLoaded = false
                 Log.d("Debug", "REPLENISHMENT")
+                return previousState
+            }
+            is CostAndReplenishmentPartialState.ShowReplenishmentData -> {
+                previousState.errorShown = false
+                previousState.errorText = null
+                previousState.replenishmentDataLoaded = true
+                previousState.costsShown = false
+                previousState.mainDataLoaded = false
+                previousState.replenishmentShown = false
+                previousState.replenishmentData = changes.payments
                 return previousState
             }
         }

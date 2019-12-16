@@ -12,5 +12,7 @@ interface CostAndReplenishmentView : MvpView {
 
     fun showReplenishmentIntent() : Observable<Int>
 
+    fun getReplenishmentDataIntent(): Observable<String>
+
     fun render(state: CostAndReplenishmentState)
 }

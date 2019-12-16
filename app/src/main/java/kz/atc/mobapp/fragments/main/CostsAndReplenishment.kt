@@ -19,9 +19,11 @@ import kotlinx.android.synthetic.main.activity_main_page.*
 import kotlinx.android.synthetic.main.fragment_costs_and_replenishment.*
 
 import kz.atc.mobapp.R
+import kz.atc.mobapp.adapters.RepAdapter
 import kz.atc.mobapp.presenters.main.CostsAndReplenishmentPresenter
 import kz.atc.mobapp.states.main.CostAndReplenishmentState
 import kz.atc.mobapp.utils.CalendarView
+import kz.atc.mobapp.utils.TimeUtils
 import kz.atc.mobapp.views.main.CostAndReplenishmentView
 import ru.slybeaver.slycalendarview.SlyCalendarDialog
 
@@ -32,12 +34,19 @@ import ru.slybeaver.slycalendarview.SlyCalendarDialog
 class CostsAndReplenishment :
     MviFragment<CostAndReplenishmentView, CostsAndReplenishmentPresenter>(),
     CostAndReplenishmentView {
+    override fun getReplenishmentDataIntent(): Observable<String> {
+        return showReplenishmentDataTrigger.map<String> {
+            tvRepPeriod.text.toString()
+        }
+    }
 
     private lateinit var mainDataLoadTrigger: BehaviorSubject<Int>
 
     private lateinit var showCostsTrigger: BehaviorSubject<Int>
 
     private lateinit var showReplenishmentTrigger: BehaviorSubject<Int>
+
+    private lateinit var showReplenishmentDataTrigger: BehaviorSubject<Int>
 
     private var navController: NavController? = null
 
@@ -61,10 +70,17 @@ class CostsAndReplenishment :
             }
             state.costsShown -> {
                 costsLayout.visibility = View.VISIBLE
+                replenishmentLayout.visibility = View.GONE
+            }
+            state.replenishmentDataLoaded -> {
+                repListView.adapter = RepAdapter(context!!, state.replenishmentData!!)
             }
             state.replenishmentShown -> {
+                Log.d("debug", "fixed")
                 costsLayout.visibility = View.GONE
+                replenishmentLayout.visibility = View.VISIBLE
             }
+
         }
     }
 
@@ -81,6 +97,7 @@ class CostsAndReplenishment :
         mainDataLoadTrigger = BehaviorSubject.create()
         showCostsTrigger = BehaviorSubject.create()
         showReplenishmentTrigger = BehaviorSubject.create()
+        showReplenishmentDataTrigger = BehaviorSubject.create()
     }
 
     override fun onResume() {
@@ -88,8 +105,10 @@ class CostsAndReplenishment :
         (activity as AppCompatActivity).supportActionBar?.show()
         var tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         tvTitle.setTextColor(resources.getColor(R.color.black))
+        costsAndReplenishmentGroup.check(R.id.costsButton)
         mainDataLoadTrigger.onNext(1)
         showCostsTrigger.onNext(1)
+
         tvTitle.text = "Расходы"
     }
 
@@ -123,7 +142,9 @@ class CostsAndReplenishment :
             if (radio.id == R.id.costsButton) {
                 showCostsTrigger.onNext(1)
             } else {
+                tvRepPeriod.text = TimeUtils().returnPeriodMinusThreeMonth()
                 showReplenishmentTrigger.onNext(1)
+                showReplenishmentDataTrigger.onNext(1)
             }
         }
     }
