@@ -7,10 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
+import kotlinx.android.synthetic.main.activity_main_page.*
 import kotlinx.android.synthetic.main.fragment_costs_email.*
 
 import kz.atc.mobapp.R
@@ -18,6 +21,7 @@ import kz.atc.mobapp.models.EmailDetalModel
 import kz.atc.mobapp.presenters.main.CostsEmailPresenter
 import kz.atc.mobapp.states.main.CostsEmailState
 import kz.atc.mobapp.utils.CalendarView
+import kz.atc.mobapp.utils.TextConverter
 import kz.atc.mobapp.views.main.CostsEmailView
 import ru.slybeaver.slycalendarview.SlyCalendarDialog
 
@@ -41,7 +45,7 @@ class CostsEmailFragment :
     override fun render(state: CostsEmailState) {
         when(state) {
             is CostsEmailState.MsisdnShown -> {
-                tvPhoneNumber.text = state.msisdn
+                tvPhoneNumber.text = TextConverter().getFormattedPhone(state.msisdn)
                 tvPeriod.text = state.defPeriod
             }
             is CostsEmailState.ErrorShown -> {
@@ -54,6 +58,13 @@ class CostsEmailFragment :
 
     override fun onResume() {
         super.onResume()
+        (activity as AppCompatActivity).supportActionBar?.show()
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_backbutton_black)
+        var tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
+        activity!!.nav_view.visibility = View.INVISIBLE
+        tvTitle.setTextColor(resources.getColor(R.color.black))
+        tvTitle.text = "Заказать детализацию"
         msisdnLoadTrigger.onNext(1)
     }
 
@@ -61,6 +72,7 @@ class CostsEmailFragment :
         super.onCreate(savedInstanceState)
         msisdnLoadTrigger = BehaviorSubject.create()
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

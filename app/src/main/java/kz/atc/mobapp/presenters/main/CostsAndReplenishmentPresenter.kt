@@ -2,27 +2,32 @@ package kz.atc.mobapp.presenters.main
 
 import android.content.Context
 import android.util.Log
+import com.google.gson.Gson
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kz.atc.mobapp.models.ErrorJson
 import kz.atc.mobapp.presenters.interactors.SubscriberInteractor
 import kz.atc.mobapp.states.main.CostAndReplenishmentPartialState
 import kz.atc.mobapp.states.main.CostAndReplenishmentState
 import kz.atc.mobapp.views.main.CostAndReplenishmentView
+import retrofit2.HttpException
 
 class CostsAndReplenishmentPresenter(val ctx: Context) :
     MviBasePresenter<CostAndReplenishmentView, CostAndReplenishmentState>() {
 
     private val subService = SubscriberInteractor(ctx)
-
+    private val gson = Gson()
     override fun bindIntents() {
 
         var mainDataLoadIntent: Observable<CostAndReplenishmentPartialState> =
             intent(CostAndReplenishmentView::mainDataLoadIntent)
                 .flatMap {
                     subService.costsMainData().subscribeOn(Schedulers.io())
-                }
+                }.startWith(
+                    CostAndReplenishmentPartialState.Loading
+                )
 
         var costsShownIntent: Observable<CostAndReplenishmentPartialState> =
             intent(CostAndReplenishmentView::showCostsIntent)
@@ -41,7 +46,22 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
         var replenishmentDataShownIntent: Observable<CostAndReplenishmentPartialState> =
             intent(CostAndReplenishmentView::getReplenishmentDataIntent)
                 .flatMap {
-                    subService.getReplenishmentData(it).subscribeOn(Schedulers.io())
+                    subService.getReplenishmentData(it).subscribeOn(Schedulers.io()).onErrorResumeNext { error: Throwable ->
+                        var errMessage = error.localizedMessage
+                        if (error is HttpException) {
+                            errMessage = if (error.code() == 409) {
+                                "Вы не являетесь пользователем мобильной связи"
+                            } else {
+                                val errorBody = error.response()!!.errorBody()
+
+                                val adapter =
+                                    gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                                val errorObj = adapter.fromJson(errorBody!!.string())
+                                errorObj.error_description
+                            }
+                        }
+                        Observable.just(CostAndReplenishmentPartialState.ShowErrorState(errMessage))
+                    }
                 }
 
 
@@ -50,7 +70,8 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
             errorShown = false,
             errorText = null,
             replenishmentDataLoaded = false,
-            replenishmentData = null
+            replenishmentData = null,
+            loading = false
         )
 
         val allIntents = Observable.merge(
@@ -72,12 +93,12 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
 
         when (changes) {
             is CostAndReplenishmentPartialState.ShowMainDataState -> {
+                previousState.loading = false
                 previousState.errorShown = false
                 previousState.errorText = null
                 previousState.mainDataLoaded = true
                 previousState.mainData = changes.data
                 previousState.replenishmentDataLoaded = false
-
                 Log.d("Debug", "DATA")
                 return previousState
             }
@@ -110,6 +131,25 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
                 previousState.mainDataLoaded = false
                 previousState.replenishmentShown = false
                 previousState.replenishmentData = changes.payments
+                return previousState
+            }
+            is CostAndReplenishmentPartialState.ShowErrorState -> {
+                previousState.loading = false
+                previousState.errorShown = true
+                previousState.errorText = changes.error
+                previousState.replenishmentDataLoaded = false
+                previousState.costsShown = false
+                previousState.mainDataLoaded = false
+                previousState.replenishmentShown = false
+                return previousState
+            }
+            is CostAndReplenishmentPartialState.Loading -> {
+                previousState.loading = true
+                previousState.errorShown = false
+                previousState.replenishmentDataLoaded = false
+                previousState.costsShown = false
+                previousState.mainDataLoaded = false
+                previousState.replenishmentShown = false
                 return previousState
             }
         }

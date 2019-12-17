@@ -33,7 +33,6 @@ class RepAdapter(var context: Context, var payments: List<SubPaymentsResponse>) 
             rowView = convertView
             viewHolder = rowView.tag as ViewHolder
         }
-        Log.d("count", payments.size.toString())
         val payment = getItem(position)
 
         val mainHolderParam = viewHolder.mainHolder.layoutParams as LinearLayout.LayoutParams
@@ -56,7 +55,7 @@ class RepAdapter(var context: Context, var payments: List<SubPaymentsResponse>) 
 
         viewHolder.date.text = TimeUtils().getDateForListView(payment.date)
         viewHolder.gateway.text = payment.gateway
-        viewHolder.sum.text = payment.amount.toString()
+        viewHolder.sum.text = payment.amount.toString() + context.resources.getString(R.string.rub_value)
 
         return rowView as View
     }

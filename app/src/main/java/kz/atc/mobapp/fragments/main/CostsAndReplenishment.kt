@@ -17,18 +17,18 @@ import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.activity_main_page.*
 import kotlinx.android.synthetic.main.fragment_costs_and_replenishment.*
+import kotlinx.android.synthetic.main.fragment_costs_and_replenishment.tvPhoneNumber
+import kotlinx.android.synthetic.main.fragment_costs_email.*
 
 import kz.atc.mobapp.R
 import kz.atc.mobapp.adapters.RepAdapter
 import kz.atc.mobapp.presenters.main.CostsAndReplenishmentPresenter
 import kz.atc.mobapp.states.main.CostAndReplenishmentState
 import kz.atc.mobapp.utils.CalendarView
+import kz.atc.mobapp.utils.TextConverter
 import kz.atc.mobapp.utils.TimeUtils
 import kz.atc.mobapp.views.main.CostAndReplenishmentView
 import ru.slybeaver.slycalendarview.SlyCalendarDialog
-
-
-
 
 
 class CostsAndReplenishment :
@@ -65,6 +65,7 @@ class CostsAndReplenishment :
     override fun render(state: CostAndReplenishmentState) {
         Log.d("dd", "shown $state")
         when {
+
             state.mainDataLoaded -> {
                 renderMainData(state)
             }
@@ -73,6 +74,11 @@ class CostsAndReplenishment :
                 replenishmentLayout.visibility = View.GONE
             }
             state.replenishmentDataLoaded -> {
+                tvRepSum.visibility = View.VISIBLE
+                tvRepSum.text =
+                    state.replenishmentData!!.sumBy { it.amount.toInt() }.toString() + resources.getString(
+                        R.string.rub_value
+                    )
                 repListView.adapter = RepAdapter(context!!, state.replenishmentData!!)
             }
             state.replenishmentShown -> {
@@ -80,14 +86,27 @@ class CostsAndReplenishment :
                 costsLayout.visibility = View.GONE
                 replenishmentLayout.visibility = View.VISIBLE
             }
-
+            state.errorShown -> {
+                Toast.makeText(context, state.errorText, Toast.LENGTH_LONG).show()
+            }
+            state.loading -> {
+                pgMainData.visibility = View.VISIBLE
+                tvPhoneNumber.visibility = View.INVISIBLE
+                tvBalance.visibility = View.INVISIBLE
+                tvTariff.visibility = View.INVISIBLE
+            }
         }
     }
 
     private fun renderMainData(state: CostAndReplenishmentState) {
-        tvPhoneNumber.text = state.mainData!!.phoneNumber
-        tvBalance.text = state.mainData!!.balance.toString()
-        tvTariff.text = state.mainData!!.tariffData!!.tariff.name
+        pgMainData.visibility = View.INVISIBLE
+        tvPhoneNumber.visibility = View.VISIBLE
+        tvBalance.visibility = View.VISIBLE
+        tvTariff.visibility = View.VISIBLE
+        tvPhoneNumber.text = TextConverter().getFormattedPhone(state.mainData!!.phoneNumber!!)
+        tvBalance.text =
+            state.mainData!!.balance.toString() + resources.getString(R.string.rub_value)
+        tvTariff.text = "Тариф \"${state.mainData!!.tariffData!!.tariff.name}\""
     }
 
     override fun createPresenter() = CostsAndReplenishmentPresenter(context!!)
@@ -103,13 +122,16 @@ class CostsAndReplenishment :
     override fun onResume() {
         super.onResume()
         (activity as AppCompatActivity).supportActionBar?.show()
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        activity!!.nav_view.visibility = View.VISIBLE
         var tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         tvTitle.setTextColor(resources.getColor(R.color.black))
+        tvTitle.text = "Расходы"
         costsAndReplenishmentGroup.check(R.id.costsButton)
         mainDataLoadTrigger.onNext(1)
         showCostsTrigger.onNext(1)
 
-        tvTitle.text = "Расходы"
+
     }
 
     override fun onCreateView(
@@ -122,7 +144,11 @@ class CostsAndReplenishment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         costsLayout.visibility = View.GONE
+        tvPhoneNumber.visibility = View.INVISIBLE
+        tvBalance.visibility = View.INVISIBLE
+        tvTariff.visibility = View.INVISIBLE
 //        activity!!.nav_view.visibility = View.GONE
+        tvRepPeriod.text = TimeUtils().returnPeriodMinusThreeMonth()
         btOrderDetails.setOnClickListener {
 
             val fr = CostsEmailFragment()
@@ -142,10 +168,18 @@ class CostsAndReplenishment :
             if (radio.id == R.id.costsButton) {
                 showCostsTrigger.onNext(1)
             } else {
-                tvRepPeriod.text = TimeUtils().returnPeriodMinusThreeMonth()
                 showReplenishmentTrigger.onNext(1)
                 showReplenishmentDataTrigger.onNext(1)
             }
+        }
+
+        viewRepCalendar.setOnClickListener {
+            SlyCalendarDialog()
+                .setSingle(false)
+                .setIsCosts(false)
+                .setFirstMonday(false)
+                .setCallback(CalendarView(tvRepPeriod, showReplenishmentDataTrigger))
+                .show(activity!!.supportFragmentManager, "TAG_SLYCALENDAR")
         }
     }
 
