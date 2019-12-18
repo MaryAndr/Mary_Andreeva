@@ -13,6 +13,7 @@ import androidx.navigation.ui.setupWithNavController
 import kotlinx.android.synthetic.main.activity_main_page.*
 import kz.atc.mobapp.fragments.main.CostsAndReplenishment
 import kz.atc.mobapp.fragments.main.MainPageFragment
+import kz.atc.mobapp.fragments.main.MyTariffFragment
 import kz.atc.mobapp.utils.Constants
 import kz.atc.mobapp.utils.PreferenceHelper
 import kz.atc.mobapp.utils.PreferenceHelper.set
@@ -30,6 +31,12 @@ class MainPageActivity : AppCompatActivity() {
             R.id.navigation_costs -> {
                 val fragment = CostsAndReplenishment()
                 supportFragmentManager.beginTransaction().replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
+                    .commit()
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_tariff -> {
+                val fragment = MyTariffFragment()
+                supportFragmentManager.beginTransaction().replace(R.id.container, fragment, fragment.javaClass.simpleName)
                     .commit()
                 return@OnNavigationItemSelectedListener true
             }
