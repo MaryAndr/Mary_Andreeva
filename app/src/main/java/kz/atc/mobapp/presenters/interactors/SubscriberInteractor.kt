@@ -164,6 +164,9 @@ class SubscriberInteractor(ctx: Context) {
                         Log.d("DEBUG", "HERE")
                         accumData.indicatorHolder = calculateIndicators(subT, subRem, catTar)
                         Observable.just(MainPagePartialState.ShowDataState(accumData))
+                    }.onErrorReturn {
+                        accumData.indicatorHolder = calculateIndicators(subT, subRem, null)
+                        MainPagePartialState.ShowDataState(accumData)
                     }.blockingFirst()
                 } else {
                     accumData.indicatorHolder = calculateIndicators(subT, subRem, null)

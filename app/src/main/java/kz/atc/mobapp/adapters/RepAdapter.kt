@@ -34,11 +34,13 @@ class RepAdapter(var context: Context, var payments: List<SubPaymentsResponse>) 
             viewHolder = rowView.tag as ViewHolder
         }
         val payment = getItem(position)
+        var previousPayment: SubPaymentsResponse? = null
 
+        if(position != 0) {
+            previousPayment = getItem(position - 1)
+        }
         val mainHolderParam = viewHolder.mainHolder.layoutParams as LinearLayout.LayoutParams
-
-        if (currentMonth != TimeUtils().getMonthAndYearFromDate(payment.date)) {
-            currentMonth = TimeUtils().getMonthAndYearFromDate(payment.date)
+        if(previousPayment == null || (TimeUtils().getMonthAndYearFromDate(payment.date) != TimeUtils().getMonthAndYearFromDate(previousPayment.date))) {
             mainHolderParam.setMargins(0, TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 16f,
@@ -46,12 +48,28 @@ class RepAdapter(var context: Context, var payments: List<SubPaymentsResponse>) 
             ).toInt(),0,0)
             viewHolder.mainHolder.layoutParams = mainHolderParam
             viewHolder.monthDivider.visibility = View.VISIBLE
-            viewHolder.monthDivider.text = currentMonth
+            viewHolder.monthDivider.text = TimeUtils().getMonthAndYearFromDate(payment.date)
         } else {
             viewHolder.monthDivider.visibility = View.GONE
             mainHolderParam.setMargins(0, 0,0,0)
             viewHolder.mainHolder.layoutParams = mainHolderParam
         }
+
+//        if (currentMonth != TimeUtils().getMonthAndYearFromDate(payment.date)) {
+//            currentMonth = TimeUtils().getMonthAndYearFromDate(payment.date)
+//            mainHolderParam.setMargins(0, TypedValue.applyDimension(
+//                TypedValue.COMPLEX_UNIT_DIP,
+//                16f,
+//                context.resources.displayMetrics
+//            ).toInt(),0,0)
+//            viewHolder.mainHolder.layoutParams = mainHolderParam
+//            viewHolder.monthDivider.visibility = View.VISIBLE
+//            viewHolder.monthDivider.text = currentMonth
+//        } else {
+//            viewHolder.monthDivider.visibility = View.GONE
+//            mainHolderParam.setMargins(0, 0,0,0)
+//            viewHolder.mainHolder.layoutParams = mainHolderParam
+//        }
 
         viewHolder.date.text = TimeUtils().getDateForListView(payment.date)
         viewHolder.gateway.text = payment.gateway
@@ -79,6 +97,7 @@ class RepAdapter(var context: Context, var payments: List<SubPaymentsResponse>) 
         val date = view?.findViewById(R.id.tvDate) as TextView
         val sum = view?.findViewById(R.id.tvSum) as TextView
         val mainHolder = view?.findViewById(R.id.lvMainHolder) as LinearLayout
+        val isFirstDate: Boolean? = null
     }
 
 }

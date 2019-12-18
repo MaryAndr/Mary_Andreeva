@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="slycalendar_cancel">Отмена</string>
-    <string name="slycalendar_next">Вперед</string>
-    <string name="slycalendar_prev">Назад</string>
-    <string name="slycalendar_save">Сохранить</string>
-</resources>
