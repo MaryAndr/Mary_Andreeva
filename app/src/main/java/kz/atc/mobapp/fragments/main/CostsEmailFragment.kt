@@ -49,7 +49,7 @@ class CostsEmailFragment :
                 tvPeriod.text = state.defPeriod
             }
             is CostsEmailState.ErrorShown -> {
-                Toast.makeText(context, state.error, Toast.LENGTH_SHORT).show()
+                layoutTextInputEnterEmail.error = state.error
             }
         }
     }

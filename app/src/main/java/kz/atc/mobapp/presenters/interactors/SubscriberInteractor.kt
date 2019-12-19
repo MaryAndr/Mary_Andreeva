@@ -63,6 +63,9 @@ class SubscriberInteractor(ctx: Context) {
     }
 
     fun sendDetalEmail(emailDetalModel: EmailDetalModel): Observable<CostsEmailState> {
+
+        if (StringUtils().isEmailValid(emailDetalModel.email)) {
+
         val emailCosts = EmailCosts()
         val dates = emailDetalModel.period.split("-")
         if (dates.size > 1) {
@@ -78,6 +81,8 @@ class SubscriberInteractor(ctx: Context) {
 
         return subService.sendDetalization(emailCosts).flatMap {
             Observable.just(CostsEmailState.EmailSent)
+        }} else {
+            return Observable.just(CostsEmailState.ErrorShown("Некорректный email"))
         }
     }
 
