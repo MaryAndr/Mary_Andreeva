@@ -46,7 +46,7 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
         var replenishmentDataShownIntent: Observable<CostAndReplenishmentPartialState> =
             intent(CostAndReplenishmentView::getReplenishmentDataIntent)
                 .flatMap {
-                    subService.getReplenishmentData(it).subscribeOn(Schedulers.io()).onErrorResumeNext { error: Throwable ->
+                    subService.getReplenishmentData(it).subscribeOn(Schedulers.io()).onErrorReturn { error: Throwable ->
                         var errMessage = error.localizedMessage
                         if (error is HttpException) {
                             errMessage = if (error.code() == 409) {
@@ -60,7 +60,7 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
                                 errorObj.error_description
                             }
                         }
-                        Observable.just(CostAndReplenishmentPartialState.ShowErrorState(errMessage))
+                        CostAndReplenishmentPartialState.ShowErrorState(errMessage)
                     }
                 }
 
@@ -99,7 +99,6 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
                 previousState.mainDataLoaded = true
                 previousState.mainData = changes.data
                 previousState.replenishmentDataLoaded = false
-                Log.d("Debug", "DATA")
                 return previousState
             }
             is CostAndReplenishmentPartialState.ShowCostsLayout -> {
@@ -141,6 +140,7 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
                 previousState.costsShown = false
                 previousState.mainDataLoaded = false
                 previousState.replenishmentShown = false
+                Log.d("debug", "fixed")
                 return previousState
             }
             is CostAndReplenishmentPartialState.Loading -> {

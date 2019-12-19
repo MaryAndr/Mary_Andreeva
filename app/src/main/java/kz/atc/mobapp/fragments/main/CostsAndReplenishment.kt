@@ -64,11 +64,9 @@ class CostsAndReplenishment :
 
     override fun render(state: CostAndReplenishmentState) {
         Log.d("dd", "shown $state")
-        when {
 
-            state.mainDataLoaded -> {
-                renderMainData(state)
-            }
+        when {
+            state.mainDataLoaded -> renderMainData(state)
             state.costsShown -> {
                 costsLayout.visibility = View.VISIBLE
                 replenishmentLayout.visibility = View.GONE
@@ -87,7 +85,9 @@ class CostsAndReplenishment :
                 replenishmentLayout.visibility = View.VISIBLE
             }
             state.errorShown -> {
+                Log.d("debug", "fixed")
                 Toast.makeText(context, state.errorText, Toast.LENGTH_LONG).show()
+                tvRepPeriod.text = TimeUtils().returnPeriodMinusThreeMonth()
             }
             state.loading -> {
                 pgMainData.visibility = View.VISIBLE
@@ -96,6 +96,12 @@ class CostsAndReplenishment :
                 tvTariff.visibility = View.INVISIBLE
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        costsAndReplenishmentGroup.check(R.id.costsButton)
+
     }
 
     private fun renderMainData(state: CostAndReplenishmentState) {
@@ -124,13 +130,10 @@ class CostsAndReplenishment :
         (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         activity!!.nav_view.visibility = View.VISIBLE
+        showCostsTrigger.onNext(1)
         var tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         tvTitle.setTextColor(resources.getColor(R.color.black))
         tvTitle.text = "Расходы"
-        costsAndReplenishmentGroup.check(R.id.costsButton)
-        mainDataLoadTrigger.onNext(1)
-        showCostsTrigger.onNext(1)
-
 
     }
 
@@ -147,8 +150,9 @@ class CostsAndReplenishment :
         tvPhoneNumber.visibility = View.INVISIBLE
         tvBalance.visibility = View.INVISIBLE
         tvTariff.visibility = View.INVISIBLE
-//        activity!!.nav_view.visibility = View.GONE
         tvRepPeriod.text = TimeUtils().returnPeriodMinusThreeMonth()
+//        activity!!.nav_view.visibility = View.GONE
+        mainDataLoadTrigger.onNext(1)
         btOrderDetails.setOnClickListener {
 
             val fr = CostsEmailFragment()
@@ -167,7 +171,8 @@ class CostsAndReplenishment :
             val radio: RadioButton = view.findViewById(checkedId)
             if (radio.id == R.id.costsButton) {
                 showCostsTrigger.onNext(1)
-            } else {
+            } else if (radio.id == R.id.replenishmentButton) {
+                Log.d("TRIGGERED", "<<PTHER")
                 showReplenishmentTrigger.onNext(1)
                 showReplenishmentDataTrigger.onNext(1)
             }
