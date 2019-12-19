@@ -9,6 +9,11 @@ class TextConverter {
     }
 
 
+    fun descriptionBuilder(min: String? = "0.00", data: String? = "0.00", sms: String? = "0.00") : String {
+        return "Свой тариф: $min минут, $data ГБ, $sms SMS"
+    }
+
+
     fun getFormattedPhone(phoneNumber: String) : String {
         return if (phoneNumber.length != 10) {
             "Некорректный номер"

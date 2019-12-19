@@ -14,9 +14,11 @@ import kz.atc.mobapp.models.*
 import kz.atc.mobapp.models.catalogTariff.CatalogTariffResponse
 import kz.atc.mobapp.models.main.IndicatorHolder
 import kz.atc.mobapp.models.main.MainPagaAccumData
+import kz.atc.mobapp.models.main.MyTariffMainData
 import kz.atc.mobapp.states.main.CostAndReplenishmentPartialState
 import kz.atc.mobapp.states.main.CostsEmailState
 import kz.atc.mobapp.states.main.MainPagePartialState
+import kz.atc.mobapp.states.main.MyTariffPartialState
 import kz.atc.mobapp.utils.MathUtils
 import kz.atc.mobapp.utils.StringDateComparator
 import kz.atc.mobapp.utils.StringUtils
@@ -33,6 +35,24 @@ class SubscriberInteractor(ctx: Context) {
 
     private val userService by lazy {
         AuthServices.create()
+    }
+
+    fun getMyTariffMainData(): Observable<MyTariffPartialState> {
+        val subTariff = subService.getSubTariff().onErrorReturn {
+            null
+        }
+
+        return subTariff.flatMap { subTariffResponse ->
+            val mainData = MyTariffMainData(subTariffResponse)
+            userService.getCatalogTariff(subTariffResponse.tariff.id).flatMap{
+                mainData.catalogTariff = it
+                Observable.just(MyTariffPartialState.MainDataLoadedState(mainData))
+            }.onErrorReturn {
+                mainData.catalogTariff = null
+                MyTariffPartialState.MainDataLoadedState(mainData)
+            }
+
+        }
     }
 
     fun getReplenishmentData(period: String): Observable<CostAndReplenishmentPartialState> {
