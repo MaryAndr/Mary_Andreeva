@@ -6,12 +6,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_my_tariff.*
 
 import kz.atc.mobapp.R
+import kz.atc.mobapp.adapters.MyTariffServicesAdapter
+import kz.atc.mobapp.adapters.RepAdapter
 import kz.atc.mobapp.presenters.main.MyTariffPresenter
 import kz.atc.mobapp.states.main.MyTariffState
 import kz.atc.mobapp.utils.StringUtils
@@ -53,6 +56,8 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
 
                 tvTariffRate.text = catalogTariff?.tariffs?.first()?.attributes?.firstOrNull { pred -> pred.system_name == "write_off_period" }?.value
                 tvTariffDate.text = subTariff?.charge_date
+                addedRecyclerView.layoutManager = LinearLayoutManager(context!!)
+                addedRecyclerView.adapter = MyTariffServicesAdapter(state.mainData?.servicesList, context!!)
             }
         }
     }

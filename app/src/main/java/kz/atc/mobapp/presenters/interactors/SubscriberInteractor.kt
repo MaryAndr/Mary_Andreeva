@@ -15,6 +15,7 @@ import kz.atc.mobapp.models.catalogTariff.CatalogTariffResponse
 import kz.atc.mobapp.models.main.IndicatorHolder
 import kz.atc.mobapp.models.main.MainPagaAccumData
 import kz.atc.mobapp.models.main.MyTariffMainData
+import kz.atc.mobapp.models.main.ServicesListShow
 import kz.atc.mobapp.states.main.CostAndReplenishmentPartialState
 import kz.atc.mobapp.states.main.CostsEmailState
 import kz.atc.mobapp.states.main.MainPagePartialState
@@ -23,6 +24,8 @@ import kz.atc.mobapp.utils.MathUtils
 import kz.atc.mobapp.utils.StringDateComparator
 import kz.atc.mobapp.utils.StringUtils
 import kz.atc.mobapp.utils.TimeUtils
+import okhttp3.MediaType
+import okhttp3.RequestBody
 import java.util.*
 import kotlin.Function3 as Function31
 
@@ -42,17 +45,65 @@ class SubscriberInteractor(ctx: Context) {
             null
         }
 
-        return subTariff.flatMap { subTariffResponse ->
-            val mainData = MyTariffMainData(subTariffResponse)
-            userService.getCatalogTariff(subTariffResponse.tariff.id).flatMap{
-                mainData.catalogTariff = it
-                Observable.just(MyTariffPartialState.MainDataLoadedState(mainData))
-            }.onErrorReturn {
-                mainData.catalogTariff = null
-                MyTariffPartialState.MainDataLoadedState(mainData)
-            }
-
+        val subInfo = subService.getSubInfo().onErrorReturn {
+            null
         }
+
+        val transHistory = subService.getTransferedHistory().onErrorReturn {
+            mutableListOf()
+        }
+
+//        subTariff.flatMap { subTariffResponse ->
+//            val mainData = MyTariffMainData(subTariffResponse)
+//            userService.getCatalogTariff(subTariffResponse.tariff.id).flatMap{
+//                mainData.catalogTariff = it
+//                Observable.just(MyTariffPartialState.MainDataLoadedState(mainData))
+//            }.onErrorReturn {
+//                mainData.catalogTariff = null
+//                MyTariffPartialState.MainDataLoadedState(mainData)
+//            }
+//
+//        }
+
+
+        return Observable.combineLatest(
+            subTariff,
+            subInfo,
+            transHistory,
+            Function3 { subTariffResponse, subInfoResponse, transHistory ->
+                val mainData = MyTariffMainData(subTariffResponse)
+                userService.getCatalogTariff(subTariffResponse.tariff.id).flatMap {
+                    mainData.catalogTariff = it
+                    Observable.just(mainData)
+                }.onErrorReturn {
+                    mainData.catalogTariff = null
+                    mainData
+                }.blockingFirst()
+
+                subService.getServicesList().subscribe {
+                    it.forEach { service ->
+                        val serviceShow = ServicesListShow()
+                        serviceShow.serviceName = service.name
+
+                        userService.getCatalogService(
+                             service.id.toString(),
+                            subInfoResponse.region.name
+                        ).flatMap { serviceDetails ->
+                            serviceShow.description = serviceDetails.services.first()?.attributes.first{predicate -> predicate.system_name == "short_description"}?.value
+                            Observable.just(serviceShow)
+                        }.onErrorReturn {
+                            serviceShow.description = null
+                            serviceShow
+                        }.blockingFirst()
+                        mainData.servicesList.add(serviceShow)
+                    }
+                }
+
+
+
+                MyTariffPartialState.MainDataLoadedState(mainData)
+            })
+
     }
 
     fun getReplenishmentData(period: String): Observable<CostAndReplenishmentPartialState> {
@@ -86,22 +137,24 @@ class SubscriberInteractor(ctx: Context) {
 
         if (StringUtils().isEmailValid(emailDetalModel.email)) {
 
-        val emailCosts = EmailCosts()
-        val dates = emailDetalModel.period.split("-")
-        if (dates.size > 1) {
-            emailCosts.date_from = TimeUtils().changeFormat(dates[0], "dd.MM.yyyy", "yyyy-MM-dd")
-            emailCosts.date_to = TimeUtils().changeFormat(dates[1], "dd.MM.yyyy", "yyyy-MM-dd")
-        } else {
-            emailCosts.date_from =
-                TimeUtils().changeFormat(emailDetalModel.period, "dd.MM.yyyy", "yyyy-MM-dd")
-            emailCosts.date_to =
-                TimeUtils().changeFormat(emailDetalModel.period, "dd.MM.yyyy", "yyyy-MM-dd")
-        }
-        emailCosts.emails!!.add(emailDetalModel.email)
+            val emailCosts = EmailCosts()
+            val dates = emailDetalModel.period.split("-")
+            if (dates.size > 1) {
+                emailCosts.date_from =
+                    TimeUtils().changeFormat(dates[0], "dd.MM.yyyy", "yyyy-MM-dd")
+                emailCosts.date_to = TimeUtils().changeFormat(dates[1], "dd.MM.yyyy", "yyyy-MM-dd")
+            } else {
+                emailCosts.date_from =
+                    TimeUtils().changeFormat(emailDetalModel.period, "dd.MM.yyyy", "yyyy-MM-dd")
+                emailCosts.date_to =
+                    TimeUtils().changeFormat(emailDetalModel.period, "dd.MM.yyyy", "yyyy-MM-dd")
+            }
+            emailCosts.emails!!.add(emailDetalModel.email)
 
-        return subService.sendDetalization(emailCosts).flatMap {
-            Observable.just(CostsEmailState.EmailSent)
-        }} else {
+            return subService.sendDetalization(emailCosts).flatMap {
+                Observable.just(CostsEmailState.EmailSent)
+            }
+        } else {
             return Observable.just(CostsEmailState.ErrorShown("Некорректный email"))
         }
     }

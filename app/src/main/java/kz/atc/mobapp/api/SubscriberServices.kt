@@ -3,7 +3,9 @@ package kz.atc.mobapp.api
 import android.content.Context
 import io.reactivex.Observable
 import kz.atc.mobapp.models.*
+import kz.atc.mobapp.models.main.ServicesListResponse
 import kz.atc.mobapp.models.main.SubPaymentsResponse
+import kz.atc.mobapp.models.main.TransferredHistoryResponse
 import kz.atc.mobapp.oauth.TokenAuthenticator
 import kz.atc.mobapp.utils.*
 import kz.atc.mobapp.utils.PreferenceHelper.get
@@ -36,6 +38,12 @@ interface SubscriberServices {
 
     @GET("/lk/v1/subscriber/payments")
     fun getSubPayments(@Query("date_from") dateFrom: String?, @Query("date_to") dateTo: String?) : Observable<List<SubPaymentsResponse>>
+
+    @GET("/lk/v1/subscriber/transferred_history")
+    fun getTransferedHistory() : Observable<List<TransferredHistoryResponse>>
+
+    @GET("/lk/v1/subscriber/services")
+    fun getServicesList() : Observable<List<ServicesListResponse>>
 
     companion object {
         fun create(ctx: Context): SubscriberServices {
