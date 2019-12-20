@@ -32,7 +32,7 @@ import kotlin.Function3 as Function31
 class SubscriberInteractor(ctx: Context) {
 
 
-    private val subService by lazy {
+    public val subService by lazy {
         SubscriberServices.create(ctx)
     }
 
@@ -47,6 +47,10 @@ class SubscriberInteractor(ctx: Context) {
 
         val subInfo = subService.getSubInfo().onErrorReturn {
             null
+        }
+
+        val subRemains = subService.getSubRemains().onErrorReturn {
+            mutableListOf()
         }
 
         val transHistory = subService.getTransferedHistory().onErrorReturn {
@@ -70,7 +74,8 @@ class SubscriberInteractor(ctx: Context) {
             subTariff,
             subInfo,
             transHistory,
-            Function3 { subTariffResponse, subInfoResponse, transHistory ->
+            subRemains,
+            Function4 { subTariffResponse, subInfoResponse, transHistory, subRemainsResponse ->
                 val mainData = MyTariffMainData(subTariffResponse)
                 userService.getCatalogTariff(subTariffResponse.tariff.id).flatMap {
                     mainData.catalogTariff = it
@@ -80,16 +85,18 @@ class SubscriberInteractor(ctx: Context) {
                     mainData
                 }.blockingFirst()
 
-                subService.getServicesList().subscribe {
+                subService.getServicesList().flatMap {
                     it.forEach { service ->
                         val serviceShow = ServicesListShow()
                         serviceShow.serviceName = service.name
-
+                        serviceShow.id = service.id.toString()
                         userService.getCatalogService(
-                             service.id.toString(),
+                            service.id.toString(),
                             subInfoResponse.region.name
                         ).flatMap { serviceDetails ->
-                            serviceShow.description = serviceDetails.services.first()?.attributes.first{predicate -> predicate.system_name == "short_description"}?.value
+                            serviceShow.description = serviceDetails.services.first()
+                                ?.attributes.first { predicate -> predicate.system_name == "short_description" }
+                                ?.value
                             Observable.just(serviceShow)
                         }.onErrorReturn {
                             serviceShow.description = null
@@ -97,9 +104,10 @@ class SubscriberInteractor(ctx: Context) {
                         }.blockingFirst()
                         mainData.servicesList.add(serviceShow)
                     }
-                }
+                    Observable.just(mainData)
+                }.blockingFirst()
 
-
+                mainData.indicatorHolder = calculateIndicators(null, subRemainsResponse, null)
 
                 MyTariffPartialState.MainDataLoadedState(mainData)
             })
@@ -255,7 +263,7 @@ class SubscriberInteractor(ctx: Context) {
     }
 
     private fun calculateIndicators(
-        tariff: TariffResponse,
+        tariff: TariffResponse?,
         remains: List<RemainsResponse>?,
         catalogTariff: CatalogTariffResponse?
     ): MutableMap<String, IndicatorHolder> {
@@ -265,28 +273,55 @@ class SubscriberInteractor(ctx: Context) {
                 Log.d("HERE", "DATA")
                 var rest = it.rest_amount
                 var total = it.total_amount
-                val indicatorData =
-                    IndicatorHolder(rest, total, MathUtils().calculatePercent(rest, total), false)
+                var indicatorData: IndicatorHolder?
+                indicatorData = if (rest != 0 && total != 0) {
+                    IndicatorHolder(
+                        rest,
+                        total,
+                        MathUtils().calculatePercent(rest, total),
+                        false
+                    )
+                } else {
+                    IndicatorHolder(rest, total, 0, false)
+                }
                 outputMap?.put("DATA", indicatorData)
             }
             if (it.type == "VOICE") {
                 Log.d("HERE", "VOICES")
                 var rest = it.rest_amount
                 var total = it.total_amount
-                val indicatorData =
-                    IndicatorHolder(rest, total, MathUtils().calculatePercent(rest, total), false)
+                var indicatorData: IndicatorHolder?
+                indicatorData = if (rest != 0 && total != 0) {
+                    IndicatorHolder(
+                        rest,
+                        total,
+                        MathUtils().calculatePercent(rest, total),
+                        false
+                    )
+                } else {
+                    IndicatorHolder(rest, total, 0, false)
+                }
                 outputMap?.put("VOICE", indicatorData)
             }
             if (it.type == "SMS") {
                 Log.d("HERE", "SMS")
                 var rest = it.rest_amount
                 var total = it.total_amount
-                val indicatorData =
-                    IndicatorHolder(rest, total, MathUtils().calculatePercent(rest, total), false)
+                var indicatorData: IndicatorHolder?
+                indicatorData = if (rest != 0 && total != 0) {
+                    IndicatorHolder(
+                        rest,
+                        total,
+                        MathUtils().calculatePercent(rest, total),
+                        false
+                    )
+                } else {
+                    IndicatorHolder(rest, total, 0, false)
+                }
                 outputMap?.put("SMS", indicatorData)
             }
         }
-        tariff.options.filter { predicate -> predicate.primary }.forEach {
+        tariff?.options?.filter { predicate -> predicate.primary }?.forEach {
 
             if (it.type == "DATA" && !outputMap.containsKey("DATA")) {
                 val indicatorHolder = IndicatorHolder(null, null, null, true, null, it.name)

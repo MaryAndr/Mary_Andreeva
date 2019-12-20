@@ -1,6 +1,7 @@
 package kz.atc.mobapp.models.main
 
 data class ServicesListShow(
+    var id: String? = null,
     var serviceName: String? = null,
     var description: String? = null,
     var price: String? = null,

@@ -3,6 +3,7 @@ package kz.atc.mobapp.api
 import android.content.Context
 import io.reactivex.Observable
 import kz.atc.mobapp.models.*
+import kz.atc.mobapp.models.main.DeleteServiceResponse
 import kz.atc.mobapp.models.main.ServicesListResponse
 import kz.atc.mobapp.models.main.SubPaymentsResponse
 import kz.atc.mobapp.models.main.TransferredHistoryResponse
@@ -44,6 +45,9 @@ interface SubscriberServices {
 
     @GET("/lk/v1/subscriber/services")
     fun getServicesList() : Observable<List<ServicesListResponse>>
+
+    @DELETE("/lk/v1/subscriber/services/service/{serv_id}")
+    fun deleteService(@Path("serv_id") servId: String?) : Observable<DeleteServiceResponse>
 
     companion object {
         fun create(ctx: Context): SubscriberServices {
