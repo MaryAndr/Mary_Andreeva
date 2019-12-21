@@ -17,7 +17,9 @@ import kotlinx.android.synthetic.main.fragment_my_tariff.*
 import kz.atc.mobapp.R
 import kz.atc.mobapp.adapters.MyTariffServicesAdapter
 import kz.atc.mobapp.adapters.RepAdapter
+import kz.atc.mobapp.dialogs.MyTariffAboutDialog
 import kz.atc.mobapp.models.main.IndicatorHolder
+import kz.atc.mobapp.models.main.MyTariffAboutData
 import kz.atc.mobapp.presenters.main.MyTariffPresenter
 import kz.atc.mobapp.states.main.MyTariffState
 import kz.atc.mobapp.utils.StringUtils
@@ -35,9 +37,13 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
 
     private lateinit var preLoadTrigger: BehaviorSubject<Int>
 
+
+    private lateinit var aboutData: MyTariffAboutData
+
     override fun preLoadIntent(): Observable<Int> {
         return preLoadTrigger
     }
+
 
     override fun render(state: MyTariffState) {
         when {
@@ -45,6 +51,8 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
                 val subTariff = state.mainData?.subscriberTariff
                 val catalogTariff = state.mainData?.catalogTariff
 
+
+                aboutData = MyTariffAboutData(subTariff, catalogTariff)
                 tvTariffName.text = subTariff?.tariff?.name
                 if (subTariff?.tariff?.id in mutableListOf(14, 26, 27, 28)) {
                     tvTariffCondition.text = TextConverter().descriptionBuilder(
@@ -98,7 +106,7 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
             pbInetConditions.progress = indicatorHolder["DATA"]?.percent!!
         }
         if (indicatorHolder?.containsKey("VOICE")!!) {
-            viewAmountVoiceConditions.visibility = View.VISIBLE
+            constVoice.visibility = View.VISIBLE
             val rest = indicatorHolder["VOICE"]?.rest!!
             val total = indicatorHolder["VOICE"]?.total!!
             tvVoiceConditionsRest.text =
@@ -118,7 +126,7 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
             pbVoiceConditions.progress = indicatorHolder["VOICE"]?.percent!!
         }
         if (indicatorHolder?.containsKey("SMS")!!) {
-            viewAmountSmsConditions.visibility = View.VISIBLE
+            constSms.visibility = View.VISIBLE
             val rest = indicatorHolder["SMS"]?.rest!!
             val total = indicatorHolder["SMS"]?.total!!
             tvSmsConditionsRest.text =
@@ -151,6 +159,19 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
     override fun onResume() {
         super.onResume()
         preLoadTrigger.onNext(1)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        tvAboutTariff.setOnClickListener {
+            if (::aboutData.isInitialized) {
+                val aboutDialog = MyTariffAboutDialog.newInstance(aboutData)
+                aboutDialog.show(
+                    activity!!.getSupportFragmentManager(),
+                    "my_tariff_dialog_fragment"
+                )
+            }
+        }
     }
 
     override fun onCreateView(
