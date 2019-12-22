@@ -47,6 +47,7 @@ class MyTariffAboutAdapter(val catalogTariff: CatalogTariffResponse, val context
 //                context.resources.displayMetrics
 //            )
 //        }
+
         holder.tvValue.text =
             attributes[position]?.value.orEmpty() + attributes[position]?.unit.orEmpty()
     }
