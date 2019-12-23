@@ -11,13 +11,15 @@
         android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/baseConstraint"
             android:layout_width="match_parent"
-            android:layout_height="1000dp">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
                 android:text="О тарифе"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -27,12 +29,13 @@
                 app:layout_constraintVertical_bias="0.0" />
 
             <ImageView
-                android:id="@+id/imageView8"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_tarif_icon"
+                android:id="@+id/ivClose"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="25dp"
+                android:src="@drawable/ic_close_icon"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline27"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -71,7 +74,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/add_info"
                 android:layout_width="0dp"
-                android:layout_height="100dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/back_gray_rectangle"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -100,7 +103,7 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_weight="1"
-                        android:src="@drawable/ic_tarif_icon" />
+                        android:src="@drawable/ic_data_icon" />
 
                     <TextView
                         android:id="@+id/tvAddData"
@@ -130,7 +133,7 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_weight="1"
-                        android:src="@drawable/ic_tarif_icon" />
+                        android:src="@drawable/ic_voice_icon" />
 
                     <TextView
                         android:id="@+id/tvAddVoice"
@@ -160,7 +163,7 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_weight="1"
-                        android:src="@drawable/ic_tarif_icon" />
+                        android:src="@drawable/ic_sms_icon" />
 
                     <TextView
                         android:id="@+id/tvAddSMS"
@@ -172,11 +175,12 @@
 
                 <TextView
                     android:id="@+id/tvSubFee"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="25dp"
                     android:layout_marginLeft="25dp"
                     android:layout_marginTop="63dp"
+                    android:layout_marginBottom="25dp"
                     android:text="TextView"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -188,7 +192,7 @@
 
             <TextView
                 android:id="@+id/tvTariffDescription"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="TextView"
@@ -257,7 +261,7 @@
                 app:layout_constraintVertical_bias="0.0" />
 
             <TextView
-                android:id="@+id/textView21"
+                android:id="@+id/tvAddInfoAbout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
@@ -280,12 +284,12 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/guideline27"
                 app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toEndOf="@+id/textView21"
+                app:layout_constraintStart_toEndOf="@+id/tvAddInfoAbout"
                 app:layout_constraintTop_toBottomOf="@+id/view2"
                 app:layout_constraintVertical_bias="0.0" />
 
             <View
-                android:id="@+id/view3"
+                android:id="@+id/viewUnderAddInfo"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_marginTop="19dp"
@@ -303,7 +307,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
-                android:text="Информация о тарифе"
+                android:text="Услуги, доступные на тарифе"
                 android:textColor="#000000"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -311,7 +315,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/guideline27"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/guideline26"
-                app:layout_constraintTop_toBottomOf="@+id/view3"
+                app:layout_constraintTop_toBottomOf="@+id/viewUnderAddInfo"
                 app:layout_constraintVertical_bias="0.0" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -331,7 +335,7 @@
             <LinearLayout
                 android:id="@+id/pdfDownload"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
+                android:layout_height="40dp"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/guideline27"
@@ -345,7 +349,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_weight="1"
-                    app:srcCompat="@drawable/ic_icon24x24eye" />
+                    app:srcCompat="@drawable/ic_download" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -357,10 +361,33 @@
                     <TextView
                         android:id="@+id/textView6"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
                         android:text="Скачать информацию о тарифе" />
                 </LinearLayout>
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imageView10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_rectangle_dialog"
+                app:layout_constraintBottom_toTopOf="@+id/title"
+                app:layout_constraintEnd_toStartOf="@+id/guideline27"
+                app:layout_constraintStart_toStartOf="@+id/guideline26"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/subBase"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                app:layout_constraintBottom_toTopOf="@+id/imageView10"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

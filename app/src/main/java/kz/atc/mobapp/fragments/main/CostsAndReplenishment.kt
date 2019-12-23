@@ -1,6 +1,5 @@
 package kz.atc.mobapp.fragments.main
 
-
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,14 +10,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.activity_main_page.*
 import kotlinx.android.synthetic.main.fragment_costs_and_replenishment.*
 import kotlinx.android.synthetic.main.fragment_costs_and_replenishment.tvPhoneNumber
-import kotlinx.android.synthetic.main.fragment_costs_email.*
 
 import kz.atc.mobapp.R
 import kz.atc.mobapp.adapters.RepAdapter

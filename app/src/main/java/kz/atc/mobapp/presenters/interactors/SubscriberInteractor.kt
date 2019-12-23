@@ -2,20 +2,15 @@ package kz.atc.mobapp.presenters.interactors
 
 import android.content.Context
 import android.util.Log
-import android.view.View
 import io.reactivex.Observable
 import io.reactivex.functions.Function3
 import io.reactivex.functions.Function4
 import io.reactivex.functions.Function5
-import io.reactivex.schedulers.Schedulers
 import kz.atc.mobapp.api.AuthServices
 import kz.atc.mobapp.api.SubscriberServices
 import kz.atc.mobapp.models.*
 import kz.atc.mobapp.models.catalogTariff.CatalogTariffResponse
-import kz.atc.mobapp.models.main.IndicatorHolder
-import kz.atc.mobapp.models.main.MainPagaAccumData
-import kz.atc.mobapp.models.main.MyTariffMainData
-import kz.atc.mobapp.models.main.ServicesListShow
+import kz.atc.mobapp.models.main.*
 import kz.atc.mobapp.states.main.CostAndReplenishmentPartialState
 import kz.atc.mobapp.states.main.CostsEmailState
 import kz.atc.mobapp.states.main.MainPagePartialState
@@ -24,15 +19,12 @@ import kz.atc.mobapp.utils.MathUtils
 import kz.atc.mobapp.utils.StringDateComparator
 import kz.atc.mobapp.utils.StringUtils
 import kz.atc.mobapp.utils.TimeUtils
-import okhttp3.MediaType
-import okhttp3.RequestBody
 import java.util.*
-import kotlin.Function3 as Function31
 
 class SubscriberInteractor(ctx: Context) {
 
 
-    public val subService by lazy {
+    val subService by lazy {
         SubscriberServices.create(ctx)
     }
 
@@ -85,34 +77,38 @@ class SubscriberInteractor(ctx: Context) {
                     mainData
                 }.blockingFirst()
 
-                subService.getServicesList().flatMap {
-                    it.forEach { service ->
-                        val serviceShow = ServicesListShow()
-                        serviceShow.serviceName = service.name
-                        serviceShow.id = service.id.toString()
-                        userService.getCatalogService(
-                            service.id.toString(),
-                            subInfoResponse.region.name
-                        ).flatMap { serviceDetails ->
-                            serviceShow.description = serviceDetails.services.first()
-                                ?.attributes.first { predicate -> predicate.system_name == "short_description" }
-                                ?.value
-                            Observable.just(serviceShow)
-                        }.onErrorReturn {
-                            serviceShow.description = null
-                            serviceShow
-                        }.blockingFirst()
-                        mainData.servicesList.add(serviceShow)
-                    }
-                    Observable.just(mainData)
-                }.blockingFirst()
+                subService.getServicesList().subscribe { list ->
+                    userService.getCatalogService(
+                        list.joinToString { it.id.toString() },
+                        subInfoResponse.region.name
+                    ).flatMap { serviceDetails ->
+                        serviceDetails.services.forEach {
+                            val serviceShow = ServicesListShow()
+                            serviceShow.id = it.id.toString()
+                            serviceShow.serviceName = list.first { pred -> pred.id == it.id }.name
+                            serviceShow.description =
+                                it.attributes.first { predicate -> predicate.system_name == "short_description" }
+                                    ?.value.orEmpty()
+                            serviceShow.price =
+                                list.first { pred -> pred.id == it.id }.price.toString()
+                            mainData.servicesList.add(serviceShow)
+                        }
+                        Observable.just(mainData)
+                    }.onErrorReturn {
+                        mainData.servicesList = mutableListOf()
+                        mainData
+                    }.blockingFirst()
+                }
 
                 mainData.indicatorHolder = calculateIndicators(null, subRemainsResponse, null)
+                mainData.indicatorModels =
+                    accumulateIndicators(subTariffResponse, subRemainsResponse)
 
                 MyTariffPartialState.MainDataLoadedState(mainData)
             })
 
     }
+
 
     fun getReplenishmentData(period: String): Observable<CostAndReplenishmentPartialState> {
         val dates = period.split("-")
@@ -260,6 +256,136 @@ class SubscriberInteractor(ctx: Context) {
                 }
             })
 
+    }
+
+    private fun accumulateIndicators(
+        tariffs: TariffResponse?,
+        remains: List<RemainsResponse>?
+    ): IndicatorsModel {
+        var dataIndicators = mutableListOf<IndicatorHolder>()
+        var voiceIndicators = mutableListOf<IndicatorHolder>()
+        var smsIndicators = mutableListOf<IndicatorHolder>()
+
+        remains?.forEach { remain ->
+            when {
+                remain.type == "DATA" -> {
+                    var rest = remain.rest_amount
+                    var total = remain.total_amount
+                    var name = if (remain.services.primary) {
+                        "По условиям тарифа"
+                    } else {
+                        remain.services.name.orEmpty()
+                    }
+                    var dueDate = ""
+                    if (remain.due_date == "2999-12-31") {
+                        dueDate = remain.due_date
+                    }
+                    var indicatorData: IndicatorHolder?
+                    indicatorData = if (rest != 0 && total != 0) {
+                        IndicatorHolder(
+                            rest,
+                            total,
+                            MathUtils().calculatePercent(rest, total),
+                            false, optionsName = name, dueDate = dueDate
+                        )
+                    } else {
+                        IndicatorHolder(
+                            rest,
+                            total,
+                            0,
+                            false,
+                            optionsName = name,
+                            dueDate = dueDate
+                        )
+                    }
+                    dataIndicators.add(indicatorData)
+                }
+                remain.type == "VOICE" -> {
+                    var rest = remain.rest_amount
+                    var total = remain.total_amount
+                    var name = if (remain.services.primary) {
+                        "По условиям тарифа"
+                    } else {
+                        remain.services.name.orEmpty()
+                    }
+                    var dueDate = ""
+                    if (remain.due_date == "2999-12-31") {
+                        dueDate = remain.due_date
+                    }
+                    var indicatorData: IndicatorHolder?
+                    indicatorData = if (rest != 0 && total != 0) {
+                        IndicatorHolder(
+                            rest,
+                            total,
+                            MathUtils().calculatePercent(rest, total),
+                            false, optionsName = name, dueDate = dueDate
+                        )
+                    } else {
+                        IndicatorHolder(
+                            rest,
+                            total,
+                            0,
+                            false,
+                            optionsName = name,
+                            dueDate = dueDate
+                        )
+                    }
+                    voiceIndicators.add(indicatorData)
+                }
+                remain.type == "SMS" -> {
+                    var rest = remain.rest_amount
+                    var total = remain.total_amount
+                    var name = if (remain.services.primary) {
+                        "По условиям тарифа"
+                    } else {
+                        remain.services.name.orEmpty()
+                    }
+                    var dueDate = ""
+                    if (remain.due_date == "2999-12-31") {
+                        dueDate = remain.due_date
+                    }
+
+                    var indicatorData: IndicatorHolder?
+                    indicatorData = if (rest != 0 && total != 0) {
+                        IndicatorHolder(
+                            rest,
+                            total,
+                            MathUtils().calculatePercent(rest, total),
+                            false, optionsName = name, dueDate = dueDate
+                        )
+                    } else {
+                        IndicatorHolder(
+                            rest,
+                            total,
+                            0,
+                            false,
+                            optionsName = name,
+                            dueDate = dueDate
+                        )
+                    }
+                    smsIndicators.add(indicatorData)
+                }
+            }
+
+        }
+
+        tariffs?.options?.forEach { option ->
+            if (option.type == "DATA") {
+                val indicatorHolder =
+                    IndicatorHolder(null, null, null, true, null, option.name, null)
+                dataIndicators.add(indicatorHolder)
+            } else if (option.type == "VOICE") {
+                val indicatorHolder =
+                    IndicatorHolder(null, null, null, true, null, option.name, null)
+                voiceIndicators.add(indicatorHolder)
+            } else if (option.type == "SMS") {
+                val indicatorHolder =
+                    IndicatorHolder(null, null, null, true, null, option.name, null)
+                smsIndicators.add(indicatorHolder)
+            }
+        }
+
+        return IndicatorsModel(dataIndicators, voiceIndicators, smsIndicators)
     }
 
     private fun calculateIndicators(

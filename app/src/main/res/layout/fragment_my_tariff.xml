@@ -7,720 +7,773 @@
     android:background="@color/cardview_light_background"
     tools:context=".fragments.main.MyTariffFragment">
 
+    <ProgressBar
+        android:id="@+id/pgMainData"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        tools:visibility="visible" />
+
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/mainDataHolder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="56dp">
+        android:layout_marginBottom="56dp"
+        android:visibility="gone">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/mainConstraint"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:visibility="visible">
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/mainLeftovers"
+                android:id="@+id/subBase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/viewOtherTarrifs"
-                app:layout_constraintVertical_bias="0.0">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constInternet"
-                    android:layout_width="0dp"
+                    android:id="@+id/mainLeftovers"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline25"
-                    app:layout_constraintStart_toStartOf="@+id/guideline24"
-                    app:layout_constraintTop_toBottomOf="@+id/textView13"
-                    app:layout_constraintVertical_bias="0.0">
-
-                    <TextView
-                        android:id="@+id/tvInternet"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Интернет"
-                        android:textColor="#000000"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.1" />
-
-                    <LinearLayout
-                        android:id="@+id/viewAmountLeftovers"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
-                        android:orientation="vertical"
-                        android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvInternet"
-                        app:layout_constraintVertical_bias="0.0">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/tvLeftOversName"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Перенесенные остатки"
-                                android:textColor="#000000" />
-
-                            <TextView
-                                android:id="@+id/tvLeftOversRest"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="right"
-                                android:text="3 ГБ"
-                                android:textColor="#000000"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <ProgressBar
-                            android:id="@+id/pbLeftovers"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:progress="60" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/tvLeftoversDate"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="до 15.12.2019"
-                                android:textSize="13sp" />
-
-                            <TextView
-                                android:id="@+id/textView18"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="right"
-                                android:text="из 10 ГБ"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/viewAmountEx"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:orientation="vertical"
-                        android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/viewAmountLeftovers"
-                        app:layout_constraintVertical_bias="0.0">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/tvExName"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Обменные ГБ"
-                                android:textColor="#000000" />
-
-                            <TextView
-                                android:id="@+id/tvExRest"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="right"
-                                android:text="3 ГБ"
-                                android:textColor="#000000"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <ProgressBar
-                            android:id="@+id/pbEx"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:progress="60" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/tvExDate"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="до 15.12.2019"
-                                android:textSize="13sp" />
-
-                            <TextView
-                                android:id="@+id/tvExTotal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="right"
-                                android:text="из 10 ГБ"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/viewAmountInetConditions"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:orientation="vertical"
-                        android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/viewAmountEx"
-                        app:layout_constraintVertical_bias="0.0">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/tvInetConditionsName"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="По условиям тарифа"
-                                android:textColor="#000000" />
-
-                            <TextView
-                                android:id="@+id/tvInetConditionsRest"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="right"
-                                android:text="3 ГБ"
-                                android:textColor="#000000"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <ProgressBar
-                            android:id="@+id/pbInetConditions"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:progress="60" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/tvInetConditionsDate"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="до 15.12.2019"
-                                android:textSize="13sp" />
-
-                            <TextView
-                                android:id="@+id/tvInetConditionsTotal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="right"
-                                android:text="из 10 ГБ"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-
-                    </LinearLayout>
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constVoice"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline25"
-                    app:layout_constraintStart_toStartOf="@+id/guideline24"
-                    app:layout_constraintTop_toBottomOf="@+id/constInternet"
-                    app:layout_constraintVertical_bias="0.1">
-
-                    <TextView
-                        android:id="@+id/tvVoice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Звонки"
-                        android:textColor="#000000"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.1" />
-
-                    <LinearLayout
-                        android:id="@+id/viewAmountVoiceConditions"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:orientation="vertical"
-                        android:visibility="visible"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvVoice"
-                        app:layout_constraintVertical_bias="0.0">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/tvVoiceConditionsName"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="По условиям тарифа"
-                                android:textColor="#000000" />
-
-                            <TextView
-                                android:id="@+id/tvVoiceConditionsRest"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="right"
-                                android:text="3 ГБ"
-                                android:textColor="#000000"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <ProgressBar
-                            android:id="@+id/pbVoiceConditions"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:progress="60" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/tvVoiceConditionsDate"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="до 15.12.2019"
-                                android:textSize="13sp" />
-
-                            <TextView
-                                android:id="@+id/tvVoiceConditionsTotal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="right"
-                                android:text="из 10 ГБ"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-
-                    </LinearLayout>
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constSms"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline25"
-                    app:layout_constraintStart_toStartOf="@+id/guideline24"
-                    app:layout_constraintTop_toBottomOf="@+id/constVoice"
-                    app:layout_constraintVertical_bias="0.1">
-
-                    <TextView
-                        android:id="@+id/tvSms"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="SMS"
-                        android:textColor="#000000"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.1" />
-
-                    <LinearLayout
-                        android:id="@+id/viewAmountSmsConditions"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:orientation="vertical"
-                        android:visibility="visible"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvSms"
-                        app:layout_constraintVertical_bias="0.0">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/tvSmsConditionsName"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="По условиям тарифа"
-                                android:textColor="#000000" />
-
-                            <TextView
-                                android:id="@+id/tvSmsConditionsRest"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="right"
-                                android:text="3 ГБ"
-                                android:textColor="#000000"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <ProgressBar
-                            android:id="@+id/pbSmsConditions"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:progress="0" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/tvSmsConditionsDate"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="до 15.12.2019"
-                                android:textSize="13sp" />
-
-                            <TextView
-                                android:id="@+id/tvSmsConditionsTotal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="right"
-                                android:text="из 10 ГБ"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-
-                    </LinearLayout>
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <TextView
-                    android:id="@+id/textView13"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
-                    android:text="Остатки по пакетам услуг"
-                    android:textColor="#000000"
-                    android:textSize="25sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline25"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/guideline24"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
-
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline24"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_begin="18dp" />
-
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline25"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_end="18dp" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/mainAddedService"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/mainLeftovers"
-                app:layout_constraintVertical_bias="0.0">
-
-                <TextView
-                    android:id="@+id/addedTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
-                    android:text="Подключенные услуги"
-                    android:textColor="#000000"
-                    android:textSize="25sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline21"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/guideline20"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
-
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/addedRecyclerView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/addedTitle" />
+                    app:layout_constraintTop_toBottomOf="@id/viewOtherTarrifs"
+                    app:layout_constraintVertical_bias="0.0">
 
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline20"
-                    android:layout_width="wrap_content"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/constInternet"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline25"
+                        app:layout_constraintStart_toStartOf="@+id/guideline24"
+                        app:layout_constraintTop_toBottomOf="@+id/textView13"
+                        app:layout_constraintVertical_bias="0.0">
+
+                        <TextView
+                            android:id="@+id/tvInternet"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Интернет"
+                            android:textColor="#000000"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.1" />
+
+                        <LinearLayout
+                            android:id="@+id/viewAmountLeftovers"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tvInternet"
+                            app:layout_constraintVertical_bias="0.0">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvLeftOversName"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Перенесенные остатки"
+                                    android:textColor="#000000" />
+
+                                <TextView
+                                    android:id="@+id/tvLeftOversRest"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="right"
+                                    android:text="3 ГБ"
+                                    android:textColor="#000000"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <ProgressBar
+                                android:id="@+id/pbLeftovers"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:progress="60" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvLeftoversDate"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="до 15.12.2019"
+                                    android:textSize="13sp" />
+
+                                <TextView
+                                    android:id="@+id/textView18"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="right"
+                                    android:text="из 10 ГБ"
+                                    android:textSize="13sp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/viewAmountEx"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/viewAmountLeftovers"
+                            app:layout_constraintVertical_bias="0.0">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvExName"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Обменные ГБ"
+                                    android:textColor="#000000" />
+
+                                <TextView
+                                    android:id="@+id/tvExRest"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="right"
+                                    android:text="3 ГБ"
+                                    android:textColor="#000000"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <ProgressBar
+                                android:id="@+id/pbEx"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:progress="60" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvExDate"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="до 15.12.2019"
+                                    android:textSize="13sp" />
+
+                                <TextView
+                                    android:id="@+id/tvExTotal"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="right"
+                                    android:text="из 10 ГБ"
+                                    android:textSize="13sp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/viewAmountInetConditions"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/viewAmountEx"
+                            app:layout_constraintVertical_bias="0.0">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvInetConditionsName"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="По условиям тарифа"
+                                    android:textColor="#000000" />
+
+                                <TextView
+                                    android:id="@+id/tvInetConditionsRest"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="right"
+                                    android:text="3 ГБ"
+                                    android:textColor="#000000"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <ProgressBar
+                                android:id="@+id/pbInetConditions"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:progress="60" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvInetConditionsDate"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="до 15.12.2019"
+                                    android:textSize="13sp" />
+
+                                <TextView
+                                    android:id="@+id/tvInetConditionsTotal"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="right"
+                                    android:text="из 10 ГБ"
+                                    android:textSize="13sp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/dataRecyclerView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tvInternet" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/constVoice"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline25"
+                        app:layout_constraintStart_toStartOf="@+id/guideline24"
+                        app:layout_constraintTop_toBottomOf="@+id/constInternet"
+                        app:layout_constraintVertical_bias="0.1">
+
+                        <TextView
+                            android:id="@+id/tvVoice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Звонки"
+                            android:textColor="#000000"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.1" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/voiceRecyclerView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tvVoice" />
+
+                        <LinearLayout
+                            android:id="@+id/viewAmountVoiceConditions"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tvVoice"
+                            app:layout_constraintVertical_bias="0.0">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvConditionsName"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="По условиям тарифа"
+                                    android:textColor="#000000" />
+
+                                <TextView
+                                    android:id="@+id/tvConditionsRest"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="right"
+                                    android:text="3 ГБ"
+                                    android:textColor="#000000"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <ProgressBar
+                                android:id="@+id/pbConditions"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:progress="60" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvConditionsDate"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="до 15.12.2019"
+                                    android:textSize="13sp" />
+
+                                <TextView
+                                    android:id="@+id/tvConditionsTotal"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="right"
+                                    android:text="из 10 ГБ"
+                                    android:textSize="13sp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/constSms"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline25"
+                        app:layout_constraintStart_toStartOf="@+id/guideline24"
+                        app:layout_constraintTop_toBottomOf="@+id/constVoice"
+                        app:layout_constraintVertical_bias="0.1">
+
+                        <TextView
+                            android:id="@+id/tvSms"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="SMS"
+                            android:textColor="#000000"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.1" />
+
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/smsRecyclerView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tvSms" />
+
+                        <LinearLayout
+                            android:id="@+id/viewAmountSmsConditions"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tvSms"
+                            app:layout_constraintVertical_bias="0.0">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvSmsConditionsName"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="По условиям тарифа"
+                                    android:textColor="#000000" />
+
+                                <TextView
+                                    android:id="@+id/tvSmsConditionsRest"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="right"
+                                    android:text="3 ГБ"
+                                    android:textColor="#000000"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <ProgressBar
+                                android:id="@+id/pbSmsConditions"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:progress="0" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvSmsConditionsDate"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="до 15.12.2019"
+                                    android:textSize="13sp" />
+
+                                <TextView
+                                    android:id="@+id/tvSmsConditionsTotal"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="right"
+                                    android:text="из 10 ГБ"
+                                    android:textSize="13sp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <TextView
+                        android:id="@+id/textView13"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="30dp"
+                        android:text="Остатки по пакетам услуг"
+                        android:textColor="#000000"
+                        android:textSize="25sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline25"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/guideline24"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline24"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_begin="18dp" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline25"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_end="18dp" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/mainAddedService"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_begin="18dp" />
-
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline21"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_end="18dp" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-            <LinearLayout
-                android:id="@+id/viewOtherTarrifs"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/borderbottom"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/mainDataLayout"
-                app:layout_constraintVertical_bias="0.0">
-
-                <TextView
-                    android:id="@+id/textView12"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="18dp"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:text="Другие тарифы" />
-
-                <ImageView
-                    android:id="@+id/imageView6"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginRight="12dp"
-                    android:src="@drawable/ic_navigatearrow" />
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:id="@+id/viewOtherServices"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/borderbottom"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/mainAddedService"
-                app:layout_constraintVertical_bias="0.0">
-
-                <TextView
-                    android:id="@+id/tvOtherServices"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="18dp"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:text="Другие сервисы" />
-
-                <ImageView
-                    android:id="@+id/ivOtherServices"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginRight="12dp"
-                    android:src="@drawable/ic_navigatearrow" />
-            </LinearLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/mainDataLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/back_gradient"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0">
-
-                <TextView
-                    android:id="@+id/tvTariffName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Очень простой тариф"
-                    android:textColor="#030000"
-                    android:textSize="40dp"
-                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline23"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/guideline22"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/mainLeftovers"
+                    app:layout_constraintVertical_bias="0.0">
+
+                    <TextView
+                        android:id="@+id/addedTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="30dp"
+                        android:text="Подключенные услуги"
+                        android:textColor="#000000"
+                        android:textSize="25sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline21"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/guideline20"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/addedRecyclerView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/addedTitle" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline20"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_begin="18dp" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline21"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_end="18dp" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/viewOtherTarrifs"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/borderbottom"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/mainDataLayout"
+                    app:layout_constraintVertical_bias="0.0">
+
+                    <TextView
+                        android:id="@+id/textView12"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="18dp"
+                        android:layout_weight="1"
+                        android:gravity="left"
+                        android:text="Другие тарифы" />
+
+                    <ImageView
+                        android:id="@+id/imageView6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="12dp"
+                        android:src="@drawable/ic_navigatearrow" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/viewOtherServices"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/borderbottom"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/mainAddedService"
+                    app:layout_constraintVertical_bias="0.0">
+
+                    <TextView
+                        android:id="@+id/tvOtherServices"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="18dp"
+                        android:layout_weight="1"
+                        android:gravity="left"
+                        android:text="Другие сервисы" />
+
+                    <ImageView
+                        android:id="@+id/ivOtherServices"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="12dp"
+                        android:src="@drawable/ic_navigatearrow" />
+                </LinearLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/mainDataLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/back_gradient"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintVertical_bias="0.0">
 
-                <TextView
-                    android:id="@+id/tvTariffCondition"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textSize="16dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline23"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/guideline22"
-                    app:layout_constraintTop_toBottomOf="@+id/tvTariffName"
-                    app:layout_constraintVertical_bias="0.110000014" />
+                    <TextView
+                        android:id="@+id/tvTariffName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Очень простой тариф"
+                        android:textColor="#030000"
+                        android:textSize="40dp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline23"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/guideline22"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
 
-                <TextView
-                    android:id="@+id/tvTariffRate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:textColor="#000000"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/tvAboutTariff"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/guideline22"
-                    app:layout_constraintTop_toBottomOf="@+id/tvTariffCondition"
-                    app:layout_constraintVertical_bias="0.23000002" />
+                    <TextView
+                        android:id="@+id/tvTariffCondition"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        android:textSize="16dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline23"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/guideline22"
+                        app:layout_constraintTop_toBottomOf="@+id/tvTariffName"
+                        app:layout_constraintVertical_bias="0.110000014" />
 
-                <TextView
-                    android:id="@+id/tvAboutTariff"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="О тарифе"
-                    android:textColor="#FA6600"
-                    android:textSize="18sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/tvTariffCondition"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toStartOf="@+id/guideline22"
-                    app:layout_constraintTop_toBottomOf="@+id/tvTariffCondition"
-                    app:layout_constraintVertical_bias="0.23000002" />
+                    <TextView
+                        android:id="@+id/tvTariffRate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        android:textColor="#000000"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/tvAboutTariff"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/guideline22"
+                        app:layout_constraintTop_toBottomOf="@+id/tvTariffCondition"
+                        app:layout_constraintVertical_bias="0.23000002" />
 
-                <TextView
-                    android:id="@+id/tvTariffDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TextView"
-                    android:visibility="visible"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline23"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/guideline22"
-                    app:layout_constraintTop_toBottomOf="@+id/tvTariffRate"
-                    app:layout_constraintVertical_bias="0.0" />
+                    <TextView
+                        android:id="@+id/tvAboutTariff"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="О тарифе"
+                        android:textColor="#FA6600"
+                        android:textSize="18sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/tvTariffCondition"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="@+id/guideline22"
+                        app:layout_constraintTop_toBottomOf="@+id/tvTariffCondition"
+                        app:layout_constraintVertical_bias="0.23000002" />
 
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline22"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_begin="18dp" />
+                    <TextView
+                        android:id="@+id/tvTariffDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline23"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="@+id/guideline22"
+                        app:layout_constraintTop_toBottomOf="@+id/tvTariffRate"
+                        app:layout_constraintVertical_bias="0.0" />
 
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline23"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_end="18dp" />
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline22"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_begin="18dp" />
 
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="15dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline23"
-                    app:layout_constraintStart_toStartOf="@+id/guideline22"
-                    app:layout_constraintTop_toBottomOf="@+id/tvTariffDate" />
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline23"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_end="18dp" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="15dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline23"
+                        app:layout_constraintStart_toStartOf="@+id/guideline22"
+                        app:layout_constraintTop_toBottomOf="@+id/tvTariffDate" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
             </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

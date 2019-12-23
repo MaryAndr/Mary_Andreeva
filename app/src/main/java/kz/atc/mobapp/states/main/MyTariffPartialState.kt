@@ -7,4 +7,6 @@ sealed class MyTariffPartialState {
     data class MainDataLoadedState(val data : MyTariffMainData) : MyTariffPartialState()
 
     data class ShowErrorMessage(val error: String) : MyTariffPartialState()
+
+    object Loading : MyTariffPartialState()
 }

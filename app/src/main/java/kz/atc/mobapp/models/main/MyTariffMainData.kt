@@ -7,5 +7,6 @@ data class MyTariffMainData(
     var subscriberTariff: TariffResponse? = null,
     var catalogTariff: CatalogTariffResponse? = null,
     var servicesList: MutableList<ServicesListShow> = mutableListOf<ServicesListShow>(),
-    var indicatorHolder: MutableMap<String, IndicatorHolder>? = null
+    var indicatorHolder: MutableMap<String, IndicatorHolder>? = null,
+    var indicatorModels: IndicatorsModel? = null
 )

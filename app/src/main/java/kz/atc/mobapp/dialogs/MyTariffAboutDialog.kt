@@ -18,6 +18,7 @@ import kz.atc.mobapp.R
 import kz.atc.mobapp.adapters.MyTariffAboutAdapter
 import kz.atc.mobapp.models.main.MyTariffAboutData
 import kz.atc.mobapp.utils.DownloadHelper
+import kz.atc.mobapp.utils.TextConverter
 
 
 class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragment() {
@@ -28,14 +29,13 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (data.catalogTariff?.tariffs != null && data.catalogTariff?.tariffs.size > 0 && data.catalogTariff?.tariffs.first()
+        if (data.catalogTariff?.tariffs != null && data.catalogTariff?.tariffs.size > 0 && data.catalogTariff.tariffs.first()
                 .attributes.first { pred -> pred.system_name == "description_url" } != null
         ) {
             PDF_URL = data.catalogTariff.tariffs.first()
                 .attributes.first { pred -> pred.system_name == "description_url" }.value
             tariffName = data.catalogTariff.tariffs?.first().name
-        }
-        else {
+        } else {
             PDF_URL = ""
             tariffName = "defaultName"
         }
@@ -60,9 +60,65 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        ivClose.setOnClickListener {
+            dismiss()
+        }
+
+        val attrs = data.catalogTariff?.tariffs?.first()?.attributes
+
+        val isSubFee = attrs?.firstOrNull{it.system_name == "subscription_fee"}?.value == "1"
+
         pdfDownload.setOnClickListener {
             Log.d("OnClick", "Triggered")
             downloadPdf()
+        }
+
+        if (data.subscriberTariff?.constructor != null && data.subscriberTariff.tariff.id in mutableListOf(14, 26, 27, 28) ) {
+            tvTariffDescription.text = TextConverter().descriptionBuilder(
+                data.subscriberTariff?.constructor?.min,
+                data.subscriberTariff?.constructor?.data,
+                data.subscriberTariff?.constructor?.sms
+            )
+        } else {
+            tvTariffDescription.text = data.catalogTariff?.tariffs?.first()
+                ?.attributes?.firstOrNull { pred -> pred.system_name == "short_description" }
+                ?.value.orEmpty()
+        }
+
+        if (isSubFee) {
+            tvAddData.text = attrs?.firstOrNull{it.system_name == "internet_gb_count"}?.value.orEmpty() + attrs?.firstOrNull{it.system_name == "internet_gb_count"}?.unit.orEmpty()
+            tvAddVoice.text = attrs?.firstOrNull{it.system_name == "minutes_count"}?.value.orEmpty() + attrs?.firstOrNull{it.system_name == "minutes_count"}?.unit.orEmpty()
+            tvAddSMS.text = attrs?.firstOrNull{it.system_name == "sms_count"}?.value.orEmpty() + attrs?.firstOrNull{it.system_name == "sms_count"}?.unit.orEmpty()
+        } else {
+            tvAddData.text = attrs?.firstOrNull{it.system_name == "internet_mb_cost"}?.value.orEmpty() + attrs?.firstOrNull{it.system_name == "internet_mb_cost"}?.unit.orEmpty()
+            tvAddVoice.text = attrs?.firstOrNull{it.system_name == "minute_cost"}?.value.orEmpty() + attrs?.firstOrNull{it.system_name == "minute_cost"}?.unit.orEmpty()
+            tvAddSMS.text = attrs?.firstOrNull{it.system_name == "sms_cost"}?.value.orEmpty() + attrs?.firstOrNull{it.system_name == "sms_cost"}?.unit.orEmpty()
+        }
+
+        if (attrs?.firstOrNull{it.system_name == "subscription_fee"} != null && attrs?.firstOrNull{it.system_name == "subscription_fee"}?.value != "0") {
+            tvSubFee.text = attrs?.firstOrNull{it.system_name == "subscription_fee"}?.value + " " + attrs?.firstOrNull{it.system_name == "subscription_fee"}?.unit
+        } else {
+            tvSubFee.visibility = View.GONE
+        }
+
+        if (tvAddData.text.isNullOrEmpty()) {
+            addDataView.visibility = View.GONE
+        }
+
+        if (tvAddVoice.text.isNullOrEmpty()) {
+            addVoiceView.visibility = View.GONE
+        }
+
+        if (tvAddSMS.text.isNullOrEmpty()) {
+            addSMSView.visibility = View.GONE
+        }
+        if (attrs?.firstOrNull{it.name == "Информация о тарифе"} != null) {
+            tvAddInfoAbout.text = attrs?.firstOrNull{it.name == "Информация о тарифе"}?.param
+            tvSubscriberFee.text = attrs?.firstOrNull{it.name == "Информация о тарифе"}?.value.orEmpty() + attrs?.firstOrNull{it.name == "Информация о тарифе"}?.unit.orEmpty()
+        } else {
+            tvAddInfoAbout.visibility = View.GONE
+            tvSubscriberFee.visibility = View.GONE
+            viewUnderAddInfo.visibility = View.GONE
         }
 
         if (data.catalogTariff != null) {
@@ -99,6 +155,7 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             DownloadHelper().permissionCode -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
