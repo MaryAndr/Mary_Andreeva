@@ -29,12 +29,12 @@
 
         <ToggleButton
             android:id="@+id/tgButton"
-            style="?android:attr/borderlessButtonStyle"
             android:layout_width="40dp"
             android:layout_height="24dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_weight="0"
+            style="?android:attr/borderlessButtonStyle"
             android:background="@drawable/toggle_selector"
             android:checked="false"
             android:text=""
