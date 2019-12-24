@@ -26,7 +26,6 @@ class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val con
     private var myCompositeDisposable: CompositeDisposable? = null
 
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         myCompositeDisposable = CompositeDisposable()
         return ViewHolder(
@@ -57,34 +56,32 @@ class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val con
         if (holder.tgButton.isEnabled) {
 
             holder.tgButton.setOnCheckedChangeListener { view, isChecked ->
-                if (isChecked) {
-                    myCompositeDisposable?.add(
-                        services.subService.deleteService(items?.get(position)?.id)
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeOn(Schedulers.io())
-                            .subscribe({
-                                removeItem(position)
-                            }, { error ->
-                                var errMessage = error.localizedMessage
-                                if (error is HttpException) {
-                                    errMessage = if (error.code() == 409) {
-                                        "Вы не являетесь пользователем мобильной связи"
-                                    } else {
-                                        val errorBody = error.response()!!.errorBody()
+                myCompositeDisposable?.add(
+                    services.subService.deleteService(items?.get(position)?.id)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe({
+                            removeItem(position)
+                        }, { error ->
+                            var errMessage = error.localizedMessage
+                            if (error is HttpException) {
+                                errMessage = if (error.code() == 409) {
+                                    "Вы не являетесь пользователем мобильной связи"
+                                } else {
+                                    val errorBody = error.response()!!.errorBody()
 
-                                        val adapter =
-                                            gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
-                                        val errorObj = adapter.fromJson(errorBody!!.string())
-                                        errorObj.error_description
-                                    }
+                                    val adapter =
+                                        gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                                    val errorObj = adapter.fromJson(errorBody!!.string())
+                                    errorObj.error_description
                                 }
-                                holder.tgButton.isChecked = true
-                                holder.tgButton.isEnabled = true
-                                Toast.makeText(context, errMessage, Toast.LENGTH_LONG).show()
+                            }
+                            holder.tgButton.isChecked = true
+                            holder.tgButton.isEnabled = true
+                            Toast.makeText(context, errMessage, Toast.LENGTH_LONG).show()
 
-                            })
-                    )
-                }
+                        })
+                )
 
             }
         }

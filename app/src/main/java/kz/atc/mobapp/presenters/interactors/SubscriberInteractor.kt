@@ -32,6 +32,14 @@ class SubscriberInteractor(ctx: Context) {
         AuthServices.create()
     }
 
+    private val mapOfRegions =
+        mapOf(
+            0 to "СврдО",
+            3 to "КургО",
+            4 to "ХМАО",
+            5 to "ЯНАО"
+        )
+
     fun getMyTariffMainData(): Observable<MyTariffPartialState> {
         val subTariff = subService.getSubTariff().onErrorReturn {
             null
@@ -80,7 +88,7 @@ class SubscriberInteractor(ctx: Context) {
                 subService.getServicesList().subscribe { list ->
                     userService.getCatalogService(
                         list.joinToString { it.id.toString() },
-                        subInfoResponse.region.name
+                        mapOfRegions[subInfoResponse.region.id]
                     ).flatMap { serviceDetails ->
                         serviceDetails.services.forEach {
                             val serviceShow = ServicesListShow()

@@ -99,7 +99,7 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         tvTariffRate.text = catalogTariff?.tariffs?.first()
             ?.attributes?.firstOrNull { pred -> pred.system_name == "write_off_period" }
             ?.value
-        tvTariffDate.text = "Списасние ${TimeUtils().changeFormat(subTariff?.charge_date!!, "yyyy-MM-dd", "dd.MM.yyyy")}"
+        tvTariffDate.text = "Списание ${TimeUtils().changeFormat(subTariff?.charge_date!!, "yyyy-MM-dd", "dd.MM.yyyy")}"
         addedRecyclerView.layoutManager = LinearLayoutManager(context!!)
         addedRecyclerView.adapter =
             MyTariffServicesAdapter(state.mainData?.servicesList, context!!)
