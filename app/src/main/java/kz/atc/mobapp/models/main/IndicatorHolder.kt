@@ -7,5 +7,6 @@ data class IndicatorHolder(
     var unlim: Boolean,
     var valueUnit: String? = null,
     var optionsName: String? = null,
-    var dueDate: String? = null
+    var dueDate: String? = null,
+    var type: String? = null
 )

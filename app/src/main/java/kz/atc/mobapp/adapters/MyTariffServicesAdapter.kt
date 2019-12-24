@@ -25,6 +25,8 @@ class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val con
     private val gson = Gson()
     private var myCompositeDisposable: CompositeDisposable? = null
 
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         myCompositeDisposable = CompositeDisposable()
         return ViewHolder(

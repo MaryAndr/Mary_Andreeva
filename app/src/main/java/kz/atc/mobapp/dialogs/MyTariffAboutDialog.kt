@@ -60,6 +60,9 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        tvTariffName.text = data.catalogTariff?.tariffs?.first()?.name
+
         ivClose.setOnClickListener {
             dismiss()
         }
@@ -115,6 +118,8 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
         if (attrs?.firstOrNull{it.name == "Информация о тарифе"} != null) {
             tvAddInfoAbout.text = attrs?.firstOrNull{it.name == "Информация о тарифе"}?.param
             tvSubscriberFee.text = attrs?.firstOrNull{it.name == "Информация о тарифе"}?.value.orEmpty() + attrs?.firstOrNull{it.name == "Информация о тарифе"}?.unit.orEmpty()
+
+            Log.d("TvAddInfoAbout", tvAddInfoAbout.text.toString())
         } else {
             tvAddInfoAbout.visibility = View.GONE
             tvSubscriberFee.visibility = View.GONE

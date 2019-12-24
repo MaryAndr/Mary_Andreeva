@@ -10,7 +10,20 @@ class TextConverter {
 
 
     fun descriptionBuilder(min: String? = "0.00", data: String? = "0.00", sms: String? = "0.00") : String {
-        return "Свой тариф: $min минут, $data ГБ, $sms SMS"
+        var minExist: String? = "0.00"
+        var dataExist: String? = "0.00"
+        var smsExist: String?  = "0.00"
+        if (min != null) {
+            minExist = min
+        }
+        if (data != null) {
+            dataExist = data
+        }
+        if (sms != null) {
+            smsExist = sms
+        }
+
+        return "Свой тариф: $minExist минут, $dataExist ГБ, $smsExist SMS"
     }
 
 

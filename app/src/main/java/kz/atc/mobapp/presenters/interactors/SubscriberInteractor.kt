@@ -67,7 +67,7 @@ class SubscriberInteractor(ctx: Context) {
             subInfo,
             transHistory,
             subRemains,
-            Function4 { subTariffResponse, subInfoResponse, transHistory, subRemainsResponse ->
+            Function4 { subTariffResponse, subInfoResponse, transHistoryResponse, subRemainsResponse ->
                 val mainData = MyTariffMainData(subTariffResponse)
                 userService.getCatalogTariff(subTariffResponse.tariff.id).flatMap {
                     mainData.catalogTariff = it
@@ -102,7 +102,7 @@ class SubscriberInteractor(ctx: Context) {
 
                 mainData.indicatorHolder = calculateIndicators(null, subRemainsResponse, null)
                 mainData.indicatorModels =
-                    accumulateIndicators(subTariffResponse, subRemainsResponse)
+                    accumulateIndicators(subTariffResponse, subRemainsResponse, transHistoryResponse)
 
                 MyTariffPartialState.MainDataLoadedState(mainData)
             })
@@ -260,11 +260,51 @@ class SubscriberInteractor(ctx: Context) {
 
     private fun accumulateIndicators(
         tariffs: TariffResponse?,
-        remains: List<RemainsResponse>?
+        remains: List<RemainsResponse>?,
+        transferredHistory: List<TransferredHistoryResponse>?
     ): IndicatorsModel {
         var dataIndicators = mutableListOf<IndicatorHolder>()
         var voiceIndicators = mutableListOf<IndicatorHolder>()
         var smsIndicators = mutableListOf<IndicatorHolder>()
+
+
+        transferredHistory?.forEach {
+            when {
+                it.type == "DATA" -> {
+                    if (it.amount != null && it.amount > 0) {
+                        val rest = it.amount
+                        val total = it.amount
+                        val name = "Перенесенные остатки"
+                        var indicatorData = IndicatorHolder(
+                            rest,
+                            total,
+                            100,
+                            false,
+                            optionsName = name,
+                            type = "DATA"
+                        )
+                        dataIndicators.add(indicatorData)
+                    }
+                    if (it.exchange != null && it.exchange > 0) {
+                        val rest = it.exchange.toInt()
+                        val total = it.exchange.toInt()
+                        val name = "Количество обменянных ГБ"
+                        var indicatorData = IndicatorHolder(
+                            rest,
+                            total,
+                            100,
+                            false,
+                            optionsName = name,
+                            type = "DATA"
+                        )
+                        dataIndicators.add(indicatorData)
+                    }
+
+                }
+            }
+        }
+
+
 
         remains?.forEach { remain ->
             when {
@@ -286,7 +326,8 @@ class SubscriberInteractor(ctx: Context) {
                             rest,
                             total,
                             MathUtils().calculatePercent(rest, total),
-                            false, optionsName = name, dueDate = dueDate
+                            false, optionsName = name, dueDate = dueDate,
+                            type = "DATA"
                         )
                     } else {
                         IndicatorHolder(
@@ -295,7 +336,8 @@ class SubscriberInteractor(ctx: Context) {
                             0,
                             false,
                             optionsName = name,
-                            dueDate = dueDate
+                            dueDate = dueDate,
+                            type = "DATA"
                         )
                     }
                     dataIndicators.add(indicatorData)
@@ -370,18 +412,22 @@ class SubscriberInteractor(ctx: Context) {
         }
 
         tariffs?.options?.forEach { option ->
-            if (option.type == "DATA") {
-                val indicatorHolder =
-                    IndicatorHolder(null, null, null, true, null, option.name, null)
-                dataIndicators.add(indicatorHolder)
-            } else if (option.type == "VOICE") {
-                val indicatorHolder =
-                    IndicatorHolder(null, null, null, true, null, option.name, null)
-                voiceIndicators.add(indicatorHolder)
-            } else if (option.type == "SMS") {
-                val indicatorHolder =
-                    IndicatorHolder(null, null, null, true, null, option.name, null)
-                smsIndicators.add(indicatorHolder)
+            when {
+                option.type == "DATA" -> {
+                    val indicatorHolder =
+                        IndicatorHolder(null, null, null, true, null, option.name, null)
+                    dataIndicators.add(indicatorHolder)
+                }
+                option.type == "VOICE" -> {
+                    val indicatorHolder =
+                        IndicatorHolder(null, null, null, true, null, option.name, null)
+                    voiceIndicators.add(indicatorHolder)
+                }
+                option.type == "SMS" -> {
+                    val indicatorHolder =
+                        IndicatorHolder(null, null, null, true, null, option.name, null)
+                    smsIndicators.add(indicatorHolder)
+                }
             }
         }
 

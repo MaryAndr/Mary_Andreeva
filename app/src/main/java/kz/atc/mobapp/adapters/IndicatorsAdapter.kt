@@ -10,6 +10,7 @@ import kotlinx.android.synthetic.main.indictors_list.view.*
 import kz.atc.mobapp.R
 import kz.atc.mobapp.models.main.IndicatorHolder
 import kz.atc.mobapp.models.main.IndicatorsModel
+import kz.atc.mobapp.utils.StringUtils
 
 class IndicatorsAdapter(val indicatorsModels: MutableList<IndicatorHolder>, val context: Context) :
     RecyclerView.Adapter<IndicatorViewHolder>() {
@@ -37,8 +38,19 @@ class IndicatorsAdapter(val indicatorsModels: MutableList<IndicatorHolder>, val 
             holder.tvconditionTotal.text = ""
             holder.pbCondition.progress = 100
         } else {
-            holder.tvConditionRest.text = indicatorsModels[position].rest.toString()
-            holder.tvconditionTotal.text = indicatorsModels[position].total.toString()
+            if (indicatorsModels[position].type == "DATA") {
+                holder.tvConditionRest.text =
+                    "${StringUtils().unitValueConverter(indicatorsModels[position].rest!!).value} ${StringUtils().unitValueConverter(
+                        indicatorsModels[position].rest!!
+                    ).unit}"
+                holder.tvconditionTotal.text =
+                    "${StringUtils().unitValueConverter(indicatorsModels[position].total!!).value} ${StringUtils().unitValueConverter(
+                        indicatorsModels[position].total!!
+                    ).unit}"
+            } else {
+                holder.tvConditionRest.text = indicatorsModels[position].rest.toString()
+                holder.tvconditionTotal.text = indicatorsModels[position].total.toString()
+            }
             holder.pbCondition.progress = indicatorsModels[position].percent!!
         }
 

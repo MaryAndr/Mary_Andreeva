@@ -11,6 +11,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
+import kotlinx.android.synthetic.main.activity_main_page.*
 import kotlinx.android.synthetic.main.fragment_main_page.*
 import kotlinx.android.synthetic.main.fragment_main_page.view.*
 
@@ -195,7 +196,6 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
     override fun onResume() {
         super.onResume()
         (activity as AppCompatActivity).supportActionBar?.hide()
-        pgMainData.visibility = View.GONE
         preLoadTrigger.onNext(1)
     }
 
@@ -205,6 +205,11 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
     ): View? {
 
         return inflater.inflate(R.layout.fragment_main_page, container, false)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pgMainData.visibility = View.GONE
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -220,6 +225,10 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
 //        dataView.pbPhone.visibility = View.INVISIBLE
 //        dataView.tvVoiceRestAmount.visibility = View.INVISIBLE
 //        dataView.tvVoiceTotalAmount.visibility = View.INVISIBLE
+
+        tvTariffName.setOnClickListener {
+            activity!!.nav_view.selectedItemId = R.id.navigation_tariff
+        }
 
         groupData.visibility = View.INVISIBLE
         groupVoice.visibility = View.INVISIBLE

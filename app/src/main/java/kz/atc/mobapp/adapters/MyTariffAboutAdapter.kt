@@ -12,8 +12,15 @@ import kz.atc.mobapp.models.catalogTariff.CatalogTariffResponse
 
 class MyTariffAboutAdapter(val catalogTariff: CatalogTariffResponse, val context: Context) :
     RecyclerView.Adapter<AboutViewHolder>() {
-
-    private val attributes = catalogTariff.tariffs.first().attributes
+    private val allowedServices = mutableListOf<String>(
+        "Включено в абонентскую плату",
+        "Услуги, доступные на тарифе",
+        "Сверх абонентской платы",
+        "Услуги сверх пакета или при несписании абонентской платы",
+        "При списании абонентской платы (сверх пакета)",
+        "При несписаной абонентской плате"
+    )
+    private val attributes = catalogTariff.tariffs.first().attributes.filter { pred -> pred.name in allowedServices }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AboutViewHolder {
         return AboutViewHolder(
