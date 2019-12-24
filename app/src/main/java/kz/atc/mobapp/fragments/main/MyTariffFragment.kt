@@ -50,7 +50,6 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
     }
 
 
-
     override fun render(state: MyTariffState) {
         when {
             state.mainDataLoaded -> {
@@ -72,7 +71,6 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         super.onPause()
         pgMainData.visibility = View.GONE
     }
-
 
 
     private fun renderMainData(state: MyTariffState) {
@@ -99,7 +97,15 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         tvTariffRate.text = catalogTariff?.tariffs?.first()
             ?.attributes?.firstOrNull { pred -> pred.system_name == "write_off_period" }
             ?.value
-        tvTariffDate.text = "Списание ${TimeUtils().changeFormat(subTariff?.charge_date!!, "yyyy-MM-dd", "dd.MM.yyyy")}"
+        if (subTariff?.charge_date != null) {
+            tvTariffDate.text = "Списание ${TimeUtils().changeFormat(
+                subTariff?.charge_date!!,
+                "yyyy-MM-dd",
+                "dd.MM.yyyy"
+            )}"
+        } else {
+            tvTariffDate.visibility = View.GONE
+        }
         addedRecyclerView.layoutManager = LinearLayoutManager(context!!)
         addedRecyclerView.adapter =
             MyTariffServicesAdapter(state.mainData?.servicesList, context!!)
