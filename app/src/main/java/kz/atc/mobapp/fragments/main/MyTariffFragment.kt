@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -60,6 +61,9 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
             state.loading -> {
                 mainDataHolder.visibility = View.GONE
                 pgMainData.visibility = View.VISIBLE
+            }
+            state.errorShown -> {
+                Toast.makeText(context, state.errorText, Toast.LENGTH_LONG).show()
             }
         }
     }

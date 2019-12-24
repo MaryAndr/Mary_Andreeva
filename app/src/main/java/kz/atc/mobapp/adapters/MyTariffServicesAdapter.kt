@@ -4,20 +4,25 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.enabled
+import com.jakewharton.rxbinding2.widget.checked
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.added_services_list.view.*
 import kz.atc.mobapp.R
+import kz.atc.mobapp.models.ErrorJson
 import kz.atc.mobapp.models.main.ServicesListShow
 import kz.atc.mobapp.presenters.interactors.SubscriberInteractor
+import retrofit2.HttpException
 
 class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val context: Context) :
     RecyclerView.Adapter<ViewHolder>() {
     private val services = SubscriberInteractor(context)
-
+    private val gson = Gson()
     private var myCompositeDisposable: CompositeDisposable? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -50,16 +55,34 @@ class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val con
         if (holder.tgButton.isEnabled) {
 
             holder.tgButton.setOnCheckedChangeListener { view, isChecked ->
-                myCompositeDisposable?.add(services.subService.deleteService(items?.get(position)?.id)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe({
-                        removeItem(position)
-                    }, { error ->
-                        holder.tgButton.isEnabled = true
-                        error.printStackTrace()
-                    })
-                )
+                if (isChecked) {
+                    myCompositeDisposable?.add(
+                        services.subService.deleteService(items?.get(position)?.id)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe({
+                                removeItem(position)
+                            }, { error ->
+                                var errMessage = error.localizedMessage
+                                if (error is HttpException) {
+                                    errMessage = if (error.code() == 409) {
+                                        "Вы не являетесь пользователем мобильной связи"
+                                    } else {
+                                        val errorBody = error.response()!!.errorBody()
+
+                                        val adapter =
+                                            gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                                        val errorObj = adapter.fromJson(errorBody!!.string())
+                                        errorObj.error_description
+                                    }
+                                }
+                                holder.tgButton.isChecked = true
+                                holder.tgButton.isEnabled = true
+                                Toast.makeText(context, errMessage, Toast.LENGTH_LONG).show()
+
+                            })
+                    )
+                }
 
             }
         }
