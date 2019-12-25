@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.my_tariff_about_dialog.*
 import kz.atc.mobapp.R
+import kz.atc.mobapp.adapters.InfoAdapter
 import kz.atc.mobapp.adapters.MyTariffAboutAdapter
 import kz.atc.mobapp.models.main.MyTariffAboutData
 import kz.atc.mobapp.utils.DownloadHelper
@@ -115,6 +116,15 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
         if (tvAddSMS.text.isNullOrEmpty()) {
             addSMSView.visibility = View.GONE
         }
+
+        val attributesInfo = attrs?.filter{it.name == "Информация о тарифе"}
+
+        if (attributesInfo != null && attributesInfo.isNotEmpty()) {
+            infoList.layoutManager = LinearLayoutManager(context!!)
+            infoList.adapter =
+                InfoAdapter(context!!, attributesInfo)
+        }
+
         if (attrs?.firstOrNull{it.name == "Информация о тарифе"} != null) {
             tvAddInfoAbout.text = attrs?.firstOrNull{it.name == "Информация о тарифе"}?.param
             tvSubscriberFee.text = attrs?.firstOrNull{it.name == "Информация о тарифе"}?.value.orEmpty() + attrs?.firstOrNull{it.name == "Информация о тарифе"}?.unit.orEmpty()

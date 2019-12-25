@@ -7,12 +7,14 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
-import com.jakewharton.rxbinding2.view.enabled
-import com.jakewharton.rxbinding2.widget.checked
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.added_services_list.view.*
+import kotlinx.android.synthetic.main.added_services_list.view.tvDescription
+import kotlinx.android.synthetic.main.added_services_list.view.tvName
+import kotlinx.android.synthetic.main.added_services_list.view.tvValue
+import kotlinx.android.synthetic.main.my_tariff_services_list.view.*
 import kz.atc.mobapp.R
 import kz.atc.mobapp.models.ErrorJson
 import kz.atc.mobapp.models.main.ServicesListShow
@@ -49,6 +51,9 @@ class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val con
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
+
+
         holder.tvName.text = items?.get(position)?.serviceName
         holder.tvDescription.text = items?.get(position)?.description
         holder.tvValue.text = items?.get(position)?.price
