@@ -24,7 +24,18 @@ class MyTariffAboutAdapter(val catalogTariff: CatalogTariffResponse, val context
         "При несписаной абонентской плате"
     )
 
-    private val attributes = catalogTariff.tariffs.first().attributes.filter { pred -> pred.name in allowedServices }.sortedBy { it.name }
+    private val keywords = mutableListOf(
+        "Исходящие звонки",
+        "Мобильный интернет",
+        "Исходящие SMS-сообщения",
+        "Исходящие MMS-сообщения",
+        "Входящие"
+    )
+
+    private val attributes =
+        catalogTariff.tariffs.first().attributes.filter { pred -> pred.name in allowedServices }
+            .sortedBy { it.name }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AboutViewHolder {
         return AboutViewHolder(
@@ -43,28 +54,37 @@ class MyTariffAboutAdapter(val catalogTariff: CatalogTariffResponse, val context
 
     override fun onBindViewHolder(holder: AboutViewHolder, position: Int) {
 
-
         var previousItem: Attribute? = null
+
 
         if (position != 0) {
             previousItem = attributes?.get(position - 1)
         }
 
-        if (previousItem == null && attributes?.get(position)?.name != previousItem?.name) {
+        if (previousItem == null || attributes?.get(position)?.name != previousItem?.name) {
             holder.headerLayout.visibility = View.VISIBLE
             holder.tvHeader.text = attributes?.get(position)?.name
         }
 
 
-        if (attributes[position]?.name.length > 30) {
-            holder.tvName.textSize = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_PX,
-                11f,
-                context.resources.displayMetrics
-            )
+//        if (attributes[position]?.name.length > 30) {
+//            holder.tvName.textSize = TypedValue.applyDimension(
+//                TypedValue.COMPLEX_UNIT_PX,
+//                11f,
+//                context.resources.displayMetrics
+//            )
+//        }
+        val match = keywords.filter { it in attributes[position]?.param }
+        if (match.isNotEmpty()) {
+            holder.tvName.text = match.first()
+            holder.tvDescription.text =
+                attributes[position]?.param.substring(attributes[position]?.param.indexOf(match.first()) + match.first().length).trim()
+        } else {
+            holder.tvDescription.visibility = View.GONE
+            holder.tvName.text =  attributes[position]?.param
         }
-        holder.tvName.text = attributes[position]?.name
-        holder.tvDescription.text = attributes[position]?.param
+//        holder.tvName.text = attributes[position]?.name
+//        holder.tvDescription.text = attributes[position]?.notice
 //        if (attributes[position]?.value?.length > 20 || attributes[position]?.unit?.length > 20) {
 //            holder.tvValue.textSize = TypedValue.applyDimension(
 //                TypedValue.COMPLEX_UNIT_PX,
