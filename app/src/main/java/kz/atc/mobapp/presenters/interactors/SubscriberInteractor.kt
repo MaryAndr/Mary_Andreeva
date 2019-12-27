@@ -3,6 +3,7 @@ package kz.atc.mobapp.presenters.interactors
 import android.content.Context
 import android.util.Log
 import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import io.reactivex.functions.Function4
 import io.reactivex.functions.Function5
@@ -11,10 +12,7 @@ import kz.atc.mobapp.api.SubscriberServices
 import kz.atc.mobapp.models.*
 import kz.atc.mobapp.models.catalogTariff.CatalogTariffResponse
 import kz.atc.mobapp.models.main.*
-import kz.atc.mobapp.states.main.CostAndReplenishmentPartialState
-import kz.atc.mobapp.states.main.CostsEmailState
-import kz.atc.mobapp.states.main.MainPagePartialState
-import kz.atc.mobapp.states.main.MyTariffPartialState
+import kz.atc.mobapp.states.main.*
 import kz.atc.mobapp.utils.MathUtils
 import kz.atc.mobapp.utils.StringDateComparator
 import kz.atc.mobapp.utils.StringUtils
@@ -39,6 +37,46 @@ class SubscriberInteractor(ctx: Context) {
             4 to "ХМАО",
             5 to "ЯНАО"
         )
+
+
+    fun getEnabledServices(): Observable<ServicesState> {
+        val subInfo = subService.getSubInfo().onErrorReturn {
+            null
+        }
+
+        val subService = subService.getServicesList()
+
+
+        return Observable.combineLatest(
+            subInfo,
+            subService,
+            BiFunction { subInfoResponse, subServiceResponse ->
+
+                val servicesList: MutableList<ServicesListShow> = mutableListOf()
+
+                userService.getCatalogService(
+                    subServiceResponse.joinToString { it.id.toString() },
+                    mapOfRegions[subInfoResponse.region.id]
+                ).map<MutableList<ServicesListShow>> { catResp ->
+                    catResp.services.forEach {
+                        val serviceShow = ServicesListShow()
+                        serviceShow.id = it.id.toString()
+                        serviceShow.serviceName =
+                            subServiceResponse.first { pred -> pred.id == it.id }.name
+                        serviceShow.description =
+                            it.attributes.first { predicate -> predicate.system_name == "short_description" }
+                                ?.value.orEmpty()
+                        serviceShow.price =
+                            subServiceResponse.first { pred -> pred.id == it.id }.price.toString()
+                        servicesList.add(serviceShow)
+                    }
+                    servicesList
+                }.blockingFirst()
+
+                ServicesState.FetchEnabledService(servicesList)
+            })
+    }
+
 
     fun getMyTariffMainData(): Observable<MyTariffPartialState> {
         val subTariff = subService.getSubTariff().onErrorReturn {
@@ -110,7 +148,11 @@ class SubscriberInteractor(ctx: Context) {
 
                 mainData.indicatorHolder = calculateIndicators(null, subRemainsResponse, null)
                 mainData.indicatorModels =
-                    accumulateIndicators(subTariffResponse, subRemainsResponse, transHistoryResponse)
+                    accumulateIndicators(
+                        subTariffResponse,
+                        subRemainsResponse,
+                        transHistoryResponse
+                    )
 
                 MyTariffPartialState.MainDataLoadedState(mainData)
             })

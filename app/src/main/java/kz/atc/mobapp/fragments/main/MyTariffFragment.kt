@@ -51,6 +51,15 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         when {
             state.mainDataLoaded -> {
                 pgMainData.visibility = View.GONE
+
+                viewOtherServices.setOnClickListener {
+                    val fr = ServicesFragment()
+                    val fm = fragmentManager
+                    val fragmentTransaction = fm!!.beginTransaction().addToBackStack("mytariff")
+                    fragmentTransaction.replace(R.id.container, fr)
+                    fragmentTransaction.commit()
+                }
+
                 if(state.mainData?.indicatorModels?.dataIndicators?.size == 0 &&
                     state.mainData?.indicatorModels?.voiceIndicators?.size == 0 &&
                     state.mainData?.indicatorModels?.smsIndicators?.size == 0) {
