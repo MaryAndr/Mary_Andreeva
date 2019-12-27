@@ -36,12 +36,7 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val fetchConfiguration = FetchConfiguration.Builder(context!!)
-            .setDownloadConcurrentLimit(3)
-            .build()
 
-        fetch = Fetch.getInstance(fetchConfiguration)
-        fetch.addListener(MyFetchListener(context!!))
         if (data.catalogTariff?.tariffs != null && data.catalogTariff?.tariffs.isNotEmpty() && data.catalogTariff.tariffs.first()
                 .attributes.first { pred -> pred.system_name == "description_url" } != null
         ) {
@@ -137,6 +132,11 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
         if (tvAddSMS.text.isNullOrEmpty()) {
             addSMSView.visibility = View.GONE
         }
+
+        if (tvAddData.text.isNullOrEmpty() && tvAddVoice.text.isNullOrEmpty() && tvAddSMS.text.isNullOrEmpty()) {
+            addHolder.visibility = View.GONE
+        }
+
 
         val attributesInfo = attrs?.filter { it.name == "Информация о тарифе" }
 
