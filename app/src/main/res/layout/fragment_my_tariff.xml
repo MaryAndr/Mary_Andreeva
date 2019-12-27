@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="56dp"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/mainConstraint"
@@ -56,7 +56,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/guideline25"
                         app:layout_constraintStart_toStartOf="@+id/guideline24"
-                        app:layout_constraintTop_toBottomOf="@+id/textView13"
+                        app:layout_constraintTop_toBottomOf="@+id/tvLeftoversTitle"
                         app:layout_constraintVertical_bias="0.0">
 
                         <TextView
@@ -521,7 +521,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
-                        android:id="@+id/textView13"
+                        android:id="@+id/tvLeftoversTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="30dp"
@@ -710,7 +710,6 @@
                         android:id="@+id/tvTariffRate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="TextView"
                         android:textColor="#000000"
                         android:textSize="20sp"
                         android:textStyle="bold"

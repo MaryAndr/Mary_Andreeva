@@ -44,12 +44,21 @@ class IndicatorsAdapter(val indicatorsModels: MutableList<IndicatorHolder>, val 
                         indicatorsModels[position].rest!!
                     ).unit}"
                 holder.tvconditionTotal.text =
-                    "${StringUtils().unitValueConverter(indicatorsModels[position].total!!).value} ${StringUtils().unitValueConverter(
+                    "из ${StringUtils().unitValueConverter(indicatorsModels[position].total!!).value} ${StringUtils().unitValueConverter(
                         indicatorsModels[position].total!!
                     ).unit}"
             } else {
-                holder.tvConditionRest.text = indicatorsModels[position].rest.toString()
-                holder.tvconditionTotal.text = indicatorsModels[position].total.toString()
+                    if (indicatorsModels[position].type == "VOICE") {
+                        holder.tvConditionRest.text =
+                            indicatorsModels[position].rest.toString() + " Мин"
+                        holder.tvconditionTotal.text =
+                            "из ${indicatorsModels[position].total.toString()} Мин"
+                    } else if (indicatorsModels[position].type == "SMS") {
+                        holder.tvConditionRest.text =
+                            indicatorsModels[position].rest.toString() + " SMS"
+                        holder.tvconditionTotal.text =
+                            "из ${indicatorsModels[position].total.toString()} SMS"
+                    }
             }
             holder.pbCondition.progress = indicatorsModels[position].percent!!
         }

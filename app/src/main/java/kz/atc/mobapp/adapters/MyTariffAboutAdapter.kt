@@ -78,10 +78,11 @@ class MyTariffAboutAdapter(val catalogTariff: CatalogTariffResponse, val context
         if (match.isNotEmpty()) {
             holder.tvName.text = match.first()
             holder.tvDescription.text =
-                attributes[position]?.param.substring(attributes[position]?.param.indexOf(match.first()) + match.first().length).trim()
+                attributes[position]?.param.substring(attributes[position]?.param.indexOf(match.first()) + match.first().length)
+                    .trim()
         } else {
             holder.tvDescription.visibility = View.GONE
-            holder.tvName.text =  attributes[position]?.param
+            holder.tvName.text = attributes[position]?.param
         }
 //        holder.tvName.text = attributes[position]?.name
 //        holder.tvDescription.text = attributes[position]?.notice
@@ -92,9 +93,10 @@ class MyTariffAboutAdapter(val catalogTariff: CatalogTariffResponse, val context
 //                context.resources.displayMetrics
 //            )
 //        }
+        val value =
+            attributes[position]?.value.orEmpty() + " " + attributes[position]?.unit.orEmpty()
 
-        holder.tvValue.text =
-            attributes[position]?.value.orEmpty() + attributes[position]?.unit.orEmpty()
+        holder.tvValue.text = value.trim()
     }
 
 

@@ -320,7 +320,7 @@ class SubscriberInteractor(ctx: Context) {
                             100,
                             false,
                             optionsName = name,
-                            type = "DATA"
+                            type = "VOICE"
                         )
                         voiceIndicators.add(indicatorData)
                     }
@@ -334,7 +334,7 @@ class SubscriberInteractor(ctx: Context) {
                             100,
                             false,
                             optionsName = name,
-                            type = "DATA"
+                            type = "VOICE"
                         )
                         voiceIndicators.add(indicatorData)
                     }
@@ -351,7 +351,7 @@ class SubscriberInteractor(ctx: Context) {
                             100,
                             false,
                             optionsName = name,
-                            type = "DATA"
+                            type = "SMS"
                         )
                         smsIndicators.add(indicatorData)
                     }
@@ -365,7 +365,7 @@ class SubscriberInteractor(ctx: Context) {
                             100,
                             false,
                             optionsName = name,
-                            type = "DATA"
+                            type = "SMS"
                         )
                         smsIndicators.add(indicatorData)
                     }
@@ -430,7 +430,7 @@ class SubscriberInteractor(ctx: Context) {
                             rest,
                             total,
                             MathUtils().calculatePercent(rest, total),
-                            false, optionsName = name, dueDate = dueDate
+                            false, optionsName = name, dueDate = dueDate, type = "VOICE"
                         )
                     } else {
                         IndicatorHolder(
@@ -439,7 +439,8 @@ class SubscriberInteractor(ctx: Context) {
                             0,
                             false,
                             optionsName = name,
-                            dueDate = dueDate
+                            dueDate = dueDate,
+                            type = "VOICE"
                         )
                     }
                     voiceIndicators.add(indicatorData)
@@ -463,7 +464,7 @@ class SubscriberInteractor(ctx: Context) {
                             rest,
                             total,
                             MathUtils().calculatePercent(rest, total),
-                            false, optionsName = name, dueDate = dueDate
+                            false, optionsName = name, dueDate = dueDate, type = "SMS"
                         )
                     } else {
                         IndicatorHolder(
@@ -472,7 +473,8 @@ class SubscriberInteractor(ctx: Context) {
                             0,
                             false,
                             optionsName = name,
-                            dueDate = dueDate
+                            dueDate = dueDate,
+                            type = "SMS"
                         )
                     }
                     smsIndicators.add(indicatorData)

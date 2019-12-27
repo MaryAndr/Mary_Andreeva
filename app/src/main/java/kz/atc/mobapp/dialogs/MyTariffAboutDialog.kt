@@ -73,7 +73,7 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
 
         val attrs = data.catalogTariff?.tariffs?.first()?.attributes
 
-        val isSubFee = attrs?.firstOrNull { it.system_name == "subscription_fee" }?.value == "1"
+        val isSubFee = attrs?.firstOrNull { it.system_name == "subscription_fee" }?.value != "0"
 
         pdfDownload.setOnClickListener {
             Log.d("OnClick", "Triggered")
@@ -99,19 +99,43 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
         }
 
         if (isSubFee) {
-            tvAddData.text =
-                attrs?.firstOrNull { it.system_name == "internet_gb_count" }?.value.orEmpty() + attrs?.firstOrNull { it.system_name == "internet_gb_count" }?.unit.orEmpty()
-            tvAddVoice.text =
-                attrs?.firstOrNull { it.system_name == "minutes_count" }?.value.orEmpty() + attrs?.firstOrNull { it.system_name == "minutes_count" }?.unit.orEmpty()
-            tvAddSMS.text =
-                attrs?.firstOrNull { it.system_name == "sms_count" }?.value.orEmpty() + attrs?.firstOrNull { it.system_name == "sms_count" }?.unit.orEmpty()
+            if (!attrs?.firstOrNull { it.system_name == "internet_gb_count" }?.value?.orEmpty().isNullOrEmpty()) {
+                tvAddData.text =
+                    attrs?.firstOrNull { it.system_name == "internet_gb_count" }?.value.orEmpty()  + " " + attrs?.firstOrNull { it.system_name == "internet_gb_count" }?.unit.orEmpty()
+            } else {
+                tvAddData.text = null
+            }
+            if (!attrs?.firstOrNull { it.system_name == "minutes_count" }?.value?.orEmpty().isNullOrEmpty()) {
+                tvAddVoice.text =
+                    attrs?.firstOrNull { it.system_name == "minutes_count" }?.value.orEmpty() + " Мин"
+            } else {
+                tvAddVoice.text = null
+            }
+            if (!attrs?.firstOrNull { it.system_name == "sms_count" }?.value?.orEmpty().isNullOrEmpty()) {
+                tvAddSMS.text =
+                    attrs?.firstOrNull { it.system_name == "sms_count" }?.value.orEmpty() + " SMS"
+            } else {
+                tvAddSMS.text = null
+            }
         } else {
-            tvAddData.text =
-                attrs?.firstOrNull { it.system_name == "internet_mb_cost" }?.value.orEmpty() + attrs?.firstOrNull { it.system_name == "internet_mb_cost" }?.unit.orEmpty()
-            tvAddVoice.text =
-                attrs?.firstOrNull { it.system_name == "minute_cost" }?.value.orEmpty() + attrs?.firstOrNull { it.system_name == "minute_cost" }?.unit.orEmpty()
-            tvAddSMS.text =
-                attrs?.firstOrNull { it.system_name == "sms_cost" }?.value.orEmpty() + attrs?.firstOrNull { it.system_name == "sms_cost" }?.unit.orEmpty()
+            if (!attrs?.firstOrNull { it.system_name == "internet_mb_cost" }?.value?.orEmpty().isNullOrEmpty()) {
+                tvAddData.text =
+                    attrs?.firstOrNull { it.system_name == "internet_mb_cost" }?.value.orEmpty() + " " + attrs?.firstOrNull { it.system_name == "internet_mb_cost" }?.unit.orEmpty()
+            } else {
+                tvAddData.text = null
+            }
+            if (!attrs?.firstOrNull { it.system_name == "minute_cost" }?.value?.orEmpty().isNullOrEmpty()) {
+                tvAddVoice.text =
+                    attrs?.firstOrNull { it.system_name == "minute_cost" }?.value.orEmpty() + " Мин"
+            } else {
+                tvAddVoice.text = null
+            }
+            if (!attrs?.firstOrNull { it.system_name == "sms_cost" }?.value?.orEmpty().isNullOrEmpty()) {
+                tvAddSMS.text =
+                    attrs?.firstOrNull { it.system_name == "sms_cost" }?.value.orEmpty() + " SMS"
+            } else {
+                tvAddSMS.text = null
+            }
         }
 
         if (attrs?.firstOrNull { it.system_name == "subscription_fee" } != null && attrs?.firstOrNull { it.system_name == "subscription_fee" }?.value != "0") {
@@ -195,7 +219,7 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
         when (requestCode) {
             DownloadHelper().permissionCode -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    DownloadHelper().performDownload(PDF_URL, tariffName,activity!!)
+                    DownloadHelper().performDownload(PDF_URL, tariffName, activity!!)
                 } else {
                     Toast.makeText(
                         context,

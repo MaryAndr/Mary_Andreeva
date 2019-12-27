@@ -56,11 +56,10 @@ class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val con
 
         holder.tvName.text = items?.get(position)?.serviceName
         holder.tvDescription.text = items?.get(position)?.description
-        holder.tvValue.text = items?.get(position)?.price
+        holder.tvValue.text = items?.get(position)?.price + " ${context.resources.getString(R.string.rub_value)}/сутки"
         holder.tgButton.isChecked = true
         if (holder.tgButton.isEnabled) {
-
-            holder.tgButton.setOnCheckedChangeListener { view, isChecked ->
+            holder.tgButton.setOnCheckedChangeListener { _, _ ->
                 myCompositeDisposable?.add(
                     services.subService.deleteService(items?.get(position)?.id)
                         .observeOn(AndroidSchedulers.mainThread())

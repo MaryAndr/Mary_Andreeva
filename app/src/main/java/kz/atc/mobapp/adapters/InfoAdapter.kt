@@ -27,7 +27,7 @@ class InfoAdapter(val context: Context, val items: List<Attribute>) : RecyclerVi
 
     override fun onBindViewHolder(holder: InfoViewHolder, position: Int) {
         holder.tvInfoName.text = items[position].param
-        holder.tvInfoValue.text = items[position].value + items[position].unit.orEmpty()
+        holder.tvInfoValue.text = items[position].value + " " + items[position].unit.orEmpty()
     }
 }
 
