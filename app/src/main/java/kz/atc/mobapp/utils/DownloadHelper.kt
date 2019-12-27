@@ -10,11 +10,14 @@ import android.os.Build
 import android.os.Environment
 import android.util.Log
 import android.webkit.URLUtil
-import java.lang.Exception
+
+
+
 
 class DownloadHelper {
 
     val permissionCode = 1000
+
 
     fun performDownload(url: String, tariffName: String, activity: Activity) {
         try {

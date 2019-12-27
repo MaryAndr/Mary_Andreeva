@@ -309,6 +309,68 @@ class SubscriberInteractor(ctx: Context) {
                     }
 
                 }
+                it.type == "VOICE" -> {
+                    if (it.amount != null && it.amount > 0) {
+                        val rest = it.amount
+                        val total = it.amount
+                        val name = "Перенесенные остатки"
+                        var indicatorData = IndicatorHolder(
+                            rest,
+                            total,
+                            100,
+                            false,
+                            optionsName = name,
+                            type = "VOICE"
+                        )
+                        voiceIndicators.add(indicatorData)
+                    }
+                    if (it.exchange != null && it.exchange > 0) {
+                        val rest = it.exchange.toInt()
+                        val total = it.exchange.toInt()
+                        val name = "Количество обменянных Мин."
+                        var indicatorData = IndicatorHolder(
+                            rest,
+                            total,
+                            100,
+                            false,
+                            optionsName = name,
+                            type = "VOICE"
+                        )
+                        voiceIndicators.add(indicatorData)
+                    }
+
+                }
+                it.type == "SMS" -> {
+                    if (it.amount != null && it.amount > 0) {
+                        val rest = it.amount
+                        val total = it.amount
+                        val name = "Перенесенные остатки"
+                        var indicatorData = IndicatorHolder(
+                            rest,
+                            total,
+                            100,
+                            false,
+                            optionsName = name,
+                            type = "SMS"
+                        )
+                        smsIndicators.add(indicatorData)
+                    }
+                    if (it.exchange != null && it.exchange > 0) {
+                        val rest = it.exchange.toInt()
+                        val total = it.exchange.toInt()
+                        val name = "Количество обменянных SMS"
+                        var indicatorData = IndicatorHolder(
+                            rest,
+                            total,
+                            100,
+                            false,
+                            optionsName = name,
+                            type = "SMS"
+                        )
+                        smsIndicators.add(indicatorData)
+                    }
+
+                }
             }
         }
 
@@ -368,7 +430,7 @@ class SubscriberInteractor(ctx: Context) {
                             rest,
                             total,
                             MathUtils().calculatePercent(rest, total),
-                            false, optionsName = name, dueDate = dueDate
+                            false, optionsName = name, dueDate = dueDate, type = "VOICE"
                         )
                     } else {
                         IndicatorHolder(
@@ -377,7 +439,8 @@ class SubscriberInteractor(ctx: Context) {
                             0,
                             false,
                             optionsName = name,
-                            dueDate = dueDate
+                            dueDate = dueDate,
+                            type = "VOICE"
                         )
                     }
                     voiceIndicators.add(indicatorData)
@@ -401,7 +464,7 @@ class SubscriberInteractor(ctx: Context) {
                             rest,
                             total,
                             MathUtils().calculatePercent(rest, total),
-                            false, optionsName = name, dueDate = dueDate
+                            false, optionsName = name, dueDate = dueDate, type = "SMS"
                         )
                     } else {
                         IndicatorHolder(
@@ -410,7 +473,8 @@ class SubscriberInteractor(ctx: Context) {
                             0,
                             false,
                             optionsName = name,
-                            dueDate = dueDate
+                            dueDate = dueDate,
+                            type = "SMS"
                         )
                     }
                     smsIndicators.add(indicatorData)

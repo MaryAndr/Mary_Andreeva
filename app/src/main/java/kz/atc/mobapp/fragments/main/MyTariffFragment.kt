@@ -32,9 +32,6 @@ import kz.atc.mobapp.utils.TextConverter
 import kz.atc.mobapp.utils.TimeUtils
 import kz.atc.mobapp.views.main.MyTariffView
 
-/**
- * A simple [Fragment] subclass.
- */
 class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
     MyTariffView {
 
@@ -50,11 +47,15 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
     }
 
 
-
     override fun render(state: MyTariffState) {
         when {
             state.mainDataLoaded -> {
                 pgMainData.visibility = View.GONE
+                if(state.mainData?.indicatorModels?.dataIndicators?.size == 0 &&
+                    state.mainData?.indicatorModels?.voiceIndicators?.size == 0 &&
+                    state.mainData?.indicatorModels?.smsIndicators?.size == 0) {
+                    tvLeftoversTitle.visibility = View.GONE
+                }
                 renderMainData(state)
                 mainDataHolder.visibility = View.VISIBLE
             }
@@ -74,11 +75,13 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
     }
 
 
-
     private fun renderMainData(state: MyTariffState) {
         val subTariff = state.mainData?.subscriberTariff
         val catalogTariff = state.mainData?.catalogTariff
-
+        val isSubFee =
+            catalogTariff?.tariffs?.first()?.attributes?.firstOrNull { it.system_name == "subscription_fee" }?.value != "0"
+        var subFee = ""
+        var period = ""
 
         aboutData = MyTariffAboutData(subTariff, catalogTariff)
         tvTariffName.text = subTariff?.tariff?.name
@@ -88,6 +91,7 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
                 subTariff?.constructor?.data,
                 subTariff?.constructor?.sms
             )
+
         } else {
             val shortDesc: String? =
                 catalogTariff?.tariffs?.first()
@@ -96,10 +100,41 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
             tvTariffCondition.text = shortDesc
         }
 
-        tvTariffRate.text = catalogTariff?.tariffs?.first()
-            ?.attributes?.firstOrNull { pred -> pred.system_name == "write_off_period" }
-            ?.value
-        tvTariffDate.text = "Списание ${TimeUtils().changeFormat(subTariff?.charge_date!!, "yyyy-MM-dd", "dd.MM.yyyy")}"
+        if (subTariff?.tariff?.id !in mutableListOf(14, 26, 27, 28)) {
+            if (isSubFee) {
+                subFee = catalogTariff?.tariffs?.first()
+                    ?.attributes?.firstOrNull { it.system_name == "subscription_fee" }
+                    ?.value.toString()
+            }
+        } else {
+            subFee = subTariff?.constructor?.abon.toString()
+        }
+
+        if (!subFee.isNullOrEmpty()) {
+
+            if (catalogTariff?.tariffs?.first()
+                    ?.attributes?.firstOrNull { pred -> pred.system_name == "write_off_period" }
+                    ?.value == "Ежемесячно"
+            ) {
+                period = " ${resources.getString(R.string.rub_value)}/месяц"
+            } else if (catalogTariff?.tariffs?.first()
+                    ?.attributes?.firstOrNull { pred -> pred.system_name == "write_off_period" }
+                    ?.value == "Посуточно"
+            ) {
+                period = " ${resources.getString(R.string.rub_value)}/сутки"
+            }
+            tvTariffRate.text = subFee + period
+        }
+
+        if (subTariff?.charge_date != null) {
+            tvTariffDate.text = "Списание ${TimeUtils().changeFormat(
+                subTariff?.charge_date!!,
+                "yyyy-MM-dd",
+                "dd.MM.yyyy"
+            )}"
+        } else {
+            tvTariffDate.visibility = View.GONE
+        }
         addedRecyclerView.layoutManager = LinearLayoutManager(context!!)
         addedRecyclerView.adapter =
             MyTariffServicesAdapter(state.mainData?.servicesList, context!!)
