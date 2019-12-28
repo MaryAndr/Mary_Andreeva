@@ -6,5 +6,6 @@ data class ServicesListResponse(
     val name: String,
     val price: Double,
     val status: Status,
-    val unlock: Boolean
+    val unlock: Boolean,
+    val priceOn: Double
 )

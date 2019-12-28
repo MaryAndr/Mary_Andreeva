@@ -8,12 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hannesdorfmann.mosby3.mvi.MviFragment
+import com.jakewharton.rxbinding2.widget.RxCompoundButton
+import com.jakewharton.rxbinding2.widget.RxRadioGroup
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_services.*
 
 import kz.atc.mobapp.R
 import kz.atc.mobapp.adapters.EnabledServicesAdapter
+import kz.atc.mobapp.adapters.ExpandableServiceAdapter
+import kz.atc.mobapp.models.main.ServicesListShow
 import kz.atc.mobapp.presenters.main.ServicesPresenter
 import kz.atc.mobapp.states.main.ServicesState
 import kz.atc.mobapp.views.main.ServicesPageView
@@ -25,24 +29,51 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
 
     override fun createPresenter() = ServicesPresenter(context!!)
 
-    private lateinit var enabledServicesTrigger: BehaviorSubject<Int>
+    override fun showEnabledServiceIntent(): Observable<Boolean> {
+        return RxRadioGroup.checkedChanges(servicesGroup)
+            .flatMap {
+                if(it == R.id.activeButton) {
+                    Observable.just(true)
+                } else {
+                    Observable.just(false)
+                }
+            }
 
-    override fun showEnabledServiceIntent(): Observable<Int> {
-        return enabledServicesTrigger
     }
 
     override fun render(state: ServicesState) {
         when(state) {
             is ServicesState.FetchEnabledService -> {
+                allServicesLayout.visibility = View.GONE
+                addedServicesLayout.visibility = View.VISIBLE
+                allButton.isChecked = false
+                activeButton.isChecked = true
                 servicesList.layoutManager = LinearLayoutManager(context!!)
                 servicesList.adapter = EnabledServicesAdapter(context!!, state.servicesList)
+                (servicesList.adapter as EnabledServicesAdapter).notifyDataSetChanged()
+            }
+            is ServicesState.FetchAllService -> {
+                allServicesLayout.visibility = View.VISIBLE
+                addedServicesLayout.visibility = View.GONE
+                allButton.isChecked = true
+                activeButton.isChecked = false
+                val titles = state.servicesList.distinctBy { it.category }.map { it.category }
+                val mapOfServices = mutableMapOf<String, MutableList<ServicesListShow>>()
+                titles.forEach{title ->
+                    mapOfServices[title!!] = state.servicesList.filter { it.category == title }.toMutableList()
+                }
+                val adapter = ExpandableServiceAdapter(context!!,titles,mapOfServices)
+                allServicesList.setAdapter(adapter)
+                servicesList.layoutManager = LinearLayoutManager(context!!)
+                servicesList.adapter = EnabledServicesAdapter(context!!, state.servicesList)
+                (servicesList.adapter as EnabledServicesAdapter).notifyDataSetChanged()
             }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enabledServicesTrigger = BehaviorSubject.create()
+
     }
 
     override fun onCreateView(
@@ -55,7 +86,6 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        enabledServicesTrigger.onNext(1)
     }
 
 

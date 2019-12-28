@@ -6,7 +6,7 @@ import kz.atc.mobapp.states.main.ServicesState
 
 interface ServicesPageView : MvpView {
 
-    fun showEnabledServiceIntent() : Observable<Int>
+    fun showEnabledServiceIntent() : Observable<Boolean>
 
     fun render(state: ServicesState)
 }

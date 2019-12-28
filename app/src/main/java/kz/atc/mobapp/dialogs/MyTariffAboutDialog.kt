@@ -13,7 +13,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.tonyodev.fetch2.Download
 import kotlinx.android.synthetic.main.my_tariff_about_dialog.*
 import kz.atc.mobapp.R
 import kz.atc.mobapp.adapters.InfoAdapter
@@ -21,10 +20,6 @@ import kz.atc.mobapp.adapters.MyTariffAboutAdapter
 import kz.atc.mobapp.models.main.MyTariffAboutData
 import kz.atc.mobapp.utils.DownloadHelper
 import kz.atc.mobapp.utils.TextConverter
-import com.tonyodev.fetch2.Fetch
-import com.tonyodev.fetch2.FetchConfiguration
-import com.tonyodev.fetch2.Request
-import com.tonyodev.fetch2core.Func
 import kz.atc.mobapp.listeners.MyFetchListener
 
 
@@ -32,7 +27,6 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
 
     private lateinit var PDF_URL: String
     private lateinit var tariffName: String
-    private lateinit var fetch: Fetch
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
     android:background="@drawable/item_shape"
     android:orientation="vertical">
 
@@ -26,8 +27,8 @@
         <ToggleButton
             android:id="@+id/tgService"
             style="?android:attr/borderlessButtonStyle"
-            android:layout_width="58dp"
-            android:layout_height="35dp"
+            android:layout_width="40dp"
+            android:layout_height="24dp"
             android:background="@drawable/toggle_selector"
             android:text=""
             android:textOff=""
@@ -44,7 +45,7 @@
 
         <TextView
             android:id="@+id/tvDescription"
-            android:layout_width="250dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="круглосуточный безлимит на Интернет" />
     </LinearLayout>

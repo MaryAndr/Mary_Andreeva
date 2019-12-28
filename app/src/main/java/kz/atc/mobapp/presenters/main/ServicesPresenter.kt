@@ -15,8 +15,16 @@ class ServicesPresenter (val ctx: Context) : MviBasePresenter<ServicesPageView, 
 
     override fun bindIntents() {
         val fetchEnabledServicesIntent : Observable<ServicesState> =
-            intent(ServicesPageView::showEnabledServiceIntent).flatMap {
-                subService.getEnabledServices().subscribeOn(Schedulers.io())
+            intent(ServicesPageView::showEnabledServiceIntent).flatMap { isExistOnSub ->
+                subService.getEnabledServices(isExistOnSub)
+                    .flatMap {
+                        if (isExistOnSub) {
+                            Observable.just(ServicesState.FetchEnabledService(it))
+                        } else {
+                            Observable.just(ServicesState.FetchAllService(it))
+                        }
+                    }
+                    .subscribeOn(Schedulers.io())
             }
 
         val allIntents = fetchEnabledServicesIntent

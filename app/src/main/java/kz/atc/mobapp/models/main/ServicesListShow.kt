@@ -6,9 +6,11 @@ data class ServicesListShow(
     var description: String? = null,
     var price: String? = null,
     var rate: String? = null,
-    var toggleState: ToggleButtonState? = null
+    var isExistOnSub: Boolean = false,
+    var toggleState: ToggleButtonState? = ToggleButtonState.ActiveAndEnabled,
+    var category: String? = null
 )
 
-enum class ToggleButtonState{
-    ActiveAndEnabled, ActiveAndDisabled, InaactiveAndEnabled, InactiveAndDisabled
+enum class ToggleButtonState(state: Int){
+    ActiveAndEnabled(0), ActiveAndDisabled(1), InactiveAndEnabled(2)
 }

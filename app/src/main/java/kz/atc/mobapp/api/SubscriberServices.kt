@@ -46,6 +46,9 @@ interface SubscriberServices {
     @GET("/lk/v1/subscriber/services")
     fun getServicesList() : Observable<List<ServicesListResponse>>
 
+    @GET("/lk/v1/subscriber/services/available")
+    fun getAllServicesList() : Observable<List<ServicesListResponse>>
+
     @DELETE("/lk/v1/subscriber/services/service/{serv_id}")
     fun deleteService(@Path("serv_id") servId: String?) : Observable<DeleteServiceResponse>
 

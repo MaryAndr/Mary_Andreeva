@@ -39,42 +39,91 @@ class SubscriberInteractor(ctx: Context) {
         )
 
 
-    fun getEnabledServices(): Observable<ServicesState> {
+    fun getEnabledServices(isExist: Boolean): Observable<MutableList<ServicesListShow>> {
         val subInfo = subService.getSubInfo().onErrorReturn {
             null
         }
 
-        val subService = subService.getServicesList()
+        val subServices = subService.getServicesList().onErrorReturn { mutableListOf() }
 
+        val subAllService = if (isExist) {
+            Observable.just(mutableListOf<ServicesListResponse>())
+        } else {
+            subService.getAllServicesList().onErrorReturn { mutableListOf() }
+        }
 
         return Observable.combineLatest(
             subInfo,
-            subService,
-            BiFunction { subInfoResponse, subServiceResponse ->
+            subServices,
+            subAllService,
+            Function3 { subInfoResponse, subServiceResponse, subAllServiceResponse ->
 
                 val servicesList: MutableList<ServicesListShow> = mutableListOf()
 
+
+                val subServicesIds = when {
+                    !isExist && subAllServiceResponse.isNotEmpty()-> "${subServiceResponse.joinToString { it.id.toString() }},${subAllServiceResponse.joinToString { it.id.toString() }}"
+                    else -> subServiceResponse.joinToString { it.id.toString() }
+                }
+
                 userService.getCatalogService(
-                    subServiceResponse.joinToString { it.id.toString() },
+                    subServicesIds,
                     mapOfRegions[subInfoResponse.region.id]
                 ).map<MutableList<ServicesListShow>> { catResp ->
                     catResp.services.forEach {
                         val serviceShow = ServicesListShow()
+                        val subServicesListInstance = subServiceResponse.firstOrNull{ pred -> pred.id == it.id }
+                        val subServicesAllListInstance = subAllServiceResponse.firstOrNull{ pred -> pred.id == it.id }
                         serviceShow.id = it.id.toString()
-                        serviceShow.serviceName =
-                            subServiceResponse.first { pred -> pred.id == it.id }.name
-                        serviceShow.description =
-                            it.attributes.first { predicate -> predicate.system_name == "short_description" }
-                                ?.value.orEmpty()
-                        serviceShow.price =
-                            subServiceResponse.first { pred -> pred.id == it.id }.price.toString()
-                        servicesList.add(serviceShow)
+                        if (subServicesListInstance != null) {
+                            serviceShow.serviceName =
+                                subServicesListInstance.name
+                            serviceShow.description =
+                                it.attributes.first { predicate -> predicate.system_name == "short_description" }
+                                    ?.value.orEmpty()
+                            serviceShow.price =
+                                subServicesListInstance
+                                    .price.toString()
+                            if (subServicesListInstance.unlock) {
+                                serviceShow.toggleState = ToggleButtonState.ActiveAndEnabled
+                            } else {
+                                serviceShow.toggleState = ToggleButtonState.ActiveAndDisabled
+                            }
+                            serviceShow.category =
+                                it.attributes.firstOrNull { pred -> pred.system_name == "main_category" }
+                                    ?.value
+                            serviceShow.isExistOnSub = true
+
+                            servicesList.add(serviceShow)
+                        }
+                        if (subServicesAllListInstance != null) {
+                            serviceShow.serviceName =
+                                subServicesAllListInstance.name
+                            serviceShow.description =
+                                it.attributes.first { predicate -> predicate.system_name == "short_description" }
+                                    ?.value.orEmpty()
+                            serviceShow.price =
+                                subServicesAllListInstance
+                                    .price.toString()
+                            if (subServicesAllListInstance.unlock) {
+                                serviceShow.toggleState = ToggleButtonState.ActiveAndEnabled
+                            } else {
+                                serviceShow.toggleState = ToggleButtonState.ActiveAndDisabled
+                            }
+                            serviceShow.category =
+                                it.attributes.firstOrNull { pred -> pred.system_name == "main_category" }
+                                    ?.value
+                            serviceShow.isExistOnSub = false
+
+                            servicesList.add(serviceShow)
+                        }
                     }
                     servicesList
                 }.blockingFirst()
 
-                ServicesState.FetchEnabledService(servicesList)
+                servicesList
             })
+
     }
 
 
