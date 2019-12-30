@@ -52,6 +52,9 @@ interface SubscriberServices {
     @DELETE("/lk/v1/subscriber/services/service/{serv_id}")
     fun deleteService(@Path("serv_id") servId: String?) : Observable<DeleteServiceResponse>
 
+    @POST("/lk/v1/subscriber/services/service/{serv_id}")
+    fun activateService(@Path("serv_id") servId: String?) : Observable<DeleteServiceResponse>
+
     companion object {
         fun create(ctx: Context): SubscriberServices {
             val logging = HttpLoggingInterceptor()

@@ -22,7 +22,7 @@ import kz.atc.mobapp.utils.DownloadHelper
 import kz.atc.mobapp.utils.TextConverter
 import kz.atc.mobapp.listeners.MyFetchListener
 
-
+//TODO: Необходимо переписать под MVI архитектуру, используя абстрактный класс BaseBottomDialogMVI
 class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragment() {
 
     private lateinit var PDF_URL: String
@@ -32,7 +32,7 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
         super.onCreate(savedInstanceState)
 
         if (data.catalogTariff?.tariffs != null && data.catalogTariff?.tariffs.isNotEmpty() && data.catalogTariff.tariffs.first()
-                .attributes.first { pred -> pred.system_name == "description_url" } != null
+                .attributes.firstOrNull { pred -> pred.system_name == "description_url" } != null
         ) {
             PDF_URL = data.catalogTariff.tariffs.first()
                 .attributes.first { pred -> pred.system_name == "description_url" }.value

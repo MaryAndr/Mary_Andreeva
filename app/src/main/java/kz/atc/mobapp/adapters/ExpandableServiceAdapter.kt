@@ -8,9 +8,15 @@ import android.widget.BaseExpandableListAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.ToggleButton
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.services_item.view.*
 import kz.atc.mobapp.R
+import kz.atc.mobapp.dialogs.ServiceConfirmationDialogMVI
+import kz.atc.mobapp.models.main.ServiceDialogModel
 import kz.atc.mobapp.models.main.ServicesListShow
+import kz.atc.mobapp.models.main.ToggleButtonState
+import kz.atc.mobapp.utils.TimeUtils
+import java.util.*
 
 class ExpandableServiceAdapter internal constructor(
     private val context: Context,
@@ -88,7 +94,53 @@ class ExpandableServiceAdapter internal constructor(
         }
 
         viewHolder.tvInfoName?.text = child.serviceName
+        viewHolder.tvInfoValue?.text = child.description
+        viewHolder.tvPrice?.text = child.price + "/" + child.interval
 
+        when(child.toggleState) {
+            ToggleButtonState.ActiveAndDisabled -> {
+                viewHolder.tgService.isChecked = true
+                viewHolder.tgService.isEnabled = false
+            }
+            ToggleButtonState.ActiveAndEnabled -> {
+                viewHolder.tgService.isChecked = true
+                viewHolder.tgService.isEnabled = true
+                viewHolder.tgService.setOnCheckedChangeListener { compoundButton, isChecked ->
+                    if(!isChecked) {
+                        val dataToPass = ServiceDialogModel()
+                        dataToPass.serv_name = child.serviceName
+                        dataToPass.serv_id = child.id
+                        dataToPass.isConnection = false
+                        dataToPass.itemHolder = child
+                        dataToPass.conDate = TimeUtils().dateToString(Calendar.getInstance())
+                        val dialog = ServiceConfirmationDialogMVI.newInstance(dataToPass)
+                        dialog.show(
+                            (context as AppCompatActivity).supportFragmentManager,
+                            "Accept Dialog"
+                        )
+                    }
+                }
+            }
+            ToggleButtonState.InactiveAndEnabled -> {
+                viewHolder.tgService.isChecked = false
+                viewHolder.tgService.isEnabled = true
+                viewHolder.tgService.setOnCheckedChangeListener { compoundButton, isChecked ->
+                    if(isChecked) {
+                        val dataToPass = ServiceDialogModel()
+                        dataToPass.serv_name = child.serviceName
+                        dataToPass.serv_id = child.id
+                        dataToPass.isConnection = true
+                        dataToPass.itemHolder = child
+                        dataToPass.conDate = TimeUtils().dateToString(Calendar.getInstance())
+                        val dialog = ServiceConfirmationDialogMVI.newInstance(dataToPass)
+                        dialog.show(
+                            (context as AppCompatActivity).supportFragmentManager,
+                            "Accept Dialog"
+                        )
+                    }
+                }
+            }
+        }
 
         return rowView as View
 
@@ -102,9 +154,10 @@ class ExpandableServiceAdapter internal constructor(
         return titleList.size
     }
 
-    private class ChildViewHolder(view: View?) {
+    class ChildViewHolder(view: View?) {
         val tvInfoName = view?.findViewById(R.id.tvServiceName) as TextView
-        val tvInfoValue = view?.tvDescription
+        val tvInfoValue = view?.findViewById(R.id.tvDescription) as TextView
+        val tvPrice = view?.findViewById(R.id.tvPriceRate) as TextView
         val tgService = view?.findViewById(R.id.tgService) as ToggleButton
     }
 

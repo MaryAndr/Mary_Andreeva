@@ -29,6 +29,16 @@
                 app:layout_constraintVertical_bias="0.0" />
 
             <ImageView
+                android:id="@+id/imageView10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_rectangle_dialog"
+                app:layout_constraintBottom_toTopOf="@+id/title"
+                app:layout_constraintEnd_toStartOf="@+id/guideline27"
+                app:layout_constraintStart_toStartOf="@+id/guideline26"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
                 android:id="@+id/ivClose"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
@@ -376,16 +386,6 @@
                         android:text="Скачать информацию о тарифе" />
                 </LinearLayout>
             </LinearLayout>
-
-            <ImageView
-                android:id="@+id/imageView10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_rectangle_dialog"
-                app:layout_constraintBottom_toTopOf="@+id/title"
-                app:layout_constraintEnd_toStartOf="@+id/guideline27"
-                app:layout_constraintStart_toStartOf="@+id/guideline26"
-                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/subBase"

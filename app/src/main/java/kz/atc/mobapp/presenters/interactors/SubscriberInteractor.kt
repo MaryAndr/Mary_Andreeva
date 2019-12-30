@@ -62,7 +62,7 @@ class SubscriberInteractor(ctx: Context) {
 
 
                 val subServicesIds = when {
-                    !isExist && subAllServiceResponse.isNotEmpty()-> "${subServiceResponse.joinToString { it.id.toString() }},${subAllServiceResponse.joinToString { it.id.toString() }}"
+                    !isExist && subAllServiceResponse.isNotEmpty() -> "${subServiceResponse.joinToString { it.id.toString() }},${subAllServiceResponse.joinToString { it.id.toString() }}"
                     else -> subServiceResponse.joinToString { it.id.toString() }
                 }
 
@@ -72,8 +72,10 @@ class SubscriberInteractor(ctx: Context) {
                 ).map<MutableList<ServicesListShow>> { catResp ->
                     catResp.services.forEach {
                         val serviceShow = ServicesListShow()
-                        val subServicesListInstance = subServiceResponse.firstOrNull{ pred -> pred.id == it.id }
-                        val subServicesAllListInstance = subAllServiceResponse.firstOrNull{ pred -> pred.id == it.id }
+                        val subServicesListInstance =
+                            subServiceResponse.firstOrNull { pred -> pred.id == it.id }
+                        val subServicesAllListInstance =
+                            subAllServiceResponse.firstOrNull { pred -> pred.id == it.id }
                         serviceShow.id = it.id.toString()
                         if (subServicesListInstance != null) {
                             serviceShow.serviceName =
@@ -81,9 +83,22 @@ class SubscriberInteractor(ctx: Context) {
                             serviceShow.description =
                                 it.attributes.first { predicate -> predicate.system_name == "short_description" }
                                     ?.value.orEmpty()
-                            serviceShow.price =
-                                subServicesListInstance
-                                    .price.toString()
+
+                            if (subServicesListInstance.interval?.type == null) {
+                                serviceShow.price =
+                                    subServicesListInstance
+                                        .priceOn.toString()
+                            } else {
+                                serviceShow.price =
+                                    subServicesListInstance
+                                        .price.toString()
+                            }
+                            serviceShow.interval = when {
+                                subServicesListInstance.interval?.type == "day" -> "сутки"
+                                subServicesListInstance.interval?.type == "month" -> "месяц"
+                                else -> "подключение"
+                            }
+
                             if (subServicesListInstance.unlock) {
                                 serviceShow.toggleState = ToggleButtonState.ActiveAndEnabled
                             } else {
@@ -102,13 +117,25 @@ class SubscriberInteractor(ctx: Context) {
                             serviceShow.description =
                                 it.attributes.first { predicate -> predicate.system_name == "short_description" }
                                     ?.value.orEmpty()
-                            serviceShow.price =
-                                subServicesAllListInstance
-                                    .price.toString()
-                            if (subServicesAllListInstance.unlock) {
-                                serviceShow.toggleState = ToggleButtonState.ActiveAndEnabled
+
+                            if (subServicesAllListInstance.interval?.type == null) {
+                                serviceShow.price =
+                                    subServicesAllListInstance
+                                        .priceOn.toString()
                             } else {
-                                serviceShow.toggleState = ToggleButtonState.ActiveAndDisabled
+                                serviceShow.price =
+                                    subServicesAllListInstance
+                                        .price.toString()
+                            }
+                            serviceShow.interval = when {
+                                subServicesAllListInstance.interval?.type == "day" -> "сутки"
+                                subServicesAllListInstance.interval?.type == "month" -> "месяц"
+                                else -> "подключение"
+                            }
+                            if (subServicesAllListInstance.unlock) {
+                                serviceShow.toggleState = ToggleButtonState.InactiveAndEnabled
+                            } else {
+                                serviceShow.toggleState = ToggleButtonState.NotShown
                             }
                             serviceShow.category =
                                 it.attributes.firstOrNull { pred -> pred.system_name == "main_category" }
