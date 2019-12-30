@@ -4,6 +4,8 @@ data class ServicesListShow(
     var id: String? = null,
     var serviceName: String? = null,
     var description: String? = null,
+    var subFee: String? = null,
+    var activPrice: String? = null,
     var price: String? = null,
     var interval: String? = null,
     var rate: String? = null,

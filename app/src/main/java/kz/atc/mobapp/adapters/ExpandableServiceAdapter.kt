@@ -4,10 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseExpandableListAdapter
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.ToggleButton
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.services_item.view.*
 import kz.atc.mobapp.R
@@ -55,6 +52,12 @@ class ExpandableServiceAdapter internal constructor(
             viewHolder = rowView.tag as GroupViewHolder
         }
 
+        if (isExpanded) {
+            viewHolder.imgIndicator.setImageResource(R.drawable.ic_arrowup)
+        } else {
+            viewHolder.imgIndicator.setImageResource(R.drawable.ic_arrowdown)
+        }
+
         viewHolder.tvCount.text = groupCount.toString()
         viewHolder.tvGroupName.text = groupTitle
         return rowView as View
@@ -83,6 +86,7 @@ class ExpandableServiceAdapter internal constructor(
         val viewHolder: ExpandableServiceAdapter.ChildViewHolder
         val rowView: View?
         val child = getChild(groupPosition, childPosition)
+
         if (convertView == null) {
             val layoutInflater = this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             rowView = layoutInflater.inflate(R.layout.services_item, null)
@@ -93,6 +97,7 @@ class ExpandableServiceAdapter internal constructor(
             viewHolder = rowView.tag as ChildViewHolder
         }
 
+        viewHolder.tgService.setOnCheckedChangeListener(null)
         viewHolder.tvInfoName?.text = child.serviceName
         viewHolder.tvInfoValue?.text = child.description
         viewHolder.tvPrice?.text = child.price + "/" + child.interval
@@ -111,7 +116,7 @@ class ExpandableServiceAdapter internal constructor(
                         dataToPass.serv_name = child.serviceName
                         dataToPass.serv_id = child.id
                         dataToPass.isConnection = false
-                        dataToPass.itemHolder = child
+                        dataToPass.itemHolder = viewHolder
                         dataToPass.conDate = TimeUtils().dateToString(Calendar.getInstance())
                         val dialog = ServiceConfirmationDialogMVI.newInstance(dataToPass)
                         dialog.show(
@@ -130,7 +135,9 @@ class ExpandableServiceAdapter internal constructor(
                         dataToPass.serv_name = child.serviceName
                         dataToPass.serv_id = child.id
                         dataToPass.isConnection = true
-                        dataToPass.itemHolder = child
+                        dataToPass.itemHolder = viewHolder
+                        dataToPass.activationPrice = child.activPrice
+                        dataToPass.abonPay = child.subFee
                         dataToPass.conDate = TimeUtils().dateToString(Calendar.getInstance())
                         val dialog = ServiceConfirmationDialogMVI.newInstance(dataToPass)
                         dialog.show(
@@ -164,6 +171,7 @@ class ExpandableServiceAdapter internal constructor(
     private class GroupViewHolder(view: View?) {
         val tvGroupName = view?.findViewById(R.id.tvGroupName) as TextView
         val tvCount = view?.findViewById(R.id.tvCount) as TextView
+        val imgIndicator = view?.findViewById(R.id.expandImg) as ImageView
     }
 
 }

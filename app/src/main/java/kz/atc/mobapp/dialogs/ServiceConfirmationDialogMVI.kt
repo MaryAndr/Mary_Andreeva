@@ -5,9 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
+import kotlinx.android.synthetic.main.my_tariff_about_dialog.*
 import kotlinx.android.synthetic.main.service_confirmation_dialog.*
+import kotlinx.android.synthetic.main.service_confirmation_dialog.ivClose
+import kotlinx.android.synthetic.main.service_confirmation_dialog.title
 import kz.atc.mobapp.R
 import kz.atc.mobapp.adapters.ExpandableServiceAdapter
 import kz.atc.mobapp.adapters.ServicesViewHolder
@@ -38,13 +42,31 @@ class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
                     "Услуга «${data.serv_name}» успешно отключена"
                 }
                 val dialogBuilder = AlertDialog.Builder(this.context)
+                var itemHolder = when(data.itemHolder){
+                    is ExpandableServiceAdapter.ChildViewHolder -> {
+                        data.itemHolder as ExpandableServiceAdapter.ChildViewHolder
+                    }
+                    else -> {
+                        data.itemHolder as ServicesViewHolder
+                    }
+                }
                 dialogBuilder
                     .setMessage(textMessage)
                     .setPositiveButton("OK") { _, _ ->
-                        (data.itemHolder as ExpandableServiceAdapter.ChildViewHolder).tgService.isEnabled = false
+                        when(data.itemHolder){
+                            is ExpandableServiceAdapter.ChildViewHolder -> {
+                                (data.itemHolder as ExpandableServiceAdapter.ChildViewHolder).tgService.isEnabled = false
+                            }
+                            else -> {
+                                (data.itemHolder as ServicesViewHolder).tgService.isEnabled = false
+                            }
+                        }
                     }
                     .create()
                     .show()
+            }
+            is ServiceDialogState.ErrorShown -> {
+                Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -65,6 +87,14 @@ class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
 
         tvServiceName.text = data.serv_name
         tvConDateValue.text = data.conDate
+
+        tvCostValue.text = data.activationPrice + resources.getString(R.string.rub_value)
+        tvAbonValue.text = data.abonPay + resources.getString(R.string.rub_value)
+
+        ivClose.setOnClickListener {
+            dismiss()
+        }
+
 
         if (data.isConnection) {
             title.text = "Подключение услуги"

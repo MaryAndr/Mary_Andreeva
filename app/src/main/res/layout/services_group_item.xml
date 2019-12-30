@@ -39,6 +39,6 @@
             android:layout_height="30dp"
             android:layout_gravity="center"
             android:layout_marginLeft="40dp"
-            app:srcCompat="@drawable/ic_min_gb" />
+            app:srcCompat="@drawable/ic_arrowdown" />
     </LinearLayout>
 </LinearLayout>

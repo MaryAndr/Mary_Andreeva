@@ -6,12 +6,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxbinding2.widget.RxCompoundButton
 import com.jakewharton.rxbinding2.widget.RxRadioGroup
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
+import kotlinx.android.synthetic.main.activity_main_page.*
 import kotlinx.android.synthetic.main.fragment_services.*
 
 import kz.atc.mobapp.R
@@ -44,6 +47,7 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
     override fun render(state: ServicesState) {
         when(state) {
             is ServicesState.FetchEnabledService -> {
+                pgData.visibility = View.GONE
                 allServicesLayout.visibility = View.GONE
                 addedServicesLayout.visibility = View.VISIBLE
                 allButton.isChecked = false
@@ -53,6 +57,7 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                 (servicesList.adapter as EnabledServicesAdapter).notifyDataSetChanged()
             }
             is ServicesState.FetchAllService -> {
+                pgData.visibility = View.GONE
                 allServicesLayout.visibility = View.VISIBLE
                 addedServicesLayout.visibility = View.GONE
                 allButton.isChecked = true
@@ -68,7 +73,23 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                 servicesList.adapter = EnabledServicesAdapter(context!!, state.servicesList)
                 (servicesList.adapter as EnabledServicesAdapter).notifyDataSetChanged()
             }
+            is ServicesState.Loading -> {
+                allServicesLayout.visibility = View.GONE
+                addedServicesLayout.visibility = View.GONE
+                pgData.visibility = View.VISIBLE
+            }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as AppCompatActivity).supportActionBar?.show()
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_backbutton_black)
+        var tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
+        activity!!.nav_view.visibility = View.INVISIBLE
+        tvTitle.setTextColor(resources.getColor(R.color.black))
+        tvTitle.text = "Услуги"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

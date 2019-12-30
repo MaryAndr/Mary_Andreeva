@@ -23,7 +23,9 @@ class ServicesPresenter (val ctx: Context) : MviBasePresenter<ServicesPageView, 
                         } else {
                             Observable.just(ServicesState.FetchAllService(it))
                         }
-                    }
+                    }.startWith(
+                        ServicesState.Loading
+                    )
                     .subscribeOn(Schedulers.io())
             }
 

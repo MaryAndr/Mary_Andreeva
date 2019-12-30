@@ -8,7 +8,7 @@ import com.hannesdorfmann.mosby3.mvi.MviPresenter
 import com.hannesdorfmann.mosby3.mvp.MvpView
 import kz.atc.mobapp.states.main.ServiceDialogState
 
-//Created to extend MVI version of Mosby to support Bottom Sheet Dialog
+//Класс создан, что бы дополнить MVI диалог Mosby, это дает нам использовать bottomsheetdialog в нашей архитектуре
 abstract class BaseBottomDialogMVI<V: MvpView, P: MviPresenter<V, ServiceDialogState>>: MviDialogFragment<V,P> (){
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
