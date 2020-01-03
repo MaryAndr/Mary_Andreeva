@@ -637,19 +637,20 @@ class SubscriberInteractor(ctx: Context) {
         val outputMap: MutableMap<String, IndicatorHolder> = mutableMapOf()
         remains?.filter { predicate -> predicate.services.primary }?.forEach {
             if (it.type == "DATA") {
-                Log.d("HERE", "DATA")
                 var rest = it.rest_amount
                 var total = it.total_amount
+                Log.d("HERE", "DATA $rest and $total")
                 var indicatorData: IndicatorHolder?
-                indicatorData = if (rest != 0 && total != 0) {
+                indicatorData = if (rest == 0 && total == 0) {
+                    IndicatorHolder(rest, total, 0, false)
+                } else {
                     IndicatorHolder(
                         rest,
                         total,
                         MathUtils().calculatePercent(rest, total),
                         false
                     )
-                } else {
-                    IndicatorHolder(rest, total, 0, false)
+
                 }
                 outputMap?.put("DATA", indicatorData)
             }
@@ -658,15 +659,15 @@ class SubscriberInteractor(ctx: Context) {
                 var rest = it.rest_amount
                 var total = it.total_amount
                 var indicatorData: IndicatorHolder?
-                indicatorData = if (rest != 0 && total != 0) {
+                indicatorData = if (rest == 0 && total == 0) {
+                    IndicatorHolder(rest, total, 0, false)
+                } else {
                     IndicatorHolder(
                         rest,
                         total,
                         MathUtils().calculatePercent(rest, total),
                         false
                     )
-                } else {
-                    IndicatorHolder(rest, total, 0, false)
                 }
                 outputMap?.put("VOICE", indicatorData)
             }
@@ -675,15 +676,15 @@ class SubscriberInteractor(ctx: Context) {
                 var rest = it.rest_amount
                 var total = it.total_amount
                 var indicatorData: IndicatorHolder?
-                indicatorData = if (rest != 0 && total != 0) {
+                indicatorData = if (rest == 0 && total == 0) {
+                    IndicatorHolder(rest, total, 0, false)
+                } else {
                     IndicatorHolder(
                         rest,
                         total,
                         MathUtils().calculatePercent(rest, total),
                         false
                     )
-                } else {
-                    IndicatorHolder(rest, total, 0, false)
                 }
                 outputMap?.put("SMS", indicatorData)
             }

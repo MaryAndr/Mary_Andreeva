@@ -77,7 +77,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 var rest = indicatorHolder["DATA"]?.rest!!
                 var total = indicatorHolder["DATA"]?.total!!
 
-                if (rest != 0 && total != 0) {
+                if (rest != 0 || total != 0) {
                     groupData.visibility = View.VISIBLE
 
                     pbInternet.progress = indicatorHolder["DATA"]?.percent!!
@@ -115,7 +115,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 var rest = indicatorHolder["VOICE"]?.rest!!
                 var total = indicatorHolder["VOICE"]?.total!!
 
-                if (rest != 0 && total != 0) {
+                if (rest != 0 || total != 0) {
                     groupVoice.visibility = View.VISIBLE
                     pbPhone.progress = indicatorHolder["VOICE"]?.percent!!
                     tvVoiceRestAmount.text = "$rest Мин"
@@ -145,7 +145,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 var rest = indicatorHolder["SMS"]?.rest!!
                 var total = indicatorHolder["SMS"]?.total!!
 
-                if (rest != 0 && total != 0) {
+                if (rest != 0 || total != 0) {
                     groupSMS.visibility = View.VISIBLE
                     pbSms.progress = indicatorHolder["SMS"]?.percent!!
                     tvSMSRestAmount.text = "$rest SMS"
