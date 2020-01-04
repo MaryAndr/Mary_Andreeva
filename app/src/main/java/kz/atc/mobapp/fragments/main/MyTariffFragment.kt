@@ -87,18 +87,19 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
     private fun renderMainData(state: MyTariffState) {
         val subTariff = state.mainData?.subscriberTariff
         val catalogTariff = state.mainData?.catalogTariff
+        val subService = state.mainData?.servicesListOriginal
         val isSubFee =
             catalogTariff?.tariffs?.first()?.attributes?.firstOrNull { it.system_name == "subscription_fee" }?.value != "0"
         var subFee = ""
         var period = ""
 
-        aboutData = MyTariffAboutData(subTariff, catalogTariff)
+        aboutData = MyTariffAboutData(subTariff, catalogTariff, subService)
         tvTariffName.text = subTariff?.tariff?.name
         if (subTariff?.tariff?.id in mutableListOf(14, 26, 27, 28)) {
             tvTariffCondition.text = TextConverter().descriptionBuilder(
-                subTariff?.constructor?.min,
-                subTariff?.constructor?.data,
-                subTariff?.constructor?.sms
+                subTariff?.tariff?.constructor?.min,
+                subTariff?.tariff?.constructor?.data,
+                subTariff?.tariff?.constructor?.sms
             )
 
         } else {
@@ -116,7 +117,7 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
                     ?.value.toString()
             }
         } else {
-            subFee = subTariff?.constructor?.abon.toString()
+            subFee = subTariff?.tariff?.constructor?.abon.toString()
         }
 
         if (!subFee.isNullOrEmpty()) {

@@ -81,7 +81,7 @@ class SubscriberInteractor(ctx: Context) {
                             serviceShow.serviceName =
                                 subServicesListInstance.name
                             serviceShow.description =
-                                it.attributes.first { predicate -> predicate.system_name == "short_description" }
+                                it.attributes.firstOrNull { predicate -> predicate.system_name == "short_description" }
                                     ?.value.orEmpty()
 
                             if (subServicesListInstance.interval?.type == null) {
@@ -115,12 +115,12 @@ class SubscriberInteractor(ctx: Context) {
                             serviceShow.serviceName =
                                 subServicesAllListInstance.name
                             serviceShow.description =
-                                it.attributes.first { predicate -> predicate.system_name == "short_description" }
+                                it.attributes.firstOrNull { predicate -> predicate.system_name == "short_description" }
                                     ?.value.orEmpty()
 
-                            serviceShow.activPrice = it.attributes.first { predicate -> predicate.system_name == "activation_price" }
+                            serviceShow.activPrice = it.attributes.firstOrNull { predicate -> predicate.system_name == "activation_price" }
                                 ?.value.orEmpty()
-                            serviceShow.subFee = it.attributes.first { predicate -> predicate.system_name == "subscription_fee" }
+                            serviceShow.subFee = it.attributes.firstOrNull { predicate -> predicate.system_name == "subscription_fee" }
                                 ?.value.orEmpty()
 
                             if (subServicesAllListInstance.interval?.type == null) {
@@ -151,7 +151,7 @@ class SubscriberInteractor(ctx: Context) {
                         }
                     }
                     servicesList
-                }.blockingFirst()
+                }.subscribe()
 
                 servicesList
             })
@@ -205,6 +205,7 @@ class SubscriberInteractor(ctx: Context) {
                 }.blockingFirst()
 
                 subService.getServicesList().subscribe { list ->
+                    mainData.servicesListOriginal = list
                     userService.getCatalogService(
                         list.joinToString { it.id.toString() },
                         mapOfRegions[subInfoResponse.region.id]

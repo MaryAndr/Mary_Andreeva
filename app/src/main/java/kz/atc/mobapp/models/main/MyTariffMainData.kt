@@ -8,5 +8,6 @@ data class MyTariffMainData(
     var catalogTariff: CatalogTariffResponse? = null,
     var servicesList: MutableList<ServicesListShow> = mutableListOf<ServicesListShow>(),
     var indicatorHolder: MutableMap<String, IndicatorHolder>? = null,
-    var indicatorModels: IndicatorsModel? = null
+    var indicatorModels: IndicatorsModel? = null,
+    var servicesListOriginal:  List<ServicesListResponse>? = null
 )

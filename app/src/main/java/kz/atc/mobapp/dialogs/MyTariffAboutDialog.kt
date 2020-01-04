@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.app.DownloadManager
 import android.content.pm.PackageManager
+import android.graphics.Paint
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -21,6 +22,8 @@ import kz.atc.mobapp.models.main.MyTariffAboutData
 import kz.atc.mobapp.utils.DownloadHelper
 import kz.atc.mobapp.utils.TextConverter
 import kz.atc.mobapp.listeners.MyFetchListener
+import kz.atc.mobapp.models.catalogTariff.Attribute
+import kz.atc.mobapp.models.catalogTariff.Tariff
 
 //TODO: Необходимо переписать под MVI архитектуру, используя абстрактный класс BaseBottomDialogMVI
 class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragment() {
@@ -69,22 +72,23 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
 
         val isSubFee = attrs?.firstOrNull { it.system_name == "subscription_fee" }?.value != "0"
 
+        val isSelfTariff = data.subscriberTariff?.tariff?.id in mutableListOf(
+            14,
+            26,
+            27,
+            28
+        )
+
         pdfDownload.setOnClickListener {
             Log.d("OnClick", "Triggered")
             downloadPdf()
         }
 
-        if (data.subscriberTariff?.constructor != null && data.subscriberTariff.tariff.id in mutableListOf(
-                14,
-                26,
-                27,
-                28
-            )
-        ) {
+        if (data.subscriberTariff?.tariff?.constructor != null && isSelfTariff) {
             tvTariffDescription.text = TextConverter().descriptionBuilder(
-                data.subscriberTariff?.constructor?.min,
-                data.subscriberTariff?.constructor?.data,
-                data.subscriberTariff?.constructor?.sms
+                data.subscriberTariff?.tariff?.constructor?.min,
+                data.subscriberTariff?.tariff?.constructor?.data,
+                data.subscriberTariff?.tariff?.constructor?.sms
             )
         } else {
             tvTariffDescription.text = data.catalogTariff?.tariffs?.first()
@@ -95,7 +99,7 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
         if (isSubFee) {
             if (!attrs?.firstOrNull { it.system_name == "internet_gb_count" }?.value?.orEmpty().isNullOrEmpty()) {
                 tvAddData.text =
-                    attrs?.firstOrNull { it.system_name == "internet_gb_count" }?.value.orEmpty()  + " " + attrs?.firstOrNull { it.system_name == "internet_gb_count" }?.unit.orEmpty()
+                    attrs?.firstOrNull { it.system_name == "internet_gb_count" }?.value.orEmpty() + " " + attrs?.firstOrNull { it.system_name == "internet_gb_count" }?.unit.orEmpty()
             } else {
                 tvAddData.text = null
             }
@@ -135,6 +139,19 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
         if (attrs?.firstOrNull { it.system_name == "subscription_fee" } != null && attrs?.firstOrNull { it.system_name == "subscription_fee" }?.value != "0") {
             tvSubFee.text =
                 attrs?.firstOrNull { it.system_name == "subscription_fee" }?.value + " " + attrs?.firstOrNull { it.system_name == "subscription_fee" }?.unit
+        } else if (isSelfTariff) {
+            if (data.subscriberTariff?.tariff?.constructor?.abon_discount != null && data.subscriberTariff?.tariff?.constructor?.abon_discount != "0") {
+                tvSubFeeDisc.visibility = View.VISIBLE
+                tvSubFeeDisc.text =
+                    data.subscriberTariff?.tariff?.constructor?.abon_discount.toString() + " руб."
+                tvSubFee.apply {
+                    paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                    text = data.subscriberTariff?.tariff?.constructor?.abon + " руб."
+                }
+            } else {
+                tvSubFee.text = data.subscriberTariff?.tariff?.constructor?.abon + " руб."
+                tvSubFeeDisc.visibility = View.GONE
+            }
         } else {
             tvSubFee.visibility = View.GONE
         }
@@ -174,6 +191,57 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
             tvAddInfoAbout.visibility = View.GONE
             tvSubscriberFee.visibility = View.GONE
             viewUnderAddInfo.visibility = View.GONE
+        }
+
+        if (isSelfTariff) {
+            if (data.subscriberTariff?.tariff?.constructor?.min != null && data.subscriberTariff?.tariff?.constructor?.min != "0") {
+                data.catalogTariff?.tariffs?.firstOrNull()?.attributes?.add(
+                    Attribute(
+                        0,
+                        "Включено в абонентскую плату",
+                        "",
+                        "Исходящие звонки на номера РФ",
+                        "",
+                        "мин",
+                        data.subscriberTariff?.tariff?.constructor?.min
+                    ))
+            }
+            if (data.subscriberTariff?.tariff?.constructor?.data != null && data.subscriberTariff?.tariff?.constructor?.data != "0") {
+                data.catalogTariff?.tariffs?.firstOrNull()?.attributes?.add(
+                    Attribute(
+                        0,
+                        "Включено в абонентскую плату",
+                        "",
+                        "Мобильный интернет на максимальной скорости",
+                        "",
+                        "ГБ",
+                        data.subscriberTariff?.tariff?.constructor?.data
+                    ))
+            }
+            if (data.subscriberServices?.firstOrNull{pred -> pred.id == 1791} != null) {
+                data.catalogTariff?.tariffs?.firstOrNull()?.attributes?.add(
+                    Attribute(
+                        0,
+                        "Включено в абонентскую плату",
+                        "",
+                        "Безлимит на соц.сети\t",
+                        "",
+                        "",
+                        "Предоставляется"
+                    ))
+            }
+            if (data.subscriberTariff?.tariff?.constructor?.sms != null && data.subscriberTariff?.tariff?.constructor?.sms != "0") {
+                data.catalogTariff?.tariffs?.firstOrNull()?.attributes?.add(
+                    Attribute(
+                        0,
+                        "Включено в абонентскую плату",
+                        "",
+                        "Исходящие SMS-сообщения на номера РФ",
+                        "",
+                        "SMS",
+                        data.subscriberTariff?.tariff?.constructor?.sms
+                    ))
+            }
         }
 
         if (data.catalogTariff != null) {

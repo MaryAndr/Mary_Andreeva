@@ -2,7 +2,7 @@ package kz.atc.mobapp.models
 
 data class Constructor(
     val abon: String,
-    val abon_discount: Int,
+    val abon_discount: String,
     val `data`: String,
     val min: String,
     val sms: String,
