@@ -1,6 +1,7 @@
 package kz.atc.mobapp.fragments.main
 
 
+import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -51,7 +52,7 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         when {
             state.mainDataLoaded -> {
                 pgMainData.visibility = View.GONE
-
+                mainConstraint.visibility = View.VISIBLE
                 viewOtherServices.setOnClickListener {
                     val fr = ServicesFragment()
                     val fm = fragmentManager
@@ -60,9 +61,10 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
                     fragmentTransaction.commit()
                 }
 
-                if(state.mainData?.indicatorModels?.dataIndicators?.size == 0 &&
+                if (state.mainData?.indicatorModels?.dataIndicators?.size == 0 &&
                     state.mainData?.indicatorModels?.voiceIndicators?.size == 0 &&
-                    state.mainData?.indicatorModels?.smsIndicators?.size == 0) {
+                    state.mainData?.indicatorModels?.smsIndicators?.size == 0
+                ) {
                     tvLeftoversTitle.visibility = View.GONE
                 }
                 renderMainData(state)
@@ -133,7 +135,16 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
             ) {
                 period = " ${resources.getString(R.string.rub_value)}/сутки"
             }
-            tvTariffRate.text = subFee + period
+            if (subTariff?.tariff?.constructor?.abon_discount != null && subTariff?.tariff?.constructor?.abon_discount != "0") {
+                tvAbonDiscount.visibility = View.VISIBLE
+                tvTariffRate.apply {
+                    paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                    text = subFee + period
+                }
+                tvAbonDiscount.text = subTariff?.tariff?.constructor?.abon_discount + period
+            } else {
+                tvTariffRate.text = subFee + period
+            }
         }
 
         if (subTariff?.charge_date != null) {
@@ -258,7 +269,7 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         activity!!.nav_view.visibility = View.VISIBLE
         var tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         tvTitle.setTextColor(resources.getColor(R.color.black))
-        tvTitle.text = "Тариф"
+        tvTitle.text = "Мой Тариф"
 
     }
 

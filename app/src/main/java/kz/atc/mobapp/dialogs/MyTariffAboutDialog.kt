@@ -80,7 +80,6 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
         )
 
         pdfDownload.setOnClickListener {
-            Log.d("OnClick", "Triggered")
             downloadPdf()
         }
 
@@ -259,7 +258,7 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
             if (activity!!.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_DENIED
             ) {
-                activity!!.requestPermissions(
+                requestPermissions(
                     arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
                     DownloadHelper().permissionCode
                 )

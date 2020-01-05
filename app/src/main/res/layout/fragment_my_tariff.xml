@@ -26,7 +26,7 @@
             android:id="@+id/mainConstraint"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible">
+            android:visibility="gone">
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -656,7 +656,7 @@
                         android:layout_marginLeft="18dp"
                         android:layout_weight="1"
                         android:gravity="left"
-                        android:text="Другие сервисы" />
+                        android:text="Другие услуги" />
 
                     <ImageView
                         android:id="@+id/ivOtherServices"
@@ -708,8 +708,9 @@
 
                     <TextView
                         android:id="@+id/tvTariffRate"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@string/blankText"
                         android:textColor="#000000"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -762,12 +763,31 @@
                         app:layout_constraintGuide_end="18dp" />
 
                     <Space
+                        android:id="@+id/space"
                         android:layout_width="0dp"
                         android:layout_height="15dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/guideline23"
                         app:layout_constraintStart_toStartOf="@+id/guideline22"
                         app:layout_constraintTop_toBottomOf="@+id/tvTariffDate" />
+
+                    <TextView
+                        android:id="@+id/tvAbonDiscount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:text="TextView"
+                        android:textColor="#000000"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/tvAboutTariff"
+                        app:layout_constraintHorizontal_bias="0.14"
+                        app:layout_constraintStart_toEndOf="@+id/tvTariffRate"
+                        app:layout_constraintTop_toBottomOf="@+id/tvTariffCondition"
+                        app:layout_constraintVertical_bias="0.23000002" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
