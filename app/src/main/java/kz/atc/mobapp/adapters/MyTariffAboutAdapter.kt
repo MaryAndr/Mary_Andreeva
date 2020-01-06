@@ -12,7 +12,7 @@ import kz.atc.mobapp.models.catalogTariff.Attribute
 import kz.atc.mobapp.models.catalogTariff.CatalogTariffResponse
 import kz.atc.mobapp.models.main.ServicesListShow
 
-class MyTariffAboutAdapter(val catalogTariff: CatalogTariffResponse, val context: Context) :
+class MyTariffAboutAdapter(attribute: MutableList<Attribute>, val context: Context) :
     RecyclerView.Adapter<AboutViewHolder>() {
 
     private val allowedServices = mutableListOf(
@@ -33,8 +33,8 @@ class MyTariffAboutAdapter(val catalogTariff: CatalogTariffResponse, val context
     )
 
     private val attributes =
-        catalogTariff.tariffs.first().attributes.filter { pred -> pred.name in allowedServices }
-            .sortedBy { it.name }
+        attribute.filter { pred -> pred.name in allowedServices}
+            .sortedWith ( compareBy({it.name},{it.param}) )
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AboutViewHolder {
@@ -74,11 +74,11 @@ class MyTariffAboutAdapter(val catalogTariff: CatalogTariffResponse, val context
 //                context.resources.displayMetrics
 //            )
 //        }
-        val match = keywords.filter { it in attributes[position]?.param }
+        val match = keywords.filter { it in attributes[position]?.param}
         if (match.isNotEmpty()) {
             holder.tvName.text = match.first()
             holder.tvDescription.text =
-                attributes[position]?.param.substring(attributes[position]?.param.indexOf(match.first()) + match.first().length)
+                attributes[position].param.substring(attributes[position].param.indexOf(match.first()) + match.first().length)
                     .trim()
         } else {
             holder.tvDescription.visibility = View.GONE

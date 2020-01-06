@@ -51,50 +51,50 @@ class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val con
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
-
-
         holder.tvName.text = items?.get(position)?.serviceName
         holder.tvDescription.text = items?.get(position)?.description
         holder.tvValue.text = items?.get(position)?.price + " ${context.resources.getString(R.string.rub_value)}/сутки"
         holder.tgButton.isChecked = true
         if (holder.tgButton.isEnabled) {
-            holder.tgButton.setOnCheckedChangeListener { _, _ ->
-                myCompositeDisposable?.add(
-                    services.subService.deleteService(items?.get(position)?.id)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
-                        .subscribe({
-                            removeItem(position)
-                        }, { error ->
-                            var errMessage = error.localizedMessage
-                            if (error is HttpException) {
-                                errMessage = if (error.code() == 409) {
-                                    "Вы не являетесь пользователем мобильной связи"
-                                } else {
-                                    val errorBody = error.response()!!.errorBody()
+            holder.tgButton.setOnCheckedChangeListener { _, isChecked ->
+                if(!isChecked) {
+                    myCompositeDisposable?.add(
+                        services.subService.deleteService(items?.get(position)?.id)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe({
+                                removeItem(position)
+                            }, { error ->
+                                var errMessage = error.localizedMessage
+                                if (error is HttpException) {
+                                    errMessage = if (error.code() == 409) {
+                                        "Вы не являетесь пользователем мобильной связи"
+                                    } else {
+                                        val errorBody = error.response()!!.errorBody()
 
-                                    val adapter =
-                                        gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
-                                    val errorObj = adapter.fromJson(errorBody!!.string())
-                                    errorObj.error_description
+                                        val adapter =
+                                            gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                                        val errorObj = adapter.fromJson(errorBody!!.string())
+                                        errorObj.error_description
+                                    }
                                 }
-                            }
-                            holder.tgButton.isChecked = true
-                            holder.tgButton.isEnabled = true
-                            Toast.makeText(context, errMessage, Toast.LENGTH_LONG).show()
+                                holder.tgButton.isChecked = true
+                                holder.tgButton.isEnabled = true
+                                Toast.makeText(context, errMessage, Toast.LENGTH_LONG).show()
 
-                        })
-                )
-
+                            })
+                    )
+                }
             }
         }
     }
 
-    fun removeItem(position: Int) {
+    private fun removeItem(position: Int) {
+        Toast.makeText(context, "Услуга успешно отключена.", Toast.LENGTH_LONG).show()
+
+        notifyItemRangeChanged(position, items?.size!!)
         items?.removeAt(position)
         notifyItemRemoved(position)
-        notifyItemRangeChanged(position, items?.size!!)
     }
 
 }

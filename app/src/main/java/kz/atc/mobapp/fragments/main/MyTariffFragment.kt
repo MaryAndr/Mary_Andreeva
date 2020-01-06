@@ -41,8 +41,6 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
     private lateinit var preLoadTrigger: BehaviorSubject<Int>
 
 
-    private lateinit var aboutData: MyTariffAboutData
-
     override fun preLoadIntent(): Observable<Int> {
         return preLoadTrigger
     }
@@ -94,14 +92,23 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
             catalogTariff?.tariffs?.first()?.attributes?.firstOrNull { it.system_name == "subscription_fee" }?.value != "0"
         var subFee = ""
         var period = ""
+        val aboutData = MyTariffAboutData(subTariff, catalogTariff, subService)
 
-        aboutData = MyTariffAboutData(subTariff, catalogTariff, subService)
+        tvAboutTariff.setOnClickListener {
+            val aboutDialog = MyTariffAboutDialog.newInstance(aboutData)
+            aboutDialog.show(
+                activity!!.getSupportFragmentManager(),
+                "my_tariff_dialog_fragment"
+            )
+        }
+
+
         tvTariffName.text = subTariff?.tariff?.name
         if (subTariff?.tariff?.id in mutableListOf(14, 26, 27, 28)) {
             tvTariffCondition.text = TextConverter().descriptionBuilder(
-                subTariff?.tariff?.constructor?.min,
+                subTariff?.tariff?.constructor?.min!!.substringBefore(","),
                 subTariff?.tariff?.constructor?.data,
-                subTariff?.tariff?.constructor?.sms
+                subTariff?.tariff?.constructor?.sms!!.substringBefore(",")
             )
 
         } else {
@@ -113,11 +120,9 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         }
 
         if (subTariff?.tariff?.id !in mutableListOf(14, 26, 27, 28)) {
-            if (isSubFee) {
-                subFee = catalogTariff?.tariffs?.first()
-                    ?.attributes?.firstOrNull { it.system_name == "subscription_fee" }
-                    ?.value.toString()
-            }
+            subFee = catalogTariff?.tariffs?.first()
+                ?.attributes?.firstOrNull { it.system_name == "subscription_fee" }
+                ?.value.toString()
         } else {
             subFee = subTariff?.tariff?.constructor?.abon.toString()
         }
@@ -275,15 +280,7 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tvAboutTariff.setOnClickListener {
-            if (::aboutData.isInitialized) {
-                val aboutDialog = MyTariffAboutDialog.newInstance(aboutData)
-                aboutDialog.show(
-                    activity!!.getSupportFragmentManager(),
-                    "my_tariff_dialog_fragment"
-                )
-            }
-        }
+
     }
 
     override fun onCreateView(

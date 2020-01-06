@@ -3,6 +3,7 @@ package kz.atc.mobapp.dialogs
 import android.Manifest
 import android.app.Activity
 import android.app.DownloadManager
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.graphics.Paint
 import android.os.Build
@@ -85,9 +86,9 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
 
         if (data.subscriberTariff?.tariff?.constructor != null && isSelfTariff) {
             tvTariffDescription.text = TextConverter().descriptionBuilder(
-                data.subscriberTariff?.tariff?.constructor?.min,
+                data.subscriberTariff?.tariff?.constructor?.min.substringBefore("."),
                 data.subscriberTariff?.tariff?.constructor?.data,
-                data.subscriberTariff?.tariff?.constructor?.sms
+                data.subscriberTariff?.tariff?.constructor?.sms.substringBefore(".")
             )
         } else {
             tvTariffDescription.text = data.catalogTariff?.tariffs?.first()
@@ -123,22 +124,20 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
             }
             if (!attrs?.firstOrNull { it.system_name == "minute_cost" }?.value?.orEmpty().isNullOrEmpty()) {
                 tvAddVoice.text =
-                    attrs?.firstOrNull { it.system_name == "minute_cost" }?.value.orEmpty() + " Мин"
+                    attrs?.firstOrNull { it.system_name == "minute_cost" }?.value.orEmpty() + attrs?.firstOrNull { it.system_name == "minute_cost" }?.unit.orEmpty()
             } else {
                 tvAddVoice.text = null
             }
             if (!attrs?.firstOrNull { it.system_name == "sms_cost" }?.value?.orEmpty().isNullOrEmpty()) {
                 tvAddSMS.text =
-                    attrs?.firstOrNull { it.system_name == "sms_cost" }?.value.orEmpty() + " SMS"
+                    attrs?.firstOrNull { it.system_name == "sms_cost" }?.value.orEmpty() + attrs?.firstOrNull { it.system_name == "sms_cost" }?.unit.orEmpty()
             } else {
                 tvAddSMS.text = null
             }
         }
 
-        if (attrs?.firstOrNull { it.system_name == "subscription_fee" } != null && attrs?.firstOrNull { it.system_name == "subscription_fee" }?.value != "0") {
-            tvSubFee.text =
-                attrs?.firstOrNull { it.system_name == "subscription_fee" }?.value + " " + attrs?.firstOrNull { it.system_name == "subscription_fee" }?.unit
-        } else if (isSelfTariff) {
+        if (isSelfTariff) {
+
             if (data.subscriberTariff?.tariff?.constructor?.abon_discount != null && data.subscriberTariff?.tariff?.constructor?.abon_discount != "0") {
                 tvSubFeeDisc.visibility = View.VISIBLE
                 tvSubFeeDisc.text =
@@ -151,6 +150,10 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
                 tvSubFee.text = data.subscriberTariff?.tariff?.constructor?.abon + " руб."
                 tvSubFeeDisc.visibility = View.GONE
             }
+
+        } else if (attrs?.firstOrNull { it.system_name == "subscription_fee" } != null && attrs?.firstOrNull { it.system_name == "subscription_fee" }?.value != "0") {
+            tvSubFee.text =
+                attrs?.firstOrNull { it.system_name == "subscription_fee" }?.value + " " + attrs?.firstOrNull { it.system_name == "subscription_fee" }?.unit
         } else {
             tvSubFee.visibility = View.GONE
         }
@@ -191,10 +194,10 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
             tvSubscriberFee.visibility = View.GONE
             viewUnderAddInfo.visibility = View.GONE
         }
-
+        val tempList = data.catalogTariff?.tariffs?.firstOrNull()?.attributes?.toMutableList()
         if (isSelfTariff) {
             if (data.subscriberTariff?.tariff?.constructor?.min != null && data.subscriberTariff?.tariff?.constructor?.min != "0") {
-                data.catalogTariff?.tariffs?.firstOrNull()?.attributes?.add(
+                tempList?.add(
                     Attribute(
                         0,
                         "Включено в абонентскую плату",
@@ -203,10 +206,11 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
                         "",
                         "мин",
                         data.subscriberTariff?.tariff?.constructor?.min
-                    ))
+                    )
+                )
             }
             if (data.subscriberTariff?.tariff?.constructor?.data != null && data.subscriberTariff?.tariff?.constructor?.data != "0") {
-                data.catalogTariff?.tariffs?.firstOrNull()?.attributes?.add(
+                tempList?.add(
                     Attribute(
                         0,
                         "Включено в абонентскую плату",
@@ -215,10 +219,11 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
                         "",
                         "ГБ",
                         data.subscriberTariff?.tariff?.constructor?.data
-                    ))
+                    )
+                )
             }
-            if (data.subscriberServices?.firstOrNull{pred -> pred.id == 1791} != null) {
-                data.catalogTariff?.tariffs?.firstOrNull()?.attributes?.add(
+            if (data.subscriberServices?.firstOrNull { pred -> pred.id == 1791 } != null) {
+                tempList?.add(
                     Attribute(
                         0,
                         "Включено в абонентскую плату",
@@ -227,10 +232,11 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
                         "",
                         "",
                         "Предоставляется"
-                    ))
+                    )
+                )
             }
             if (data.subscriberTariff?.tariff?.constructor?.sms != null && data.subscriberTariff?.tariff?.constructor?.sms != "0") {
-                data.catalogTariff?.tariffs?.firstOrNull()?.attributes?.add(
+                tempList?.add(
                     Attribute(
                         0,
                         "Включено в абонентскую плату",
@@ -239,18 +245,20 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
                         "",
                         "SMS",
                         data.subscriberTariff?.tariff?.constructor?.sms
-                    ))
+                    )
+                )
             }
         }
 
         if (data.catalogTariff != null) {
             paramsRView.layoutManager = LinearLayoutManager(context!!)
             paramsRView.adapter =
-                MyTariffAboutAdapter(data.catalogTariff, context!!)
+                MyTariffAboutAdapter(tempList!!, context!!)
         } else {
             paramsRView.visibility = View.GONE
         }
     }
+
 
     private fun downloadPdf() {
 
