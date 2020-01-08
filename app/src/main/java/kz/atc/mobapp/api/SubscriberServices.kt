@@ -3,10 +3,7 @@ package kz.atc.mobapp.api
 import android.content.Context
 import io.reactivex.Observable
 import kz.atc.mobapp.models.*
-import kz.atc.mobapp.models.main.DeleteServiceResponse
-import kz.atc.mobapp.models.main.ServicesListResponse
-import kz.atc.mobapp.models.main.SubPaymentsResponse
-import kz.atc.mobapp.models.main.TransferredHistoryResponse
+import kz.atc.mobapp.models.main.*
 import kz.atc.mobapp.oauth.TokenAuthenticator
 import kz.atc.mobapp.utils.*
 import kz.atc.mobapp.utils.PreferenceHelper.get
@@ -18,6 +15,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 
 interface SubscriberServices {
+
+    @GET("/lk/v1/subscriber/tariff/available")
+    fun getAvailableTariffs(): Observable<List<AvailableTariffs>>
 
     @GET("/lk/v1/subscriber/info")
     fun getSubInfo(): Observable<SubInfoResponse>

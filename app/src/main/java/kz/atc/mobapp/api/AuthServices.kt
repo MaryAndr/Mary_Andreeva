@@ -28,7 +28,7 @@ interface AuthServices {
     fun sendSMS(@Part("username") username: RequestBody?): Observable<Unit>
 
     @GET("/lk/v1/catalog/tariff")
-    fun getCatalogTariff(@Query("trpl_id") id: Int): Observable<CatalogTariffResponse>
+    fun getCatalogTariff(@Query("trpl_id") id: String): Observable<CatalogTariffResponse>
 
 
     @GET("/lk/v1/catalog/service")

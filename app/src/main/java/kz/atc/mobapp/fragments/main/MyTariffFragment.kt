@@ -51,6 +51,13 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
             state.mainDataLoaded -> {
                 pgMainData.visibility = View.GONE
                 mainConstraint.visibility = View.VISIBLE
+                viewOtherTarrifs.setOnClickListener {
+                    val fr = ChangeTariff()
+                    val fm = fragmentManager
+                    val fragmentTransaction = fm!!.beginTransaction().addToBackStack("mytariff")
+                    fragmentTransaction.replace(R.id.container, fr)
+                    fragmentTransaction.commit()
+                }
                 viewOtherServices.setOnClickListener {
                     val fr = ServicesFragment()
                     val fm = fragmentManager

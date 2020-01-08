@@ -39,6 +39,84 @@ class SubscriberInteractor(ctx: Context) {
         )
 
 
+    fun getTariffs(): Observable<ChangeTariffState> {
+        val subTariff = subService.getSubTariff().onErrorReturn {
+            null
+        }
+
+        val subAvalTariff = subService.getAvailableTariffs().onErrorReturn {
+            mutableListOf()
+        }
+
+        return Observable.combineLatest(
+            subTariff,
+            subAvalTariff,
+            BiFunction { subTariffResp, subAvalTariffResp ->
+
+                val currentTariff = TariffShow()
+                var allTariffsInfo: CatalogTariffResponse? = null
+
+
+                val tariffIds = subAvalTariffResp.joinToString { it.id.toString() }
+
+                userService.getCatalogTariff(tariffIds).flatMap { tariffResp ->
+                    val changeTariffMainData = mutableListOf<TariffShow>()
+                    allTariffsInfo = tariffResp
+                    tariffResp.tariffs.forEach { tariff ->
+                        var curTariff = TariffShow()
+                        val catResp =
+                            CatalogTariffResponse(tariffResp.tariffs.filter { it.id == tariff.id }.toMutableList())
+                        val curAboutData = MyTariffAboutData(subTariffResp, catResp)
+                        curTariff.aboutData = curAboutData
+                        curTariff.category =
+                            tariff.attributes.firstOrNull { it.system_name == "additional_categories" }
+                                ?.value
+                        if (curTariff.category == null){
+                            curTariff.category = "Без категории"
+                        }
+                        curTariff.name = tariff.name
+                        if (tariff.id in mutableListOf(
+                                14,
+                                26,
+                                27,
+                                28
+                            )
+                        ) {
+                            curTariff.dataValueUnit = subTariffResp.tariff.constructor.data
+                            curTariff.smsValueUnit = subTariffResp.tariff.constructor.sms
+                            //min
+                        }
+
+                        changeTariffMainData.add(curTariff)
+                    }
+                    Observable.just(ChangeTariffState.MainDataLoaded(changeTariffMainData))
+                }.blockingFirst()
+
+//                currentTariff.id = subTariffResp.tariff.id.toString()
+//                currentTariff.category =
+//                    allTariffsInfo?.tariffs?.firstOrNull { it.id == subTariffResp.tariff.id }
+//                        ?.attributes?.firstOrNull { param -> param.system_name == "additional_categories" }
+//                        ?.value
+//
+//                if (subTariffResp.tariff.id in mutableListOf(
+//                        14,
+//                        26,
+//                        27,
+//                        28
+//                    )
+//                ) {
+//                    subService.getServicesList().flatMap {
+//
+//                    }
+//                }
+
+
+            }
+        )
+
+    }
+
+
     fun getEnabledServices(isExist: Boolean): Observable<MutableList<ServicesListShow>> {
         val subInfo = subService.getSubInfo().onErrorReturn {
             null
@@ -118,10 +196,12 @@ class SubscriberInteractor(ctx: Context) {
                                 it.attributes.firstOrNull { predicate -> predicate.system_name == "short_description" }
                                     ?.value.orEmpty()
 
-                            serviceShow.activPrice = it.attributes.firstOrNull { predicate -> predicate.system_name == "activation_price" }
-                                ?.value.orEmpty()
-                            serviceShow.subFee = it.attributes.firstOrNull { predicate -> predicate.system_name == "subscription_fee" }
-                                ?.value.orEmpty()
+                            serviceShow.activPrice =
+                                it.attributes.firstOrNull { predicate -> predicate.system_name == "activation_price" }
+                                    ?.value.orEmpty()
+                            serviceShow.subFee =
+                                it.attributes.firstOrNull { predicate -> predicate.system_name == "subscription_fee" }
+                                    ?.value.orEmpty()
 
                             if (subServicesAllListInstance.interval?.type == null) {
                                 serviceShow.price =
@@ -196,7 +276,7 @@ class SubscriberInteractor(ctx: Context) {
             subRemains,
             Function4 { subTariffResponse, subInfoResponse, transHistoryResponse, subRemainsResponse ->
                 val mainData = MyTariffMainData(subTariffResponse)
-                userService.getCatalogTariff(subTariffResponse.tariff.id).flatMap {
+                userService.getCatalogTariff(subTariffResponse.tariff.id.toString()).flatMap {
                     mainData.catalogTariff = it
                     Observable.just(mainData)
                 }.onErrorReturn {
@@ -374,7 +454,7 @@ class SubscriberInteractor(ctx: Context) {
                 accumData.balance = subBal.value
                 accumData.remains = subRem
                 if (subT.tariff != null) {
-                    userService.getCatalogTariff(subT.tariff.id).flatMap { catTar ->
+                    userService.getCatalogTariff(subT.tariff.id.toString()).flatMap { catTar ->
                         Log.d("DEBUG", "HERE")
                         accumData.indicatorHolder = calculateIndicators(subT, subRem, catTar)
                         Observable.just(MainPagePartialState.ShowDataState(accumData))
