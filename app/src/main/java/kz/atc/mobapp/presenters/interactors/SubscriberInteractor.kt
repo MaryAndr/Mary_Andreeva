@@ -13,10 +13,7 @@ import kz.atc.mobapp.models.*
 import kz.atc.mobapp.models.catalogTariff.CatalogTariffResponse
 import kz.atc.mobapp.models.main.*
 import kz.atc.mobapp.states.main.*
-import kz.atc.mobapp.utils.MathUtils
-import kz.atc.mobapp.utils.StringDateComparator
-import kz.atc.mobapp.utils.StringUtils
-import kz.atc.mobapp.utils.TimeUtils
+import kz.atc.mobapp.utils.*
 import java.util.*
 
 class SubscriberInteractor(ctx: Context) {
@@ -71,10 +68,12 @@ class SubscriberInteractor(ctx: Context) {
                         curTariff.category =
                             tariff.attributes.firstOrNull { it.system_name == "additional_categories" }
                                 ?.value
-                        if (curTariff.category == null){
+                        if (curTariff.category == null) {
                             curTariff.category = "Без категории"
                         }
                         curTariff.name = tariff.name
+                        curTariff.isCurrent = subTariffResp.tariff.id == tariff.id
+
                         if (tariff.id in mutableListOf(
                                 14,
                                 26,
@@ -84,7 +83,62 @@ class SubscriberInteractor(ctx: Context) {
                         ) {
                             curTariff.dataValueUnit = subTariffResp.tariff.constructor.data
                             curTariff.smsValueUnit = subTariffResp.tariff.constructor.sms
-                            //min
+                            curTariff.voiceValueUnit = subTariffResp.tariff.constructor.min
+                            curTariff.price = subTariffResp.tariff.constructor.abon
+                            curTariff.description = TextConverter().descriptionBuilder(
+                                subTariffResp?.tariff?.constructor?.min!!.substringBefore(","),
+                                subTariffResp?.tariff?.constructor?.data,
+                                subTariffResp?.tariff?.constructor?.sms!!.substringBefore(",")
+                            )
+                        } else {
+                            val isSubFee =
+                                tariff.attributes?.firstOrNull { it.system_name == "subscription_fee" }?.value != "0"
+
+                            curTariff.price = tariff.attributes?.firstOrNull { it.system_name == "subscription_fee" }?.value
+
+                            curTariff.description =
+                                tariff.attributes?.firstOrNull { it.system_name == "short_description" }
+                                    ?.value
+
+                            if (isSubFee) {
+                                if (!tariff.attributes?.firstOrNull { it.system_name == "internet_gb_count" }?.value?.orEmpty().isNullOrEmpty()) {
+                                    curTariff.dataValueUnit =
+                                        tariff.attributes?.firstOrNull { it.system_name == "internet_gb_count" }?.value.orEmpty() + " " + tariff.attributes?.firstOrNull { it.system_name == "internet_gb_count" }?.unit.orEmpty()
+                                } else {
+                                    curTariff.dataValueUnit = null
+                                }
+                                if (!tariff.attributes?.firstOrNull { it.system_name == "minutes_count" }?.value?.orEmpty().isNullOrEmpty()) {
+                                    curTariff.voiceValueUnit =
+                                        tariff.attributes?.firstOrNull { it.system_name == "minutes_count" }?.value.orEmpty() + " " + tariff.attributes?.firstOrNull { it.system_name == "minutes_count" }?.unit.orEmpty()
+                                } else {
+                                    curTariff.voiceValueUnit = null
+                                }
+                                if (!tariff.attributes?.firstOrNull { it.system_name == "sms_count" }?.value?.orEmpty().isNullOrEmpty()) {
+                                    curTariff.smsValueUnit =
+                                        tariff.attributes?.firstOrNull { it.system_name == "sms_count" }?.value.orEmpty() + " " + tariff.attributes?.firstOrNull { it.system_name == "sms_count" }?.unit.orEmpty()
+                                } else {
+                                    curTariff.smsValueUnit = null
+                                }
+                            } else {
+                                if (!tariff.attributes?.firstOrNull { it.system_name == "internet_mb_cost" }?.value?.orEmpty().isNullOrEmpty()) {
+                                    curTariff.dataValueUnit =
+                                        tariff.attributes?.firstOrNull { it.system_name == "internet_mb_cost" }?.value.orEmpty() + " " + tariff.attributes?.firstOrNull { it.system_name == "internet_mb_cost" }?.unit.orEmpty()
+                                } else {
+                                    curTariff.dataValueUnit = null
+                                }
+                                if (!tariff.attributes?.firstOrNull { it.system_name == "minute_cost" }?.value?.orEmpty().isNullOrEmpty()) {
+                                    curTariff.voiceValueUnit =
+                                        tariff.attributes?.firstOrNull { it.system_name == "minute_cost" }?.value.orEmpty() + " " + tariff.attributes?.firstOrNull { it.system_name == "minute_cost" }?.unit.orEmpty()
+                                } else {
+                                    curTariff.voiceValueUnit = null
+                                }
+                                if (!tariff.attributes?.firstOrNull { it.system_name == "sms_cost" }?.value?.orEmpty().isNullOrEmpty()) {
+                                    curTariff.smsValueUnit =
+                                        tariff.attributes?.firstOrNull { it.system_name == "sms_cost" }?.value.orEmpty() + " " + tariff.attributes?.firstOrNull { it.system_name == "sms_cost" }?.unit.orEmpty()
+                                } else {
+                                    curTariff.smsValueUnit = null
+                                }
+                            }
                         }
 
                         changeTariffMainData.add(curTariff)

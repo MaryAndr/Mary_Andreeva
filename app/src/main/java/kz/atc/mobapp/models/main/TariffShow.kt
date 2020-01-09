@@ -2,6 +2,7 @@ package kz.atc.mobapp.models.main
 
 data class TariffShow(
     var id: String? = null,
+    var isCurrent: Boolean = false,
     var name: String? = null,
     var description: String? = null,
     var category: String? = null,
