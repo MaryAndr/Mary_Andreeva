@@ -53,9 +53,7 @@ class SubscriberInteractor(ctx: Context) {
                 val currentTariff = TariffShow()
                 var allTariffsInfo: CatalogTariffResponse? = null
 
-
                 val tariffIds = subAvalTariffResp.joinToString { it.id.toString() }
-
                 userService.getCatalogTariff(tariffIds).flatMap { tariffResp ->
                     val changeTariffMainData = mutableListOf<TariffShow>()
                     allTariffsInfo = tariffResp

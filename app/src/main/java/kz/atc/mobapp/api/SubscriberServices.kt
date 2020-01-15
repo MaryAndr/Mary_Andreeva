@@ -55,6 +55,9 @@ interface SubscriberServices {
     @POST("/lk/v1/subscriber/services/service/{serv_id}")
     fun activateService(@Path("serv_id") servId: String?) : Observable<DeleteServiceResponse>
 
+    @PUT("/lk/v1/subscriber/tariff")
+    fun changeTariff(@Body id: TariffChangeRequest) : Observable<TariffChangeResponse>
+
     companion object {
         fun create(ctx: Context): SubscriberServices {
             val logging = HttpLoggingInterceptor()

@@ -135,7 +135,6 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         }
 
         if (!subFee.isNullOrEmpty()) {
-
             if (catalogTariff?.tariffs?.first()
                     ?.attributes?.firstOrNull { pred -> pred.system_name == "write_off_period" }
                     ?.value == "Ежемесячно"

@@ -1,23 +1,25 @@
 package kz.atc.mobapp.adapters
 
+import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.ToggleButton
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import kz.atc.mobapp.R
+import kz.atc.mobapp.dialogs.MyTariffAboutDialog
 import kz.atc.mobapp.models.main.TariffShow
-import java.util.*
 
 class ExpandableTariffsCategories internal constructor(
     private val context: Context,
     private val titleList: List<String?>,
     private val dataList: MutableMap<String, MutableList<TariffShow>>
 ) : BaseExpandableListAdapter() {
+
     override fun getGroup(groupPosition: Int): String {
         return titleList[groupPosition]!!
     }
@@ -41,11 +43,12 @@ class ExpandableTariffsCategories internal constructor(
         val groupTitle = getGroup(groupPosition)
         val groupCount = dataList[groupTitle]?.size
         if (convertView == null) {
-            val layoutInflater = this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val layoutInflater =
+                this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             rowView = layoutInflater.inflate(R.layout.services_group_item, null)
             viewHolder = GroupViewHolder(rowView)
             rowView.tag = viewHolder
-        }else {
+        } else {
             rowView = convertView
             viewHolder = rowView.tag as GroupViewHolder
         }
@@ -85,16 +88,58 @@ class ExpandableTariffsCategories internal constructor(
         val child = getChild(groupPosition, childPosition)
 
         if (convertView == null) {
-            val layoutInflater = this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val layoutInflater =
+                this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             rowView = layoutInflater.inflate(R.layout.tariffs_item, null)
             viewHolder = ChildTariffViewHolder(rowView)
             rowView.tag = viewHolder
-        }else {
+        } else {
             rowView = convertView
             viewHolder = rowView.tag as ChildTariffViewHolder
         }
 
-        viewHolder.tvInfoName.text = getChild(groupPosition,childPosition).name
+        viewHolder.tvInfoName.text = child.name
+
+        if (child.dataValueUnit != null) {
+            viewHolder.tvAddData.text = child.dataValueUnit
+        } else {
+            viewHolder.addDataView.visibility = View.GONE
+        }
+
+        if (child.voiceValueUnit != null) {
+            viewHolder.tvAddVoice.text = child.voiceValueUnit
+        } else {
+            viewHolder.addVoiceView.visibility = View.GONE
+        }
+
+        if (child.smsValueUnit != null) {
+            viewHolder.tvAddSms.text = child.smsValueUnit
+        } else {
+            viewHolder.addSmsView.visibility = View.GONE
+        }
+
+        if (child.price != null) {
+            viewHolder.tvPrice.text = child.price + context.resources.getString(R.string.rub_value)
+        } else {
+            viewHolder.tvPrice.visibility = View.GONE
+        }
+
+        if (child.description != null) {
+            viewHolder.tvDescription.text = child.description
+        } else {
+            viewHolder.tvDescription.visibility = View.GONE
+        }
+
+        if (child.aboutData != null) {
+            val activity = context as FragmentActivity
+            viewHolder.tvDetails.setOnClickListener {
+                val aboutDialog = MyTariffAboutDialog.newInstance(child.aboutData!!, true)
+                aboutDialog.show(
+                    activity!!.supportFragmentManager,
+                    "my_tariff_dialog_fragment"
+                )
+            }
+        }
         return rowView as View
     }
 
@@ -108,6 +153,15 @@ class ExpandableTariffsCategories internal constructor(
 
     private class ChildTariffViewHolder(view: View?) {
         val tvInfoName = view?.findViewById(R.id.tvName) as TextView
+        val addDataView = view?.findViewById(R.id.addDataView) as LinearLayout
+        val tvAddData = view?.findViewById(R.id.tvAddData) as TextView
+        val addVoiceView = view?.findViewById(R.id.addVoiceView) as LinearLayout
+        val tvAddVoice = view?.findViewById(R.id.tvAddVoice) as TextView
+        val addSmsView = view?.findViewById(R.id.addSMSView) as LinearLayout
+        val tvAddSms = view?.findViewById(R.id.tvAddSMS) as TextView
+        val tvPrice = view?.findViewById(R.id.tvPrice) as TextView
+        val tvDescription = view?.findViewById(R.id.tvDescription) as TextView
+        val tvDetails = view?.findViewById(R.id.tvDetails) as TextView
     }
 
     private class GroupViewHolder(view: View?) {

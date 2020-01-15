@@ -27,7 +27,7 @@ import kz.atc.mobapp.models.catalogTariff.Attribute
 import kz.atc.mobapp.models.catalogTariff.Tariff
 
 //TODO: Необходимо переписать под MVI архитектуру, используя абстрактный класс BaseBottomDialogMVI
-class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragment() {
+class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boolean = false) : BottomSheetDialogFragment() {
 
     private lateinit var PDF_URL: String
     private lateinit var tariffName: String
@@ -61,6 +61,14 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (isTariffChange) {
+            btnTariffChange.setOnClickListener {
+
+            }
+        } else {
+            btnTariffChange.visibility = View.GONE
+        }
 
 
         tvTariffName.text = data.catalogTariff?.tariffs?.first()?.name
@@ -302,8 +310,8 @@ class MyTariffAboutDialog(val data: MyTariffAboutData) : BottomSheetDialogFragme
 
     companion object {
 
-        fun newInstance(data: MyTariffAboutData): MyTariffAboutDialog {
-            return MyTariffAboutDialog(data)
+        fun newInstance(data: MyTariffAboutData, isTariffChange: Boolean = false): MyTariffAboutDialog {
+            return MyTariffAboutDialog(data, isTariffChange)
         }
     }
 }
