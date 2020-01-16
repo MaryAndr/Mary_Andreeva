@@ -45,10 +45,13 @@ class SubscriberInteractor(ctx: Context) {
             mutableListOf()
         }
 
+        val subServices = subService.getServicesList().onErrorReturn { mutableListOf() }
+
         return Observable.combineLatest(
             subTariff,
             subAvalTariff,
-            BiFunction { subTariffResp, subAvalTariffResp ->
+            subServices,
+            Function3 { subTariffResp, subAvalTariffResp, subServicesResponse ->
 
                 val currentTariff = TariffShow()
                 var allTariffsInfo: CatalogTariffResponse? = null
@@ -61,7 +64,7 @@ class SubscriberInteractor(ctx: Context) {
                         var curTariff = TariffShow()
                         val catResp =
                             CatalogTariffResponse(tariffResp.tariffs.filter { it.id == tariff.id }.toMutableList())
-                        val curAboutData = MyTariffAboutData(subTariffResp, catResp)
+                        val curAboutData = MyTariffAboutData(subTariffResp, catResp, subServicesResponse)
                         curTariff.aboutData = curAboutData
                         curTariff.category =
                             tariff.attributes.firstOrNull { it.system_name == "additional_categories" }

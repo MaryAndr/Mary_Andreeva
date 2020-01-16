@@ -13,7 +13,10 @@ import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.my_tariff_about_dialog.*
 import kz.atc.mobapp.R
@@ -25,9 +28,11 @@ import kz.atc.mobapp.utils.TextConverter
 import kz.atc.mobapp.listeners.MyFetchListener
 import kz.atc.mobapp.models.catalogTariff.Attribute
 import kz.atc.mobapp.models.catalogTariff.Tariff
+import kz.atc.mobapp.models.main.TariffDialogModelData
 
 //TODO: Необходимо переписать под MVI архитектуру, используя абстрактный класс BaseBottomDialogMVI
-class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boolean = false) : BottomSheetDialogFragment() {
+class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boolean = false) :
+    BottomSheetDialogFragment() {
 
     private lateinit var PDF_URL: String
     private lateinit var tariffName: String
@@ -64,7 +69,16 @@ class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boole
 
         if (isTariffChange) {
             btnTariffChange.setOnClickListener {
-
+                val dataToSend = TariffDialogModelData()
+                dataToSend.tariffId = data.subscriberServices?.first()?.id?.toString()
+                dataToSend.tariffName = data.subscriberServices?.first()?.name
+                dataToSend.tariffAbonCost = data.subscriberServices?.first()?.price?.toString()
+                dataToSend.tariffChangeCost = data.subscriberServices?.first()?.priceOn?.toString()
+                val dialog = TariffConfirmationDialogMVI.newInstance(dataToSend)
+                dialog.show(
+                    (context as AppCompatActivity).supportFragmentManager,
+                    "Accept Dialog"
+                )
             }
         } else {
             btnTariffChange.visibility = View.GONE
@@ -310,7 +324,10 @@ class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boole
 
     companion object {
 
-        fun newInstance(data: MyTariffAboutData, isTariffChange: Boolean = false): MyTariffAboutDialog {
+        fun newInstance(
+            data: MyTariffAboutData,
+            isTariffChange: Boolean = false
+        ): MyTariffAboutDialog {
             return MyTariffAboutDialog(data, isTariffChange)
         }
     }

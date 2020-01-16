@@ -1,6 +1,6 @@
 package kz.atc.mobapp.states.main
 
-sealed class ServiceDialogState {
+sealed class ServiceDialogState : BaseDialogState {
 
     data class ServiceProcessed(val isActivate: Boolean) : ServiceDialogState()
 

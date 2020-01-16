@@ -22,7 +22,7 @@ import kz.atc.mobapp.views.main.ServiceConfirmationDialogView
 
 
 class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
-    BaseBottomDialogMVI<ServiceConfirmationDialogView, ServiceDialogPresenter>(),
+    BaseBottomDialogMVI<ServiceConfirmationDialogView, ServiceDialogState, ServiceDialogPresenter>(),
     ServiceConfirmationDialogView {
 
     override fun createPresenter() = ServiceDialogPresenter(context!!)
