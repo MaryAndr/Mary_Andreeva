@@ -64,6 +64,10 @@
         <item name="android:windowBackground">@android:color/black</item>
     </style>
 
+    <style name="Widget.MyApp.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="boxStrokeWidth">0dp</item>
+    </style>
+
 
     <style name="LoginTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@drawable/text_input_box_stroke</item>

@@ -17,4 +17,7 @@
     <string name="title_notifications">Notifications</string>
     <string name="rub_value">₽</string>
     <string name="enter_email">Укажите e-mail</string>
+    <string name="exchange">Обменяйте</string>
+    <string name="getGB">Получайте</string>
+    <string name="btnEx">Обменять</string>
 </resources>

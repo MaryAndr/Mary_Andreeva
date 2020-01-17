@@ -45,6 +45,13 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
             }
             state.mainDataLoaded -> {
                 renderFirstLoad(state)
+                layoutServices.setOnClickListener {
+                    val fr = MinToGbFragment()
+                    val fm = activity!!.supportFragmentManager
+                    val fragmentTransaction = fm!!.beginTransaction().addToBackStack("main_page")
+                    fragmentTransaction.replace(R.id.container, fr)
+                    fragmentTransaction.commit()
+                }
             }
         }
     }

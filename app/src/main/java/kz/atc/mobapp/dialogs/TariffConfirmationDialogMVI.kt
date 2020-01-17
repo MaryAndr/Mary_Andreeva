@@ -36,8 +36,6 @@ class TariffConfirmationDialogMVI(val data: TariffDialogModelData) :
             R.layout.tariff_change_dialog, container,
             false
         )
-
-
         return v
     }
 
