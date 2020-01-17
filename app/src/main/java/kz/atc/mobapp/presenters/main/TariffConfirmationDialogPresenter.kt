@@ -25,7 +25,7 @@ class TariffConfirmationDialogPresenter(val context: Context) :
                 .flatMap { model ->
                     SubscriberInteractor(context).subService.changeTariff(TariffChangeRequest(model))
                         .map<TariffDialogState> {
-                            TariffDialogState.TariffProcessed("Услуга успешно подключена")
+                            TariffDialogState.TariffProcessed("Тариф успешно подключен")
                         }
                         .subscribeOn(Schedulers.io())
                         .onErrorReturn { error: Throwable ->

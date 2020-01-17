@@ -70,8 +70,8 @@ class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boole
         if (isTariffChange) {
             btnTariffChange.setOnClickListener {
                 val dataToSend = TariffDialogModelData()
-                dataToSend.tariffId = data.subscriberServices?.first()?.id?.toString()
-                dataToSend.tariffName = data.subscriberServices?.first()?.name
+                dataToSend.tariffId = data.catalogTariff?.tariffs?.first()?.id?.toString()
+                dataToSend.tariffName = data.catalogTariff?.tariffs?.first()?.name
                 dataToSend.tariffAbonCost = data.subscriberServices?.first()?.price?.toString()
                 dataToSend.tariffChangeCost = data.subscriberServices?.first()?.priceOn?.toString()
                 val dialog = TariffConfirmationDialogMVI.newInstance(dataToSend)
