@@ -11,6 +11,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import kotlinx.android.synthetic.main.activity_main_page.*
+import kotlinx.android.synthetic.main.activity_main_page.view.*
 import kz.atc.mobapp.fragments.main.CostsAndReplenishment
 import kz.atc.mobapp.fragments.main.MainPageFragment
 import kz.atc.mobapp.fragments.main.MyTariffFragment
@@ -36,6 +37,7 @@ class MainPageActivity : AppCompatActivity() {
             }
             R.id.navigation_tariff -> {
                 val fragment = MyTariffFragment()
+
                 supportFragmentManager.beginTransaction().replace(R.id.container, fragment, fragment.javaClass.simpleName)
                     .commit()
                 return@OnNavigationItemSelectedListener true
@@ -62,6 +64,7 @@ class MainPageActivity : AppCompatActivity() {
         supportActionBar!!.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.costs)))
         supportActionBar!!.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
         supportActionBar!!.setCustomView(R.layout.abs_layout)
+
 
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }

@@ -12,14 +12,16 @@ import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_min_to_gb.*
 
 import kz.atc.mobapp.R
+import kz.atc.mobapp.models.ExchangeResponse
 import kz.atc.mobapp.presenters.main.MinToGbPresenter
 import kz.atc.mobapp.states.main.MinToGbState
 import kz.atc.mobapp.views.main.MinToGbView
+import java.math.RoundingMode
 
 /**
  * A simple [Fragment] subclass.
  */
-class MinToGbFragment : MviFragment<MinToGbView, MinToGbPresenter>(),
+class MinToGbFragment(val exchangeInfo : ExchangeResponse?) : MviFragment<MinToGbView, MinToGbPresenter>(),
     MinToGbView {
 
     override fun createPresenter() = MinToGbPresenter(context!!)
@@ -31,7 +33,9 @@ class MinToGbFragment : MviFragment<MinToGbView, MinToGbPresenter>(),
     override fun render(state: MinToGbState) {
         when (state) {
             is MinToGbState.EtQuantityChanged -> {
+                val gb = state.quantity * exchangeInfo!!.rate
                 etMin.setText("${state.quantity} мин")
+                etGb.setText("${(gb/1024).toBigDecimal().setScale(1, RoundingMode.UP).toDouble()} ГБ")
             }
         }
     }
@@ -47,7 +51,7 @@ class MinToGbFragment : MviFragment<MinToGbView, MinToGbPresenter>(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        minToGbSeekBar.max = 1550
+        minToGbSeekBar.max = exchangeInfo!!.max_minutes
     }
 
 }

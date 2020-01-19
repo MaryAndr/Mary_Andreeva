@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/cardview_light_background"
+    android:clickable="true"
     tools:context=".fragments.main.MinToGbFragment">
 
 
@@ -76,7 +77,7 @@
                 android:inputType="number"
                 android:minWidth="90dp"
                 android:paddingBottom="10dp"
-                android:text="0 мин"
+                android:text="0 ГБ"
                 android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 

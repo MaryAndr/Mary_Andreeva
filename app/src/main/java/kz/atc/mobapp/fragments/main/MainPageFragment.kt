@@ -45,13 +45,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
             }
             state.mainDataLoaded -> {
                 renderFirstLoad(state)
-                layoutServices.setOnClickListener {
-                    val fr = MinToGbFragment()
-                    val fm = activity!!.supportFragmentManager
-                    val fragmentTransaction = fm!!.beginTransaction().addToBackStack("main_page")
-                    fragmentTransaction.replace(R.id.container, fr)
-                    fragmentTransaction.commit()
-                }
+
             }
         }
     }
@@ -64,6 +58,13 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
 
         if (state.mainData?.subExchange?.available!!) {
             layoutGbToMin.visibility = View.VISIBLE
+            layoutGbToMin.setOnClickListener {
+                val fr = MinToGbFragment(state.mainData?.subExchange)
+                val fm = activity!!.supportFragmentManager
+                val fragmentTransaction = fm!!.beginTransaction().addToBackStack("main_page")
+                fragmentTransaction.replace(R.id.container, fr)
+                fragmentTransaction.commit()
+            }
         }
         tvAbonNumber.text = TextConverter().getFormattedPhone(phoneNumber!!)
         if (state.mainData?.tariffData?.tariff?.name != null) {
