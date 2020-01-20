@@ -58,6 +58,9 @@ interface SubscriberServices {
     @PUT("/lk/v1/subscriber/tariff")
     fun changeTariff(@Body id: TariffChangeRequest) : Observable<TariffChangeResponse>
 
+    @POST("/lk/v1/subscriber/exchange")
+    fun exchangeMins(@Body minutes: ExchangeRequest) : Observable<Unit>
+
     companion object {
         fun create(ctx: Context): SubscriberServices {
             val logging = HttpLoggingInterceptor()
