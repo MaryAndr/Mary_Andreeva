@@ -63,16 +63,16 @@ class MinToGbFragment(val exchangeInfo: ExchangeResponse?) :
     override fun render(state: MinToGbState) {
         when (state) {
             is MinToGbState.EtQuantityChanged -> {
+                val gb = state.quantity * exchangeInfo!!.rate
                 if (!etMin.isFocused) {
-                    val gb = state.quantity * exchangeInfo!!.rate
                     etMin.setText("${state.quantity} мин")
-                    etGb.setText(
-                        "${(gb / 1024).toBigDecimal().setScale(
-                            1,
-                            RoundingMode.UP
-                        ).toDouble()} ГБ"
-                    )
                 }
+                etGb.setText(
+                    "${(gb / 1024).toBigDecimal().setScale(
+                        1,
+                        RoundingMode.UP
+                    ).toDouble()} ГБ"
+                )
             }
 
             is MinToGbState.Exchanged -> {
