@@ -13,5 +13,7 @@ interface MinToGbView : MvpView {
 
     fun exchangeMinsIntent(): Observable<Int>
 
+    fun changeIndicatorIntent() : Observable<Int>
+
     fun render(state: MinToGbState)
 }

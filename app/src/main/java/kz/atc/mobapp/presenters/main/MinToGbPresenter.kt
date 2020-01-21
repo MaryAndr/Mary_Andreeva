@@ -25,11 +25,17 @@ class MinToGbPresenter(val ctx: Context) :
             }
 
 
-        val exchangeInten: Observable<MinToGbState> =
+        val changeIndicatorIntent: Observable<MinToGbState> =
+            intent(MinToGbView::changeIndicatorIntent).flatMap {
+                Observable.just(MinToGbState.IndicatorChange(it))
+            }
+
+
+        val exchangeIntent: Observable<MinToGbState> =
             intent(MinToGbView::exchangeMinsIntent).flatMap {
                 SubscriberInteractor(ctx).subService.exchangeMins(ExchangeRequest(it))
                     .flatMap {
-                        Observable.just(MinToGbState.Exchanged("Success"))
+                        Observable.just(MinToGbState.Exchanged("Обмен успешно произведен"))
                     }.subscribeOn(Schedulers.io()).onErrorReturn { error: Throwable ->
                         var errMessage = error.localizedMessage
                         if (error is HttpException) {
@@ -55,8 +61,9 @@ class MinToGbPresenter(val ctx: Context) :
                 }.subscribeOn(Schedulers.io())
             }
 
-        val allIntents = Observable.merge(changeExchangeIntent,fetchData, exchangeInten)
-            .observeOn(AndroidSchedulers.mainThread())
+        val allIntents =
+            Observable.merge(changeExchangeIntent, fetchData, exchangeIntent, changeIndicatorIntent)
+                .observeOn(AndroidSchedulers.mainThread())
 
 
         subscribeViewState(allIntents, MinToGbView::render)
