@@ -35,6 +35,40 @@ class SubscriberInteractor(ctx: Context) {
             5 to "ЯНАО"
         )
 
+    fun getSettingsMainData(): Observable<SettingsDataModel> {
+
+        val subInfo = subService.subscriberInfo().onErrorReturn {
+            null
+        }
+
+        val subStatus = subService.subscriberStatus().onErrorReturn {
+            null
+        }
+
+
+        return Observable.combineLatest(
+            subInfo,
+            subStatus,
+            BiFunction { subInfoResponse, subStatusResponse ->
+                val contract = if (subInfoResponse.contract_date != null) {
+                    "${subInfoResponse.contract_number} от ${subInfoResponse.contract_date}"
+                } else {
+                    "${subInfoResponse.contract_number}"
+                }
+
+                val dataModel = SettingsDataModel(
+                    subInfoResponse.full_name.replace(" ", "\n"),
+                    subStatusResponse.status.id,
+                    subInfoResponse.msisdn,
+                    subInfoResponse.personal_account.toString(),
+                    contract,
+                    subInfoResponse.region.name
+                )
+                dataModel
+            })
+
+    }
+
 
     fun getTariffs(): Observable<ChangeTariffState> {
         val subTariff = subService.getSubTariff().onErrorReturn {
@@ -64,7 +98,8 @@ class SubscriberInteractor(ctx: Context) {
                         var curTariff = TariffShow()
                         val catResp =
                             CatalogTariffResponse(tariffResp.tariffs.filter { it.id == tariff.id }.toMutableList())
-                        val curAboutData = MyTariffAboutData(subTariffResp, catResp, subServicesResponse)
+                        val curAboutData =
+                            MyTariffAboutData(subTariffResp, catResp, subServicesResponse)
                         curTariff.aboutData = curAboutData
                         curTariff.category =
                             tariff.attributes.firstOrNull { it.system_name == "additional_categories" }
@@ -95,7 +130,9 @@ class SubscriberInteractor(ctx: Context) {
                             val isSubFee =
                                 tariff.attributes?.firstOrNull { it.system_name == "subscription_fee" }?.value != "0"
 
-                            curTariff.price = tariff.attributes?.firstOrNull { it.system_name == "subscription_fee" }?.value
+                            curTariff.price =
+                                tariff.attributes?.firstOrNull { it.system_name == "subscription_fee" }
+                                    ?.value
 
                             curTariff.description =
                                 tariff.attributes?.firstOrNull { it.system_name == "short_description" }

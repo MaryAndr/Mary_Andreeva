@@ -61,6 +61,12 @@ interface SubscriberServices {
     @POST("/lk/v1/subscriber/exchange")
     fun exchangeMins(@Body minutes: ExchangeRequest) : Observable<Unit>
 
+    @GET("/lk/v1/subscriber/info")
+    fun subscriberInfo() : Observable<SubscriberInfoResponse>
+
+    @GET("/lk/v1/subscriber/status")
+    fun subscriberStatus() : Observable<SubscriberStatusResponse>
+
     companion object {
         fun create(ctx: Context): SubscriberServices {
             val logging = HttpLoggingInterceptor()

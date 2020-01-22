@@ -61,10 +61,17 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
             layoutGbToMin.setOnClickListener {
                 val fr = MinToGbFragment(state.mainData?.subExchange)
                 val fm = activity!!.supportFragmentManager
-                val fragmentTransaction = fm!!.beginTransaction().addToBackStack("main_page")
+                val fragmentTransaction = fm!!.beginTransaction()
                 fragmentTransaction.replace(R.id.container, fr)
                 fragmentTransaction.commit()
             }
+        }
+        ivProfilePic.setOnClickListener {
+            val fr = SettingsFragment()
+            val fm = activity!!.supportFragmentManager
+            val fragmentTransaction = fm!!.beginTransaction()
+            fragmentTransaction.replace(R.id.container, fr)
+            fragmentTransaction.commit()
         }
         tvAbonNumber.text = TextConverter().getFormattedPhone(phoneNumber!!)
         if (state.mainData?.tariffData?.tariff?.name != null) {
