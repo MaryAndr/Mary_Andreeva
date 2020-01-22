@@ -22,7 +22,6 @@ class EditTextWithSuffix: EditText {
     }
 
     override fun setText(text: CharSequence?, type: BufferType?) {
-        ta
         super.setText(text, type)
     }
 
