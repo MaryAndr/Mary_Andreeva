@@ -21,6 +21,8 @@
         app:layout_constraintTop_toTopOf="parent">
 
 
+
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/layoutTextInputMin"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -37,16 +39,18 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <kz.atc.mobapp.utils.EditTextWithSuffix
                 android:id="@+id/etMin"
                 android:layout_width="wrap_content"
                 android:layout_height="45dp"
                 android:digits="1234567890"
                 android:inputType="number"
                 android:minWidth="90dp"
-                android:padding="10dp"
-                android:text="0 мин"
-                android:textSize="16sp" />
+                android:text="0"
+                android:textSize="16sp"
+                app:suffix=" Мин" />
+
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -58,7 +62,6 @@
             android:layout_marginRight="20dp"
             android:hint="@string/getGB"
             android:inputType="textNoSuggestions"
-
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
