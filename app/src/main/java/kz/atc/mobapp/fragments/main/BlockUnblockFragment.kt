@@ -12,9 +12,6 @@ import kz.atc.mobapp.R
 import kz.atc.mobapp.models.main.SettingsDataModel
 import kz.atc.mobapp.utils.TextConverter
 
-/**
- * A simple [Fragment] subclass.
- */
 class BlockUnblockFragment(val data: SettingsDataModel) : Fragment() {
 
     override fun onCreateView(
