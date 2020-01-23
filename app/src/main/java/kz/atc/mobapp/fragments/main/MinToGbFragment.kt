@@ -65,7 +65,7 @@ class MinToGbFragment(val exchangeInfo: ExchangeResponse?) :
             is MinToGbState.EtQuantityChanged -> {
                 val gb = state.quantity * exchangeInfo!!.rate
                 if (!etMin.isFocused) {
-                    etMin.setText("${state.quantity} мин")
+                    etMin.setText("${state.quantity}")
                 }
                 etGb.setText(
                     "${(gb / 1024).toBigDecimal().setScale(
@@ -88,7 +88,7 @@ class MinToGbFragment(val exchangeInfo: ExchangeResponse?) :
 
             is MinToGbState.ExchangeData -> {
                 minToGbSeekBar.max = state.data.max_minutes
-                tvMins.text = "${state.data.max_minutes} Мин"
+                tvMins.text = "${state.data.max_minutes}"
                 tvMbValue.text = "${state.data.rate} Мб"
             }
 
