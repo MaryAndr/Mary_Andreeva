@@ -22,7 +22,7 @@ import kz.atc.mobapp.views.main.SettingsView
 /**
  * A simple [Fragment] subclass.
  */
-class SettingsFragment : MviFragment<SettingsView, SettingsPresenter>(), SettingsView {
+class SettingsFragment() : MviFragment<SettingsView, SettingsPresenter>(), SettingsView {
 
     private lateinit var preLoadTrigger: BehaviorSubject<Int>
 
@@ -41,7 +41,6 @@ class SettingsFragment : MviFragment<SettingsView, SettingsPresenter>(), Setting
             is SettingsState.MainDataLoaded -> {
                 pgMainData.visibility = View.GONE
                 mainDataHolder.visibility = View.VISIBLE
-
                 tvName.text = state.data.full_name
                 tvPhoneValue.text = state.data.msisdn
                 tvLcNumberValue.text = state.data.pers_account
@@ -55,6 +54,15 @@ class SettingsFragment : MviFragment<SettingsView, SettingsPresenter>(), Setting
                     tvStatus.text = "Приостановлен"
                     ivLight.setImageResource(R.drawable.inactive_circle)
                 }
+
+                viewBlockUnblockPass.setOnClickListener {
+                    val fr = BlockUnblockFragment(state.data)
+                    val fm = activity!!.supportFragmentManager
+                    val fragmentTransaction = fm!!.beginTransaction().addToBackStack("Settings_tag")
+                    fragmentTransaction.replace(R.id.container, fr)
+                    fragmentTransaction.commit()
+                }
+
             }
         }
     }

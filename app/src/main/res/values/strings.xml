@@ -20,4 +20,6 @@
     <string name="exchange">Обменяйте</string>
     <string name="getGB">Получайте</string>
     <string name="btnEx">Обменять</string>
+    <string name="BlockDefText">Вы можете заблокировать номер на 30 дней, по истечении срока – номер будет отключен</string>
+    <string name="UnblockDefText">Для разблокировки номера необходимо ввести кодове слово</string>
 </resources>
