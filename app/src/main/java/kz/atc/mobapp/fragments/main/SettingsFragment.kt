@@ -1,6 +1,7 @@
 package kz.atc.mobapp.fragments.main
 
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,20 +10,29 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import com.hannesdorfmann.mosby3.mvi.MviFragment
+import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.activity_main_page.*
 import kotlinx.android.synthetic.main.fragment_settings.*
+import kz.atc.mobapp.MainActivity
 
 import kz.atc.mobapp.R
 import kz.atc.mobapp.presenters.main.SettingsPresenter
 import kz.atc.mobapp.states.main.SettingsState
+import kz.atc.mobapp.utils.Constants
+import kz.atc.mobapp.utils.PreferenceHelper
+import kz.atc.mobapp.utils.PreferenceHelper.set
 import kz.atc.mobapp.views.main.SettingsView
 
 /**
  * A simple [Fragment] subclass.
  */
 class SettingsFragment() : MviFragment<SettingsView, SettingsPresenter>(), SettingsView {
+
+    override fun logoutIntent(): Observable<Any> {
+        return RxView.clicks(viewExit)
+    }
 
     private lateinit var preLoadTrigger: BehaviorSubject<Int>
 
@@ -34,6 +44,16 @@ class SettingsFragment() : MviFragment<SettingsView, SettingsPresenter>(), Setti
 
     override fun render(state: SettingsState) {
         when(state) {
+            is SettingsState.LogOut -> {
+                val prefs = PreferenceHelper.customPrefs(context!!, Constants.AUTH_PREF_NAME)
+                prefs[Constants.AUTH_TOKEN] = null
+                prefs[Constants.AUTH_REFRESH_TOKEN] = null
+                val intent = Intent(activity, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                activity!!.startActivity(intent)
+            }
             is SettingsState.Loading -> {
                 mainDataHolder.visibility = View.GONE
                 pgMainData.visibility = View.VISIBLE
@@ -50,13 +70,23 @@ class SettingsFragment() : MviFragment<SettingsView, SettingsPresenter>(), Setti
                 if (state.data.statusId == 1) {
                     tvStatus.text = "Активен"
                     ivLight.setImageResource(R.drawable.active_circle)
+                    tvBlockUnblock.text = "Блокировать номер"
                 } else if (state.data.statusId == 4) {
                     tvStatus.text = "Приостановлен"
                     ivLight.setImageResource(R.drawable.inactive_circle)
+                    tvBlockUnblock.text = "Разблокировать номер"
                 }
 
                 viewBlockUnblockPass.setOnClickListener {
                     val fr = BlockUnblockFragment(state.data)
+                    val fm = activity!!.supportFragmentManager
+                    val fragmentTransaction = fm!!.beginTransaction().addToBackStack("Settings_tag")
+                    fragmentTransaction.replace(R.id.container, fr)
+                    fragmentTransaction.commit()
+                }
+
+                viewChangePass.setOnClickListener{
+                    val fr = ChangePassFragment()
                     val fm = activity!!.supportFragmentManager
                     val fragmentTransaction = fm!!.beginTransaction().addToBackStack("Settings_tag")
                     fragmentTransaction.replace(R.id.container, fr)

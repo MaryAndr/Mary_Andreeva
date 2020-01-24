@@ -27,7 +27,15 @@ class SettingsPresenter(val ctx: Context) : MviBasePresenter<SettingsView, Setti
                 }
                 .startWith (SettingsState.Loading)
 
-        val allIntents = fetchMainData
+        val logoutIntent: Observable<SettingsState> =
+            intent(SettingsView::logoutIntent)
+                .flatMap{
+                    subService.subService.logout().flatMap {
+                        Observable.just(SettingsState.LogOut)
+                    }.subscribeOn(Schedulers.io())
+                }
+
+        val allIntents = Observable.merge(fetchMainData, logoutIntent)
             .observeOn(AndroidSchedulers.mainThread())
 
         subscribeViewState(allIntents, SettingsView::render)

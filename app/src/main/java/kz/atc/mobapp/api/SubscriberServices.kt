@@ -67,6 +67,15 @@ interface SubscriberServices {
     @GET("/lk/v1/subscriber/status")
     fun subscriberStatus() : Observable<SubscriberStatusResponse>
 
+    @PUT("/lk/v1/subscriber/status")
+    fun changeStatus(@Body obj: BlockUnblockRequest) : Observable<BlockUnblockResponse>
+
+    @PUT("/lk/v1/user/password")
+    fun changePass(@Body obj: ChangePassRequest) : Observable<Unit>
+
+    @POST("/lk/v1/user/logout")
+    fun logout(): Observable<Unit>
+
     companion object {
         fun create(ctx: Context): SubscriberServices {
             val logging = HttpLoggingInterceptor()

@@ -9,4 +9,6 @@ interface SettingsView : MvpView {
     fun mainDataLoadingIntent() : Observable<Int>
 
     fun render(state : SettingsState)
+
+    fun logoutIntent(): Observable<Any>
 }

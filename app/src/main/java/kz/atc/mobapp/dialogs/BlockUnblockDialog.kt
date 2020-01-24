@@ -1,24 +1,95 @@
 package kz.atc.mobapp.dialogs
 
+import android.content.DialogInterface
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
+import kotlinx.android.synthetic.main.dialog_block_unblock.*
+import kz.atc.mobapp.R
 import kz.atc.mobapp.models.main.BlockUnblockDataModel
-import kz.atc.mobapp.presenters.main.BlockUnblockPresenter
+import kz.atc.mobapp.models.main.SettingsDataModel
+import kz.atc.mobapp.presenters.main.BlockUnblockDialogPresenter
 import kz.atc.mobapp.states.main.BlockUnblockDialogState
 import kz.atc.mobapp.views.main.BlockUnblockDialogView
 
-class BlockUnblockDialog :
-    BaseBottomDialogMVI<BlockUnblockDialogView, BlockUnblockDialogState, BlockUnblockPresenter>(),
+class BlockUnblockDialog(val data: SettingsDataModel, val message: String? = null) :
+    BaseBottomDialogMVI<BlockUnblockDialogView, BlockUnblockDialogState, BlockUnblockDialogPresenter>(),
     BlockUnblockDialogView {
-    override fun createPresenter(): BlockUnblockPresenter {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+
+    override fun createPresenter() = BlockUnblockDialogPresenter(context!!)
 
     override fun processIntent(): Observable<BlockUnblockDataModel> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return RxView.clicks(btnBlockUnlock)
+            .map<BlockUnblockDataModel> {
+                if (data.statusId == 1) {
+                    BlockUnblockDataModel(true, null, message)
+                } else {
+                    BlockUnblockDataModel(false, etKeyWord.text.toString(), null)
+                }
+            }
     }
 
     override fun render(state: BlockUnblockDialogState) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        when (state) {
+            is BlockUnblockDialogState.RequestProcessed -> {
+                if (state.isProcessed) {
+                    Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+                    targetFragment?.activity?.onBackPressed()
+                    dismiss()
+                } else {
+                    Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+                    if (state.incorrectCounter != null) {
+                        if (state.incorrectCounter > 0) {
+                            layoutTextInput.error =
+                                "Неверное кодовое слово! У вас осталось ${state.incorrectCounter} попыток"
+                        } else {
+                            layoutTextInput.visibility = View.GONE
+                            tvWrongKeyTitle.visibility = View.VISIBLE
+                            tvWrongKeySubTitle.visibility = View.VISIBLE
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(
+            R.layout.dialog_block_unblock, container,
+            false
+        )
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        if (data.statusId == 1) {
+            tvPhoneNumber.text = data.msisdn!!
+            title.text = "Блокировка номера"
+            viewUnblock.visibility = View.GONE
+            btnBlockUnlock.text = "Блокировать номер"
+        } else if (data.statusId == 4) {
+            tvPhoneNumber.text = data.msisdn!!
+            title.text = "Разблокировка номера"
+            viewUnblock.visibility = View.VISIBLE
+            etKeyWord.visibility = View.VISIBLE
+            btnBlockUnlock.text = "Разблокировать номер"
+        }
+    }
+
+    companion object {
+
+        fun newInstance(data: SettingsDataModel, message: String? = null): BlockUnblockDialog {
+            return BlockUnblockDialog(data, message)
+        }
     }
 
 }

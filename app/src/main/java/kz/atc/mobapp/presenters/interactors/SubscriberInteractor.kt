@@ -23,7 +23,7 @@ class SubscriberInteractor(ctx: Context) {
         SubscriberServices.create(ctx)
     }
 
-    private val userService by lazy {
+    val userService by lazy {
         AuthServices.create()
     }
 

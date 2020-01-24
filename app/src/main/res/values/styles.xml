@@ -21,6 +21,15 @@
         <item name="bottomSheetStyle">@style/AppModalStyle</item>
     </style>
 
+    <style name="MyDialogFragmentTheme" parent="Theme.MaterialComponents.Light.Dialog">
+        <item name="actionBarSize">30dp</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorPrimaryDark</item>
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
+        <item name="buttonStyle">@style/yourButtonStyle</item>
+        <item name="android:statusBarColor" tools:ignore="NewApi">@color/defaultBorderColor</item>
+    </style>
 
     <style name="AppModalStyle"
         parent="Widget.Design.BottomSheet.Modal">
@@ -30,6 +39,7 @@
 
     <style name="MainPageTheme" parent="Theme.MaterialComponents.Light.Bridge">
         <!-- Customize your theme here. -->
+        <item name="dialogTheme">@style/MainPageTheme</item>
         <item name="actionBarSize">60dp</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>

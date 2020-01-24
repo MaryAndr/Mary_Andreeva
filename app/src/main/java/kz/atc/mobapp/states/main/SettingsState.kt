@@ -6,6 +6,8 @@ sealed class SettingsState {
 
     data class MainDataLoaded(val data: SettingsDataModel) : SettingsState()
 
+    object LogOut : SettingsState()
+
     object Loading : SettingsState()
 
 }
