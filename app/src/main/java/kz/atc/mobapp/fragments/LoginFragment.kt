@@ -65,7 +65,7 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
             state.errorStateShown -> {
                 mainView.isClickable = true
                 loading.visibility = View.GONE
-                if (state.errorMessage == "Номер не может быть пустым") {
+                if (state.errorMessage == "Номер не может быть пустым" || state.errorMessage == "Введите корректный номер телефона") {
                     layoutTextInputPhone.error = state.errorMessage
                     layoutTextInput.error = " "
                 } else {
