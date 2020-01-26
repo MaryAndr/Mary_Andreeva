@@ -21,30 +21,34 @@ import kz.atc.mobapp.utils.PreferenceHelper.set
 
 class MainPageActivity : AppCompatActivity() {
 
-    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
-        when (menuItem.itemId) {
-            R.id.navigation_home -> {
-                val fragment = MainPageFragment()
-                supportFragmentManager.beginTransaction().replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
-                    .commit()
-                return@OnNavigationItemSelectedListener true
-            }
-            R.id.navigation_costs -> {
-                val fragment = CostsAndReplenishment()
-                supportFragmentManager.beginTransaction().replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
-                    .commit()
-                return@OnNavigationItemSelectedListener true
-            }
-            R.id.navigation_tariff -> {
-                val fragment = MyTariffFragment()
+    private val mOnNavigationItemSelectedListener =
+        BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.navigation_home -> {
+                    val fragment = MainPageFragment()
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
+                        .commit()
+                    return@OnNavigationItemSelectedListener true
+                }
+                R.id.navigation_costs -> {
+                    val fragment = CostsAndReplenishment()
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
+                        .commit()
+                    return@OnNavigationItemSelectedListener true
+                }
+                R.id.navigation_tariff -> {
+                    val fragment = MyTariffFragment()
 
-                supportFragmentManager.beginTransaction().replace(R.id.container, fragment, fragment.javaClass.simpleName)
-                    .commit()
-                return@OnNavigationItemSelectedListener true
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.container, fragment, fragment.javaClass.simpleName)
+                        .commit()
+                    return@OnNavigationItemSelectedListener true
+                }
             }
+            false
         }
-        false
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -65,6 +69,10 @@ class MainPageActivity : AppCompatActivity() {
         supportActionBar!!.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
         supportActionBar!!.setCustomView(R.layout.abs_layout)
 
+        val fragment = MainPageFragment()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, fragment, fragment.javaClass.getSimpleName())
+            .commit()
 
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }

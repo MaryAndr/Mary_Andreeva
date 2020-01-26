@@ -13,6 +13,7 @@ import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxbinding2.widget.RxCompoundButton
 import com.jakewharton.rxbinding2.widget.RxRadioGroup
 import io.reactivex.Observable
+import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.activity_main_page.*
 import kotlinx.android.synthetic.main.fragment_services.*
@@ -94,6 +95,10 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        RxJavaPlugins.setErrorHandler { throwable ->
+            throwable.printStackTrace()
+        }
 
     }
 

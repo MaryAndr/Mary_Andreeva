@@ -56,6 +56,13 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         pgMainData.visibility = View.GONE
         layoutServices.visibility = View.VISIBLE
 
+        layoutServices.setOnClickListener {
+            val fr = ServicesFragment()
+            val fm = activity!!.supportFragmentManager
+            val fragmentTransaction = fm!!.beginTransaction().addToBackStack("main_page")
+            fragmentTransaction.replace(R.id.container, fr)
+            fragmentTransaction.commit()
+        }
         if (state.mainData?.subExchange?.available!!) {
             layoutGbToMin.visibility = View.VISIBLE
             layoutGbToMin.setOnClickListener {
