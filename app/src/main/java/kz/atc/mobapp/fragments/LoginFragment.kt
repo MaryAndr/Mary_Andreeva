@@ -58,7 +58,13 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
 
     override fun render(state: LoginPageState) {
         when {
+            state.loading -> {
+                mainView.isClickable = false
+                loading.visibility = View.VISIBLE
+            }
             state.errorStateShown -> {
+                mainView.isClickable = true
+                loading.visibility = View.GONE
                 if (state.errorMessage == "Номер не может быть пустым") {
                     layoutTextInputPhone.error = state.errorMessage
                     layoutTextInput.error = " "
@@ -68,10 +74,14 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
                 }
             }
             state.successFullyAuthorized -> {
+                mainView.isClickable = true
+                loading.visibility = View.GONE
                 val intent = Intent (activity, MainPageActivity::class.java)
                 activity?.startActivity(intent)
             }
             state.defaultState -> {
+                mainView.isClickable = true
+                loading.visibility = View.GONE
                 layoutTextInputPhone.boxStrokeColor = Color.parseColor("#fa6600")
                 layoutTextInput.boxStrokeColor = Color.parseColor("#fa6600")
                 layoutTextInputPhone.error = ""

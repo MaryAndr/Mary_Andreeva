@@ -23,6 +23,7 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
             intent(LoginPageView::authorizeIntent)
                 .flatMap { authData ->
                     UserInteractor().completeAuthorization(authData, ctx)
+                        .startWith(LoginPagePartialState.Loading)
                         .onErrorResumeNext { error: Throwable ->
                             var errMessage = error.localizedMessage
                             if (error is HttpException) {
@@ -38,10 +39,8 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
                                 }
                             }
                             Observable.just(LoginPagePartialState.ErrorState(errMessage))
-                        }
+                        }.subscribeOn(Schedulers.io())
                 }
-                .retry()
-                .subscribeOn(Schedulers.io())
 
         val checkAuthIntent: Observable<LoginPagePartialState> =
             intent(LoginPageView::checkAuthIntent)
@@ -53,7 +52,8 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
         val reenterIntent: Observable<LoginPagePartialState> =
             intent(LoginPageView::reenterIntent)
                 .map<LoginPagePartialState> {
-                    LoginPagePartialState.DefaultState }
+                    LoginPagePartialState.DefaultState
+                }
                 .subscribeOn(Schedulers.io())
 
         val initialState = LoginPageState(
@@ -92,11 +92,13 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
             is LoginPagePartialState.ErrorState -> {
                 previousState.errorMessage = changes.error
                 previousState.errorStateShown = true
+                previousState.loading = false
                 previousState.successFullyAuthorized = false
                 previousState.defaultState = false
                 return previousState
             }
             is LoginPagePartialState.Authorized -> {
+                previousState.loading = false
                 previousState.successFullyAuthorized = true
                 previousState.errorMessage = null
                 previousState.defaultState = false
@@ -106,6 +108,7 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
                 previousState.loading = true
                 previousState.errorMessage = null
                 previousState.defaultState = false
+                previousState.successFullyAuthorized = false
                 return previousState
             }
         }
