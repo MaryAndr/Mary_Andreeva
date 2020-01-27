@@ -24,6 +24,7 @@ import ru.filit.motiv.app.presenters.main.MinToGbPresenter
 import ru.filit.motiv.app.states.main.MinToGbState
 import ru.filit.motiv.app.views.main.MinToGbView
 import java.math.RoundingMode
+import java.util.concurrent.TimeUnit
 
 /**
  * A simple [Fragment] subclass.
@@ -56,8 +57,9 @@ class MinToGbFragment(val exchangeInfo: ExchangeResponse?) :
 
     override fun createPresenter() = MinToGbPresenter(context!!)
 
+    //Без debounce при частом использовании SeekBar'а, приложение фризится
     override fun changeQuantityIntent(): Observable<Int> {
-        return RxSeekBar.changes(minToGbSeekBar)
+        return RxSeekBar.changes(minToGbSeekBar).debounce(10, TimeUnit.MILLISECONDS)
     }
 
     override fun render(state: MinToGbState) {

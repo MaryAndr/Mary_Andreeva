@@ -347,6 +347,7 @@ class SubscriberInteractor(ctx: Context) {
         val transHistory = subService.getTransferedHistory().onErrorReturn {
             mutableListOf()
         }
+        val exchangeInfo = subService.getExchangeInfo()
 
 //        subTariff.flatMap { subTariffResponse ->
 //            val mainData = MyTariffMainData(subTariffResponse)
@@ -366,8 +367,10 @@ class SubscriberInteractor(ctx: Context) {
             subInfo,
             transHistory,
             subRemains,
-            Function4 { subTariffResponse, subInfoResponse, transHistoryResponse, subRemainsResponse ->
+            exchangeInfo,
+            Function5 { subTariffResponse, subInfoResponse, transHistoryResponse, subRemainsResponse, exResponse ->
                 val mainData = MyTariffMainData(subTariffResponse)
+                mainData.exchangeInfo = exResponse
                 userService.getCatalogTariff(subTariffResponse.tariff.id.toString()).flatMap {
                     mainData.catalogTariff = it
                     Observable.just(mainData)

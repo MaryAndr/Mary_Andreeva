@@ -7,10 +7,10 @@ class StringUtils {
     fun unitValueConverter(value: Int) : UnitValue{
         val unitValue = UnitValue(null,null)
         if(value < 1024) {
-            unitValue.value = value
+            unitValue.value = value.toDouble()
             unitValue.unit = "Мб"
         } else {
-            unitValue.value = value/1024
+            unitValue.value = value.toDouble()/1024
             unitValue.unit = "Гб"
         }
         return unitValue

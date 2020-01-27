@@ -13,7 +13,9 @@ import kotlinx.android.synthetic.main.service_confirmation_dialog.ivClose
 import kotlinx.android.synthetic.main.service_confirmation_dialog.title
 import ru.filit.motiv.app.R
 import ru.filit.motiv.app.adapters.ExpandableServiceAdapter
+import ru.filit.motiv.app.adapters.MyTariffServicesAdapter
 import ru.filit.motiv.app.adapters.ServicesViewHolder
+import ru.filit.motiv.app.adapters.ViewHolder
 import ru.filit.motiv.app.models.main.ServiceDialogModel
 import ru.filit.motiv.app.presenters.main.ServiceDialogPresenter
 import ru.filit.motiv.app.states.main.ServiceDialogState
@@ -45,6 +47,9 @@ class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
                     is ExpandableServiceAdapter.ChildViewHolder -> {
                         data.itemHolder as ExpandableServiceAdapter.ChildViewHolder
                     }
+                    is ViewHolder -> {
+                        data.itemHolder as ViewHolder
+                    }
                     else -> {
                         data.itemHolder as ServicesViewHolder
                     }
@@ -56,6 +61,9 @@ class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
                             is ExpandableServiceAdapter.ChildViewHolder -> {
                                 (data.itemHolder as ExpandableServiceAdapter.ChildViewHolder).tgService.isEnabled = false
                             }
+                            is ViewHolder -> {
+                                (data.itemHolder as ViewHolder).tgButton.isEnabled = false
+                            }
                             else -> {
                                 (data.itemHolder as ServicesViewHolder).tgService.isEnabled = false
                             }
@@ -63,6 +71,8 @@ class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
                     }
                     .create()
                     .show()
+
+                dismiss()
             }
             is ServiceDialogState.ErrorShown -> {
                 Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()

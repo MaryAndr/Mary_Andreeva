@@ -77,8 +77,7 @@ class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boole
             btnTariffChange.visibility = View.GONE
         }
 
-
-        tvTariffName.text = data.catalogTariff?.tariffs?.first()?.name
+        tvTariffName.text = "\"" + data.catalogTariff?.tariffs?.first()?.name + "\""
 
         ivClose.setOnClickListener {
             dismiss()

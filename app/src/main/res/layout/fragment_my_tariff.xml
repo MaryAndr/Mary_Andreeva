@@ -26,7 +26,7 @@
             android:id="@+id/mainConstraint"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone">
+            android:visibility="visible">
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -299,7 +299,8 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tvInternet" />
+                            app:layout_constraintTop_toBottomOf="@+id/tvInternet"
+                            app:layout_constraintVertical_bias="0.0" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -313,6 +314,36 @@
                         app:layout_constraintStart_toStartOf="@+id/guideline24"
                         app:layout_constraintTop_toBottomOf="@+id/constInternet"
                         app:layout_constraintVertical_bias="0.1">
+
+                        <LinearLayout
+                            android:id="@+id/viewEx"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:visibility="gone"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/voiceRecyclerView">
+
+                            <ImageView
+                                android:id="@+id/imageView3"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:src="@drawable/ic_min_gb" />
+
+                            <TextView
+                                android:id="@+id/tvExchange"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="Обменять минуты на гигабайты"
+                                android:textColor="@color/brightOrange" />
+
+                        </LinearLayout>
+
+
 
                         <TextView
                             android:id="@+id/tvVoice"
@@ -335,7 +366,8 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tvVoice" />
+                            app:layout_constraintTop_toBottomOf="@+id/tvVoice"
+                            app:layout_constraintVertical_bias="0.0" />
 
                         <LinearLayout
                             android:id="@+id/viewAmountVoiceConditions"
@@ -409,6 +441,8 @@
                             </LinearLayout>
 
                         </LinearLayout>
+
+
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -708,7 +742,7 @@
 
                     <TextView
                         android:id="@+id/tvTariffRate"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="@string/blankText"
                         android:textColor="#000000"
