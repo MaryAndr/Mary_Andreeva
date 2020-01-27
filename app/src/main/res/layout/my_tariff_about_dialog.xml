@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <kz.atc.mobapp.utils.MyNestedScrollView
+    <ru.filit.motiv.app.utils.MyNestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -459,5 +459,5 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </kz.atc.mobapp.utils.MyNestedScrollView>
+    </ru.filit.motiv.app.utils.MyNestedScrollView>
 </LinearLayout>

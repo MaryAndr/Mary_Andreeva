@@ -39,7 +39,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0">
 
-            <kz.atc.mobapp.utils.EditTextWithSuffix
+            <ru.filit.motiv.app.utils.EditTextWithSuffix
                 android:id="@+id/etMin"
                 android:layout_width="wrap_content"
                 android:layout_height="45dp"

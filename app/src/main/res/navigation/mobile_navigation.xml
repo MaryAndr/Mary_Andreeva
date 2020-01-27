@@ -6,17 +6,17 @@
     app:startDestination="@id/mainPage">
     <fragment
         android:id="@+id/mainPage"
-        android:name="kz.atc.mobapp.fragments.main.MainPageFragment"
+        android:name="ru.filit.motiv.app.fragments.main.MainPageFragment"
         android:label="fragment_main_page"
         tools:layout="@layout/fragment_main_page" />
     <fragment
         android:id="@+id/costsAndReplenishment"
-        android:name="kz.atc.mobapp.fragments.main.CostsAndReplenishment"
+        android:name="ru.filit.motiv.app.fragments.main.CostsAndReplenishment"
         android:label="fragment_costs_and_replenishment"
         tools:layout="@layout/fragment_costs_and_replenishment" />
     <fragment
         android:id="@+id/costsEmailFragment"
-        android:name="kz.atc.mobapp.fragments.main.CostsEmailFragment"
+        android:name="ru.filit.motiv.app.fragments.main.CostsEmailFragment"
         android:label="fragment_costs_email"
         tools:layout="@layout/fragment_costs_email" />
 </navigation>

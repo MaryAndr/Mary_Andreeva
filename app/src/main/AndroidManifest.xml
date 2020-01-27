@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="kz.atc.mobapp">
+    package="ru.filit.motiv.app">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -18,14 +18,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainPageActivity"
+            android:name="ru.filit.motiv.app.MainPageActivity"
             android:label="@string/title_activity_main_page"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/MainPageTheme"
             ></activity>
         <activity
-            android:name=".SplashScreen"
+            android:name="ru.filit.motiv.app.SplashScreen"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent">
@@ -36,7 +36,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name="ru.filit.motiv.app.MainActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
@@ -47,7 +47,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="kz.atc.provider"
+            android:authorities="ru.filit.motiv.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -56,7 +56,7 @@
         </provider>
 
         <receiver
-            android:name=".utils.DownloadReceiver"
+            android:name="ru.filit.motiv.app.utils.DownloadReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
