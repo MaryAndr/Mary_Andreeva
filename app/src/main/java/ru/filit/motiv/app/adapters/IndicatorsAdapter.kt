@@ -9,6 +9,8 @@ import kotlinx.android.synthetic.main.indictors_list.view.*
 import ru.filit.motiv.app.R
 import ru.filit.motiv.app.models.main.IndicatorHolder
 import ru.filit.motiv.app.utils.StringUtils
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 class IndicatorsAdapter(val indicatorsModels: MutableList<IndicatorHolder>, val context: Context) :
     RecyclerView.Adapter<IndicatorViewHolder>() {
@@ -37,12 +39,14 @@ class IndicatorsAdapter(val indicatorsModels: MutableList<IndicatorHolder>, val 
             holder.pbCondition.progress = 100
         } else {
             if (indicatorsModels[position].type == "DATA") {
+                val df = DecimalFormat("#.##")
+                df.roundingMode = RoundingMode.CEILING
                 holder.tvConditionRest.text =
-                    "${StringUtils().unitValueConverter(indicatorsModels[position].rest!!).value} ${StringUtils().unitValueConverter(
+                    "${df.format(StringUtils().unitValueConverter(indicatorsModels[position].rest!!).value)} ${StringUtils().unitValueConverter(
                         indicatorsModels[position].rest!!
                     ).unit}"
                 holder.tvconditionTotal.text =
-                    "из ${StringUtils().unitValueConverter(indicatorsModels[position].total!!).value} ${StringUtils().unitValueConverter(
+                    "из ${df.format(StringUtils().unitValueConverter(indicatorsModels[position].total!!).value)} ${StringUtils().unitValueConverter(
                         indicatorsModels[position].total!!
                     ).unit}"
             } else {

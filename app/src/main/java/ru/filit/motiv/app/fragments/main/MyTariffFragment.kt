@@ -47,6 +47,17 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
             state.mainDataLoaded -> {
                 pgMainData.visibility = View.GONE
                 mainConstraint.visibility = View.VISIBLE
+
+                if (state.mainData?.exchangeInfo?.available != null && state.mainData?.exchangeInfo?.available!!) {
+                    viewEx.visibility = View.VISIBLE
+                    viewEx.setOnClickListener {
+                        val fr = MinToGbFragment(state.mainData?.exchangeInfo)
+                        val fm = fragmentManager
+                        val fragmentTransaction = fm!!.beginTransaction().addToBackStack("mytariff")
+                        fragmentTransaction.replace(R.id.container, fr)
+                        fragmentTransaction.commit()
+                    }
+                }
                 viewOtherTarrifs.setOnClickListener {
                     val fr = ChangeTariff()
                     val fm = fragmentManager
@@ -106,7 +117,7 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         }
 
 
-        tvTariffName.text = subTariff?.tariff?.name
+        tvTariffName.text = "\"" + subTariff?.tariff?.name + "\""
         if (subTariff?.tariff?.id in mutableListOf(14, 26, 27, 28)) {
             tvTariffCondition.text = TextConverter().descriptionBuilder(
                 subTariff?.tariff?.constructor?.min!!.substringBefore(","),

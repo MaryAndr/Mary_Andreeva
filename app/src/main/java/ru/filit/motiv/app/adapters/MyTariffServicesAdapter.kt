@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -19,6 +20,10 @@ import ru.filit.motiv.app.models.ErrorJson
 import ru.filit.motiv.app.models.main.ServicesListShow
 import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
 import retrofit2.HttpException
+import ru.filit.motiv.app.dialogs.ServiceConfirmationDialogMVI
+import ru.filit.motiv.app.models.main.ServiceDialogModel
+import ru.filit.motiv.app.utils.TimeUtils
+import java.util.*
 
 class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val context: Context) :
     RecyclerView.Adapter<ViewHolder>() {
@@ -52,38 +57,56 @@ class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val con
         holder.tvName.text = items?.get(position)?.serviceName
         holder.tvDescription.text = items?.get(position)?.description
         holder.tvValue.text =
-            items?.get(position)?.price + " ${context.resources.getString(R.string.rub_value)}/сутки"
+            items?.get(position)?.price + " ${context.resources.getString(R.string.rub_value)}/месяц"
+
         holder.tgButton.isChecked = true
-        if (holder.tgButton.isEnabled) {
-            holder.tgButton.setOnCheckedChangeListener { _, isChecked ->
-                if (!isChecked) {
-                    myCompositeDisposable?.add(
-                        services.subService.deleteService(items?.get(position)?.id)
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeOn(Schedulers.io())
-                            .subscribe({
-                                removeItem(position)
-                            }, { error ->
-                                var errMessage = error.localizedMessage
-                                if (error is HttpException) {
-                                    errMessage = if (error.code() == 409) {
-                                        "Вы не являетесь пользователем мобильной связи"
-                                    } else {
-                                        val errorBody = error.response()!!.errorBody()
-                                        val adapter =
-                                            gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
-                                        val errorObj = adapter.fromJson(errorBody!!.string())
-                                        errorObj.error_description
-                                    }
-                                }
-                                holder.tgButton.isChecked = true
-                                holder.tgButton.isEnabled = true
-                                Toast.makeText(context, errMessage, Toast.LENGTH_LONG).show()
-                            })
-                    )
-                }
+        holder.tgButton.isEnabled = true
+        holder.tgButton.setOnCheckedChangeListener { compoundButton, isChecked ->
+            if(!isChecked) {
+                val dataToPass = ServiceDialogModel()
+                dataToPass.serv_name = items!![position].serviceName
+                dataToPass.serv_id = items!![position].id
+                dataToPass.isConnection = false
+                dataToPass.itemHolder = holder
+                dataToPass.conDate = TimeUtils().dateToString(Calendar.getInstance())
+                val dialog = ServiceConfirmationDialogMVI.newInstance(dataToPass)
+                dialog.show(
+                    (context as AppCompatActivity).supportFragmentManager,
+                    "Accept Dialog"
+                )
             }
         }
+
+//        if (holder.tgButton.isEnabled) {
+//            holder.tgButton.setOnCheckedChangeListener { _, isChecked ->
+//                if (!isChecked) {
+//                    myCompositeDisposable?.add(
+//                        services.subService.deleteService(items?.get(position)?.id)
+//                            .observeOn(AndroidSchedulers.mainThread())
+//                            .subscribeOn(Schedulers.io())
+//                            .subscribe({
+//                                removeItem(position)
+//                            }, { error ->
+//                                var errMessage = error.localizedMessage
+//                                if (error is HttpException) {
+//                                    errMessage = if (error.code() == 409) {
+//                                        "Вы не являетесь пользователем мобильной связи"
+//                                    } else {
+//                                        val errorBody = error.response()!!.errorBody()
+//                                        val adapter =
+//                                            gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+//                                        val errorObj = adapter.fromJson(errorBody!!.string())
+//                                        errorObj.error_description
+//                                    }
+//                                }
+//                                holder.tgButton.isChecked = true
+//                                holder.tgButton.isEnabled = true
+//                                Toast.makeText(context, errMessage, Toast.LENGTH_LONG).show()
+//                            })
+//                    )
+//                }
+//            }
+//        }
     }
 
     private fun removeItem(position: Int) {

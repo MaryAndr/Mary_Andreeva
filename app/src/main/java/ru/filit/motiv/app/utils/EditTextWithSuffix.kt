@@ -28,7 +28,7 @@ class EditTextWithSuffix: EditText {
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         if(this.text.isNotEmpty()) {
-            val suffixXPosition = textPaint.measureText(this.text.toString()) + paddingLeft + suffixPadding - textPaint.measureText("   ")
+            val suffixXPosition = textPaint.measureText(this.text.toString()) + paddingLeft + suffixPadding
 
             canvas?.drawText(
                 suffix,

@@ -21,6 +21,8 @@ import ru.filit.motiv.app.states.main.MainPageState
 import ru.filit.motiv.app.utils.StringUtils
 import ru.filit.motiv.app.utils.TextConverter
 import ru.filit.motiv.app.views.main.MainPageView
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 
 class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
@@ -99,14 +101,15 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
 
                 if (rest != 0 || total != 0) {
                     groupData.visibility = View.VISIBLE
-
+                    val df = DecimalFormat("#.##")
+                    df.roundingMode = RoundingMode.HALF_UP
                     pbInternet.progress = indicatorHolder["DATA"]?.percent!!
                     tvDataRestAmount.text =
-                        "${StringUtils().unitValueConverter(rest).value} ${StringUtils().unitValueConverter(
+                        "${df.format(StringUtils().unitValueConverter(rest).value)} ${StringUtils().unitValueConverter(
                             rest
                         ).unit}"
                     tvDataTotalAmount.text =
-                        "из ${StringUtils().unitValueConverter(total).value} ${StringUtils().unitValueConverter(
+                        "из ${df.format(StringUtils().unitValueConverter(total).value)} ${StringUtils().unitValueConverter(
                             total
                         ).unit}"
                 }
