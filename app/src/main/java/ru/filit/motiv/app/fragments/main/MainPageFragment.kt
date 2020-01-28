@@ -69,6 +69,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 val fr = MinToGbFragment(state.mainData?.subExchange)
                 val fm = activity!!.supportFragmentManager
                 val fragmentTransaction = fm!!.beginTransaction()
+                fragmentTransaction.addToBackStack("min_to_gb")
                 fragmentTransaction.replace(R.id.container, fr)
                 fragmentTransaction.commit()
             }
