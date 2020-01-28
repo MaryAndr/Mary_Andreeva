@@ -65,8 +65,8 @@ class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boole
                 val dataToSend = TariffDialogModelData()
                 dataToSend.tariffId = data.catalogTariff?.tariffs?.first()?.id?.toString()
                 dataToSend.tariffName = data.catalogTariff?.tariffs?.first()?.name
-                dataToSend.tariffAbonCost = data.subscriberServices?.first()?.price?.toString()
-                dataToSend.tariffChangeCost = data.subscriberServices?.first()?.priceOn?.toString()
+                dataToSend.tariffAbonCost = data.catalogTariff?.tariffs?.first()?.attributes?.firstOrNull{it.system_name == "subscription_fee"}?.value
+                dataToSend.tariffChangeCost = data.catalogTariff?.tariffs?.first()?.attributes?.firstOrNull{it.param == "Обязательный первичный платеж"}?.value
                 val dialog = TariffConfirmationDialogMVI.newInstance(dataToSend)
                 dialog.show(
                     (context as AppCompatActivity).supportFragmentManager,

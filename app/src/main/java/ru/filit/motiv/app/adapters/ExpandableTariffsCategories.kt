@@ -97,28 +97,37 @@ class ExpandableTariffsCategories internal constructor(
             viewHolder = rowView.tag as ChildTariffViewHolder
         }
 
+
+        if (child.isNew) {
+            viewHolder.ivNew.visibility = View.VISIBLE
+        }
+
         viewHolder.tvInfoName.text = child.name
 
         if (child.dataValueUnit != null) {
+            viewHolder.addDataView.visibility = View.VISIBLE
             viewHolder.tvAddData.text = child.dataValueUnit
         } else {
             viewHolder.addDataView.visibility = View.GONE
         }
 
         if (child.voiceValueUnit != null) {
+            viewHolder.addVoiceView.visibility = View.VISIBLE
             viewHolder.tvAddVoice.text = child.voiceValueUnit
         } else {
             viewHolder.addVoiceView.visibility = View.GONE
         }
 
         if (child.smsValueUnit != null) {
+            viewHolder.addSmsView.visibility = View.VISIBLE
             viewHolder.tvAddSms.text = child.smsValueUnit
         } else {
             viewHolder.addSmsView.visibility = View.GONE
         }
 
         if (child.price != null) {
-            viewHolder.tvPrice.text = child.price + context.resources.getString(R.string.rub_value)
+            viewHolder.tvPrice.text =
+                "${child.price} ${context.resources.getString(R.string.rub_value)}/месяц"
         } else {
             viewHolder.tvPrice.visibility = View.GONE
         }
@@ -161,6 +170,7 @@ class ExpandableTariffsCategories internal constructor(
         val tvPrice = view?.findViewById(R.id.tvPrice) as TextView
         val tvDescription = view?.findViewById(R.id.tvDescription) as TextView
         val tvDetails = view?.findViewById(R.id.tvDetails) as TextView
+        val ivNew = view?.findViewById(R.id.ivNew) as ImageView
     }
 
     private class GroupViewHolder(view: View?) {
