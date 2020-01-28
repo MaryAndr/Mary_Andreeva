@@ -22,6 +22,7 @@ import ru.filit.motiv.app.R
 import ru.filit.motiv.app.models.ExchangeResponse
 import ru.filit.motiv.app.presenters.main.MinToGbPresenter
 import ru.filit.motiv.app.states.main.MinToGbState
+import ru.filit.motiv.app.utils.MinMaxFilterValue
 import ru.filit.motiv.app.views.main.MinToGbView
 import java.math.RoundingMode
 import java.util.concurrent.TimeUnit
@@ -29,7 +30,7 @@ import java.util.concurrent.TimeUnit
 /**
  * A simple [Fragment] subclass.
  */
-class MinToGbFragment(val exchangeInfo: ExchangeResponse?) :
+class MinToGbFragment(private var exchangeInfo: ExchangeResponse?) :
     MviFragment<MinToGbView, MinToGbPresenter>(),
     MinToGbView {
     override fun changeIndicatorIntent(): Observable<Int> {
@@ -92,6 +93,8 @@ class MinToGbFragment(val exchangeInfo: ExchangeResponse?) :
                 minToGbSeekBar.max = state.data.max_minutes
                 tvMins.text = "${state.data.max_minutes}"
                 tvMbValue.text = "${state.data.rate} Мб"
+                etMin.filters = arrayOf(MinMaxFilterValue(0,state.data.max_minutes))
+                exchangeInfo = state.data
             }
 
             is MinToGbState.IndicatorChange -> {
