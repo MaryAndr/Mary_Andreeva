@@ -99,7 +99,7 @@ interface SubscriberServices {
                     GsonConverterFactory.create()
                 )
                 .client(client)
-                .baseUrl("http://10.241.12.201:30100")
+                .baseUrl("https://mptest.motivtelecom.ru")
                 .build()
 
             return retrofit.create(SubscriberServices::class.java)

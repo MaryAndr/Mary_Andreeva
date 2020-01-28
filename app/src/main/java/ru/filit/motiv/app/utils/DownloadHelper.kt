@@ -87,7 +87,7 @@ class DownloadHelper {
                 // FileUri - Convert it to contentUri.
                 val file = File(attachmentUri.path)
                 attachmentUri =
-                    FileProvider.getUriForFile(context, "kz.atc.provider", file)
+                    FileProvider.getUriForFile(context, "ru.filit.motiv.provider", file)
             }
 
             val openAttachmentIntent = Intent(Intent.ACTION_VIEW)
