@@ -77,6 +77,8 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
                 mainView.isClickable = true
                 loading.visibility = View.GONE
                 val intent = Intent (activity, MainPageActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 activity?.startActivity(intent)
             }
             state.defaultState -> {
