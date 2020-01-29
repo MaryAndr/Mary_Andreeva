@@ -90,7 +90,8 @@ class SubscriberInteractor(ctx: Context) {
                 val currentTariff = TariffShow()
                 var allTariffsInfo: CatalogTariffResponse? = null
 
-                val tariffIds = subAvalTariffResp.joinToString { it.id.toString() }
+                val tariffIds =
+                    "${subAvalTariffResp.joinToString { it.id.toString() }},${subTariffResp.tariff.id}"
                 userService.getCatalogTariff(tariffIds).flatMap { tariffResp ->
                     val changeTariffMainData = mutableListOf<TariffShow>()
                     allTariffsInfo = tariffResp
@@ -102,10 +103,23 @@ class SubscriberInteractor(ctx: Context) {
                             MyTariffAboutData(subTariffResp, catResp, subServicesResponse)
                         curTariff.aboutData = curAboutData
                         curTariff.category =
-                            tariff.attributes.firstOrNull { it.system_name == "additional_categories" }
+                            tariff.attributes.firstOrNull { it.system_name == "main_category" }
                                 ?.value
-                        if (curTariff.category == null) {
-                            curTariff.category = "Без категории"
+                        if (tariff.id == subTariffResp.tariff.id) {
+                            curTariff.category = null
+                            curTariff.isCurrent = true
+                        } else {
+                            if (curTariff.category == "Новинки") {
+                                curTariff.isNew = true
+                                if (tariff.attributes.firstOrNull { it.system_name == "additional_categories" }
+                                        ?.value != null) {
+                                    curTariff.category =
+                                        tariff.attributes.firstOrNull { it.system_name == "additional_categories" }
+                                            ?.value
+                                } else {
+                                    curTariff.category = "Без категории"
+                                }
+                            }
                         }
                         curTariff.name = tariff.name
                         curTariff.isCurrent = subTariffResp.tariff.id == tariff.id
@@ -207,7 +221,6 @@ class SubscriberInteractor(ctx: Context) {
         )
 
     }
-
 
     fun getEnabledServices(isExist: Boolean): Observable<MutableList<ServicesListShow>> {
         val subInfo = subService.getSubInfo().onErrorReturn {

@@ -34,7 +34,6 @@ class DownloadHelper {
             )
             Log.d("DM", url)
             val manager = activity.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-
             manager.enqueue(request)
         } catch (ex: Exception) {
             ex.printStackTrace()

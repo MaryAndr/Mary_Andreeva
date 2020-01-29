@@ -10,5 +10,6 @@ data class TariffShow(
     var voiceValueUnit: String? = null,
     var smsValueUnit: String? = null,
     var price: String? = null,
-    var aboutData: MyTariffAboutData? = null
+    var aboutData: MyTariffAboutData? = null,
+    var isNew: Boolean = false
 )

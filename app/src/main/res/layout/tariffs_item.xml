@@ -26,17 +26,18 @@
             android:textStyle="bold" />
 
         <ImageView
-            android:id="@+id/imageView8"
+            android:id="@+id/ivNew"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"
+            android:visibility="gone"
             app:srcCompat="@drawable/ic_new_tariff" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/addHolder"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginRight="20dp"
@@ -59,9 +60,13 @@
             <TextView
                 android:id="@+id/tvAddData"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
+                android:autoSizeMaxTextSize="14sp"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeStepGranularity="1sp"
+                android:autoSizeTextType="uniform"
                 android:text="TextView" />
         </LinearLayout>
 
@@ -83,8 +88,13 @@
             <TextView
                 android:id="@+id/tvAddVoice"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:autoSizeMaxTextSize="14sp"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeStepGranularity="1sp"
+
+                android:autoSizeTextType="uniform"
                 android:text="TextView" />
         </LinearLayout>
 
@@ -105,9 +115,14 @@
             <TextView
                 android:id="@+id/tvAddSMS"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
+                android:autoSizeMaxTextSize="14sp"
+                android:autoSizeMinTextSize="10sp"
+
+                android:autoSizeStepGranularity="1sp"
+                android:autoSizeTextType="uniform"
                 android:text="TextView" />
         </LinearLayout>
 
@@ -136,7 +151,7 @@
             android:id="@+id/tvPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:text="TextView"
             android:textColor="#000000"
             android:textSize="20sp" />
@@ -149,6 +164,7 @@
             android:gravity="center"
             android:text="Подробнее"
             android:textColor="@color/brightOrange"
+            android:textSize="18sp"
             android:textStyle="bold" />
     </LinearLayout>
 </LinearLayout>
