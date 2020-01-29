@@ -22,4 +22,8 @@
     <string name="btnEx">Обменять</string>
     <string name="BlockDefText">Вы можете заблокировать номер на 30 дней, по истечении срока – номер будет отключен</string>
     <string name="UnblockDefText">Для разблокировки номера необходимо ввести кодове слово</string>
+    <string name="version_app">Версия 1.1</string>
+    <string name="ask_question">Если у вас есть вопросы,\n вы можете задать их в чате</string>
+    <string name="phone_number_support_service">8 800 240 0000</string>
+    <string name="call_is_free">Звонок бесплатный</string>
 </resources>

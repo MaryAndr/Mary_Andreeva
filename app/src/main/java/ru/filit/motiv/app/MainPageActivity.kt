@@ -7,6 +7,7 @@ import androidx.appcompat.app.ActionBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import ru.filit.motiv.app.fragments.main.CostsAndReplenishment
+import ru.filit.motiv.app.fragments.main.HelpFragment
 import ru.filit.motiv.app.fragments.main.MainPageFragment
 import ru.filit.motiv.app.fragments.main.MyTariffFragment
 
@@ -31,6 +32,14 @@ class MainPageActivity : AppCompatActivity() {
                 }
                 R.id.navigation_tariff -> {
                     val fragment = MyTariffFragment()
+
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.container, fragment, fragment.javaClass.simpleName)
+                        .commit()
+                    return@OnNavigationItemSelectedListener true
+                }
+                R.id.navigation_help -> {
+                    val fragment = HelpFragment()
 
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.container, fragment, fragment.javaClass.simpleName)
