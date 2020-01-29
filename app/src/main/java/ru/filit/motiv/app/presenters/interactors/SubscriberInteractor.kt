@@ -403,7 +403,7 @@ class SubscriberInteractor(ctx: Context) {
                             serviceShow.id = it.id.toString()
                             serviceShow.serviceName = list.first { pred -> pred.id == it.id }.name
                             serviceShow.description =
-                                it.attributes.first { predicate -> predicate.system_name == "short_description" }
+                                it.attributes.firstOrNull { predicate -> predicate.system_name == "short_description" }
                                     ?.value.orEmpty()
                             serviceShow.price =
                                 list.first { pred -> pred.id == it.id }.price.toString()
@@ -411,6 +411,7 @@ class SubscriberInteractor(ctx: Context) {
                         }
                         Observable.just(mainData)
                     }.onErrorReturn {
+                        it.printStackTrace()
                         mainData.servicesList = mutableListOf()
                         mainData
                     }.blockingFirst()
