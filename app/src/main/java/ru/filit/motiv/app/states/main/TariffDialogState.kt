@@ -6,4 +6,6 @@ sealed class TariffDialogState {
 
     data class ErrorShown(val error: String) : TariffDialogState()
 
+    object Loading : TariffDialogState()
+
 }

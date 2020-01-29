@@ -506,15 +506,22 @@ class SubscriberInteractor(ctx: Context) {
         val subTariff = subService.getSubTariff().onErrorReturn {
             null
         }
+
+        val subServices = subService.getAllServicesList().onErrorReturn {
+            mutableListOf()
+        }
+
         return Observable.combineLatest(
             subInfo,
             subTariff,
             subBalance,
-            Function3 { subInfo, subT, subBal ->
+            subServices,
+            Function4 { subInfo, subT, subBal, subServiceResponse ->
                 val accumData = MainPagaAccumData()
                 accumData.tariffData = subT
                 accumData.phoneNumber = subInfo.msisdn
                 accumData.balance = subBal.value
+                accumData.isDetalization = subServiceResponse.any { it.id == 1322 }
                 CostAndReplenishmentPartialState.ShowMainDataState(accumData)
             })
 

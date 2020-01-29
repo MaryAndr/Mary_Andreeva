@@ -16,7 +16,7 @@ class SplashScreenPresenter(val ctx : Context) : MviBasePresenter<SplashScreenVi
 
         val splashScreenState : Observable<SplashScreenState> = intent(SplashScreenView::checkInternetConnectivityIntent)
             .subscribeOn(Schedulers.io())
-            .debounce ( 400, TimeUnit.MILLISECONDS )
+            .debounce(400,TimeUnit.MILLISECONDS)
             .switchMap{
                 CheckInternetConnectivity.getNetworkStatus(ctx)
             }

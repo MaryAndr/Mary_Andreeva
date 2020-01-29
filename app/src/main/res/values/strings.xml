@@ -22,4 +22,6 @@
     <string name="btnEx">Обменять</string>
     <string name="BlockDefText">Вы можете заблокировать номер на 30 дней, по истечении срока – номер будет отключен</string>
     <string name="UnblockDefText">Для разблокировки номера необходимо ввести кодове слово</string>
+    <string name="isDetalDescText">Скоро здесь будет информация о ваших расходах в реальном времени. А пока вы можете заказать детализацию на email</string>
+    <string name="isNotDetalDescText">Скоро здесь будет информация о ваших расходах в реальном времени.</string>
 </resources>

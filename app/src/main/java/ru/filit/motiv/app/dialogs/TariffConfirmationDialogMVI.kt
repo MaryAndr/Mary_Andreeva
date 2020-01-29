@@ -7,7 +7,15 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
+import kotlinx.android.synthetic.main.service_confirmation_dialog.*
 import kotlinx.android.synthetic.main.tariff_change_dialog.*
+import kotlinx.android.synthetic.main.tariff_change_dialog.abonLayout
+import kotlinx.android.synthetic.main.tariff_change_dialog.btnProcess
+import kotlinx.android.synthetic.main.tariff_change_dialog.costLayout
+import kotlinx.android.synthetic.main.tariff_change_dialog.ivClose
+import kotlinx.android.synthetic.main.tariff_change_dialog.tvAbonValue
+import kotlinx.android.synthetic.main.tariff_change_dialog.tvCostValue
+import kotlinx.android.synthetic.main.tariff_change_dialog.tvServiceName
 import ru.filit.motiv.app.R
 import ru.filit.motiv.app.models.main.TariffDialogModelData
 import ru.filit.motiv.app.presenters.main.TariffConfirmationDialogPresenter
@@ -41,14 +49,19 @@ class TariffConfirmationDialogMVI(val data: TariffDialogModelData) :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         tvServiceName.text = data.tariffName
+
+        ivClose.setOnClickListener {
+            dismiss()
+        }
+
         if (data.tariffAbonCost != null) {
-            tvAbonValue.text = data.tariffAbonCost
+            tvAbonValue.text = data.tariffAbonCost + resources.getString(R.string.rub_value)
         } else {
             abonLayout.visibility = View.GONE
         }
 
         if (data.tariffChangeCost != null) {
-            tvCostValue.text = data.tariffChangeCost
+            tvCostValue.text = data.tariffChangeCost + resources.getString(R.string.rub_value)
         } else {
             costLayout.visibility = View.GONE
         }
@@ -57,11 +70,19 @@ class TariffConfirmationDialogMVI(val data: TariffDialogModelData) :
 
     override fun render(state: TariffDialogState) {
         when(state) {
+            is TariffDialogState.Loading -> {
+                btnProcess.visibility = View.GONE
+                progressBar.visibility = View.VISIBLE
+            }
             is TariffDialogState.TariffProcessed -> {
+                btnProcess.visibility = View.VISIBLE
+                progressBar.visibility = View.GONE
                 Toast.makeText(context, state.toastText, Toast.LENGTH_LONG).show()
                 dismiss()
             }
             is TariffDialogState.ErrorShown -> {
+                btnProcess.visibility = View.VISIBLE
+                progressBar.visibility = View.GONE
                 Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
                 dismiss()
             }

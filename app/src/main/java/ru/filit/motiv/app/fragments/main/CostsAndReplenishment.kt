@@ -106,10 +106,20 @@ class CostsAndReplenishment :
         tvPhoneNumber.visibility = View.VISIBLE
         tvBalance.visibility = View.VISIBLE
         tvTariff.visibility = View.VISIBLE
+        tvDescTitle.visibility = View.VISIBLE
+        tvDesc.visibility = View.VISIBLE
         tvPhoneNumber.text = TextConverter().getFormattedPhone(state.mainData!!.phoneNumber!!)
         tvBalance.text =
             state.mainData!!.balance.toString() + resources.getString(R.string.rub_value)
         tvTariff.text = "Тариф \"${state.mainData!!.tariffData!!.tariff.name}\""
+
+        if (state.mainData!!.isDetalization) {
+            tvDesc.text = getString(R.string.isDetalDescText)
+            btOrderDetails.visibility = View.VISIBLE
+        } else {
+            tvDesc.text = getString(R.string.isNotDetalDescText)
+            btOrderDetails.visibility = View.GONE
+        }
     }
 
     override fun createPresenter() = CostsAndReplenishmentPresenter(context!!)
