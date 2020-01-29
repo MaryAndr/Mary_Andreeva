@@ -67,34 +67,34 @@ class ChangeTariff : MviFragment<ChangeTariffView, ChangeTariffPresenter>(), Cha
             addDataView.visibility = View.VISIBLE
             tvAddData.text = child.dataValueUnit
         } else {
-            addDataView.visibility = View.GONE
+            addDataView.visibility = View.INVISIBLE
         }
 
         if (child.voiceValueUnit != null) {
             addVoiceView.visibility = View.VISIBLE
             tvAddVoice.text = child.voiceValueUnit
         } else {
-            addVoiceView.visibility = View.GONE
+            addVoiceView.visibility = View.INVISIBLE
         }
 
         if (child.smsValueUnit != null) {
             addSMSView.visibility = View.VISIBLE
             tvAddSMS.text = child.smsValueUnit
         } else {
-            addSMSView.visibility = View.GONE
+            addSMSView.visibility = View.INVISIBLE
         }
 
         if (child.price != null) {
             tvPrice.text =
                 "${child.price} ${resources.getString(R.string.rub_value)}/месяц"
         } else {
-            tvPrice.visibility = View.GONE
+            tvPrice.visibility = View.INVISIBLE
         }
 
         if (child.description != null) {
             tvDescription.text = child.description
         } else {
-            tvDescription.visibility = View.GONE
+            tvDescription.visibility = View.INVISIBLE
         }
 
         if (child.aboutData != null) {

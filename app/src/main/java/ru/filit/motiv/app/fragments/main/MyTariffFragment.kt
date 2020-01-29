@@ -3,6 +3,7 @@ package ru.filit.motiv.app.fragments.main
 
 import android.graphics.Paint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -175,6 +176,7 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
             tvTariffDate.visibility = View.GONE
         }
         addedRecyclerView.layoutManager = LinearLayoutManager(context!!)
+        Log.d("tag", "service size: " + state.mainData?.servicesList!!.size)
         addedRecyclerView.adapter =
             MyTariffServicesAdapter(state.mainData?.servicesList, context!!)
 

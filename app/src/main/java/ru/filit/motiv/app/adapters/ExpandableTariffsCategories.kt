@@ -108,34 +108,34 @@ class ExpandableTariffsCategories internal constructor(
             viewHolder.addDataView.visibility = View.VISIBLE
             viewHolder.tvAddData.text = child.dataValueUnit
         } else {
-            viewHolder.addDataView.visibility = View.GONE
+            viewHolder.addDataView.visibility = View.INVISIBLE
         }
 
         if (child.voiceValueUnit != null) {
             viewHolder.addVoiceView.visibility = View.VISIBLE
             viewHolder.tvAddVoice.text = child.voiceValueUnit
         } else {
-            viewHolder.addVoiceView.visibility = View.GONE
+            viewHolder.addVoiceView.visibility = View.INVISIBLE
         }
 
         if (child.smsValueUnit != null) {
             viewHolder.addSmsView.visibility = View.VISIBLE
             viewHolder.tvAddSms.text = child.smsValueUnit
         } else {
-            viewHolder.addSmsView.visibility = View.GONE
+            viewHolder.addSmsView.visibility = View.INVISIBLE
         }
 
         if (child.price != null) {
             viewHolder.tvPrice.text =
                 "${child.price} ${context.resources.getString(R.string.rub_value)}/месяц"
         } else {
-            viewHolder.tvPrice.visibility = View.GONE
+            viewHolder.tvPrice.visibility = View.INVISIBLE
         }
 
         if (child.description != null) {
             viewHolder.tvDescription.text = child.description
         } else {
-            viewHolder.tvDescription.visibility = View.GONE
+            viewHolder.tvDescription.visibility = View.INVISIBLE
         }
 
         if (child.aboutData != null) {

@@ -13,5 +13,6 @@ data class MainPagaAccumData(
     var remains: List<RemainsResponse>? = null,
     var catalogTariff: CatalogTariffResponse? = null,
     var indicatorHolder: MutableMap<String, IndicatorHolder>? = null,
-    var subExchange: ExchangeResponse? = null
+    var subExchange: ExchangeResponse? = null,
+    var isDetalization: Boolean = false
 )

@@ -43,6 +43,7 @@ class TariffConfirmationDialogPresenter(val context: Context) :
                             }
                             TariffDialogState.ErrorShown(errMessage)
                         }
+                        .startWith(TariffDialogState.Loading)
                 }
 
         val allIntents = operationIntent
