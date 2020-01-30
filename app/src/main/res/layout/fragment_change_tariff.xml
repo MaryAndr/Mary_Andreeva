@@ -70,7 +70,7 @@
                 <LinearLayout
                     android:id="@+id/addHolder"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginRight="20dp"
@@ -82,8 +82,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="horizontal"
-                        android:visibility="visible">
+                        android:orientation="horizontal">
 
                         <ImageView
                             android:id="@+id/imageView9"
@@ -94,13 +93,14 @@
                         <TextView
                             android:id="@+id/tvAddData"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="20dp"
                             android:layout_marginLeft="5dp"
-                            android:layout_weight="1"
-                            android:autoSizeMaxTextSize="14sp"
-                            android:autoSizeMinTextSize="10sp"
-                            android:autoSizeStepGranularity="1sp"
-                            android:autoSizeTextType="uniform"
+                            android:maxLines="1"
+                            app:autoSizeMaxTextSize="14sp"
+
+                            app:autoSizeMinTextSize="10sp"
+                            app:autoSizeStepGranularity="1sp"
+                            app:autoSizeTextType="uniform"
                             android:text="TextView" />
                     </LinearLayout>
 
@@ -111,8 +111,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
-                        android:orientation="horizontal"
-                        android:visibility="visible">
+                        android:orientation="horizontal">
 
                         <ImageView
                             android:id="@+id/ivVoice"
@@ -123,13 +122,13 @@
                         <TextView
                             android:id="@+id/tvAddVoice"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:autoSizeMaxTextSize="14sp"
-                            android:autoSizeMinTextSize="10sp"
-                            android:autoSizeStepGranularity="1sp"
+                            android:layout_height="20dp"
+                            android:maxLines="1"
+                            app:autoSizeMaxTextSize="14sp"
 
-                            android:autoSizeTextType="uniform"
+                            app:autoSizeMinTextSize="10sp"
+                            app:autoSizeStepGranularity="1sp"
+                            app:autoSizeTextType="uniform"
                             android:text="TextView" />
                     </LinearLayout>
 
@@ -139,8 +138,7 @@
 
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="horizontal"
-                        android:visibility="visible">
+                        android:orientation="horizontal">
 
                         <ImageView
                             android:id="@+id/ivSMS"
@@ -151,15 +149,14 @@
                         <TextView
                             android:id="@+id/tvAddSMS"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="20dp"
                             android:layout_marginLeft="5dp"
-                            android:layout_weight="1"
-                            android:autoSizeMaxTextSize="14sp"
-                            android:autoSizeMinTextSize="10sp"
+                            android:maxLines="1"
+                            app:autoSizeMaxTextSize="14sp"
 
-                            android:autoSizeStepGranularity="1sp"
-                            android:autoSizeTextType="uniform"
-                            android:text="TextView" />
+                            app:autoSizeMinTextSize="10sp"
+                            app:autoSizeStepGranularity="1sp"
+                            app:autoSizeTextType="uniform" />
                     </LinearLayout>
 
 
