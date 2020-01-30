@@ -76,7 +76,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         ivProfilePic.setOnClickListener {
             val fr = SettingsFragment()
             val fm = activity!!.supportFragmentManager
-            val fragmentTransaction = fm!!.beginTransaction()
+            val fragmentTransaction = fm!!.beginTransaction().addToBackStack("settings")
             fragmentTransaction.replace(R.id.container, fr)
             fragmentTransaction.commit()
         }
