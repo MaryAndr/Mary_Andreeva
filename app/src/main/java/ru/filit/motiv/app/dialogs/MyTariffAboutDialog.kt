@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.my_tariff_about_dialog.*
 import ru.filit.motiv.app.R
 import ru.filit.motiv.app.adapters.InfoAdapter
@@ -24,7 +25,7 @@ import ru.filit.motiv.app.models.catalogTariff.Attribute
 import ru.filit.motiv.app.models.main.TariffDialogModelData
 
 //TODO: Необходимо переписать под MVI архитектуру, используя абстрактный класс BaseBottomDialogMVI
-class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boolean = false) :
+class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boolean = false, val reloadTrigger: BehaviorSubject<Int>? = null) :
     BottomSheetDialogFragment() {
 
     private lateinit var PDF_URL: String
@@ -67,7 +68,10 @@ class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boole
                 dataToSend.tariffName = data.catalogTariff?.tariffs?.first()?.name
                 dataToSend.tariffAbonCost = data.catalogTariff?.tariffs?.first()?.attributes?.firstOrNull{it.system_name == "subscription_fee"}?.value
                 dataToSend.tariffChangeCost = data.catalogTariff?.tariffs?.first()?.attributes?.firstOrNull{it.param == "Обязательный первичный платеж"}?.value
-                val dialog = TariffConfirmationDialogMVI.newInstance(dataToSend)
+                if (reloadTrigger == null) {
+                    Log.d("null", "is null")
+                }
+                val dialog = TariffConfirmationDialogMVI.newInstance(dataToSend, reloadTrigger, this)
                 dialog.show(
                     (context as AppCompatActivity).supportFragmentManager,
                     "Accept Dialog"
@@ -318,9 +322,10 @@ class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boole
 
         fun newInstance(
             data: MyTariffAboutData,
-            isTariffChange: Boolean = false
+            isTariffChange: Boolean = false,
+            reloadTrigger: BehaviorSubject<Int>? = null
         ): MyTariffAboutDialog {
-            return MyTariffAboutDialog(data, isTariffChange)
+            return MyTariffAboutDialog(data, isTariffChange, reloadTrigger)
         }
     }
 }

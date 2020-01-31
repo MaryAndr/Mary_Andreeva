@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
+import io.reactivex.subjects.BehaviorSubject
 import ru.filit.motiv.app.R
 import ru.filit.motiv.app.dialogs.MyTariffAboutDialog
 import ru.filit.motiv.app.models.main.TariffShow
@@ -16,7 +17,8 @@ import ru.filit.motiv.app.models.main.TariffShow
 class ExpandableTariffsCategories internal constructor(
     private val context: Context,
     private val titleList: List<String?>,
-    private val dataList: MutableMap<String, MutableList<TariffShow>>
+    private val dataList: MutableMap<String, MutableList<TariffShow>>,
+    private val reloadTrigger: BehaviorSubject<Int>? = null
 ) : BaseExpandableListAdapter() {
 
     override fun getGroup(groupPosition: Int): String {
@@ -141,7 +143,7 @@ class ExpandableTariffsCategories internal constructor(
         if (child.aboutData != null) {
             val activity = context as FragmentActivity
             viewHolder.tvDetails.setOnClickListener {
-                val aboutDialog = MyTariffAboutDialog.newInstance(child.aboutData!!, true)
+                val aboutDialog = MyTariffAboutDialog.newInstance(child.aboutData!!, true, reloadTrigger)
                 aboutDialog.show(
                     activity!!.supportFragmentManager,
                     "my_tariff_dialog_fragment"

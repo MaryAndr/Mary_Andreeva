@@ -17,7 +17,9 @@ class ChangeTariffPresenter(val ctx: Context) :
     override fun bindIntents() {
         val mainDataIntent: Observable<ChangeTariffState> =
             intent(ChangeTariffView::showMainDataIntent).flatMap {
-                subService.getTariffs().subscribeOn(Schedulers.io())
+                subService.getTariffs()
+                    .startWith(ChangeTariffState.Loading)
+                    .subscribeOn(Schedulers.io())
             }
         val allIntents = mainDataIntent
             .observeOn(AndroidSchedulers.mainThread())

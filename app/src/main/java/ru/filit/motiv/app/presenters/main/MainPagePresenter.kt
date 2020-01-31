@@ -22,10 +22,11 @@ class MainPagePresenter(val ctx: Context) :
         var preLoadIntent: Observable<MainPagePartialState> =
             intent(MainPageView::preLoadIntent)
                 .flatMap {
-                    subService.preLoadData().subscribeOn(Schedulers.io())
-                }.startWith(
-                    MainPagePartialState.Loading
-                )
+                    subService.preLoadData()
+                        .startWith(
+                            MainPagePartialState.Loading
+                        ).subscribeOn(Schedulers.io())
+                }
 
 
         val initialState = MainPageState(

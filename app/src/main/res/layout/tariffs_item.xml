@@ -60,13 +60,14 @@
             <TextView
                 android:id="@+id/tvAddData"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="20dp"
                 android:layout_marginLeft="5dp"
-                android:layout_weight="1"
-                android:autoSizeMaxTextSize="14sp"
-                android:autoSizeMinTextSize="10sp"
-                android:autoSizeStepGranularity="1sp"
-                android:autoSizeTextType="uniform"
+                android:maxLines="1"
+                app:autoSizeMaxTextSize="14sp"
+
+                app:autoSizeMinTextSize="10sp"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform"
                 android:text="TextView" />
         </LinearLayout>
 
@@ -88,13 +89,13 @@
             <TextView
                 android:id="@+id/tvAddVoice"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:autoSizeMaxTextSize="14sp"
-                android:autoSizeMinTextSize="10sp"
-                android:autoSizeStepGranularity="1sp"
+                android:layout_height="20dp"
+                android:maxLines="1"
+                app:autoSizeMaxTextSize="14sp"
 
-                android:autoSizeTextType="uniform"
+                app:autoSizeMinTextSize="10sp"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform"
                 android:text="TextView" />
         </LinearLayout>
 
@@ -115,15 +116,14 @@
             <TextView
                 android:id="@+id/tvAddSMS"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="20dp"
                 android:layout_marginLeft="5dp"
-                android:layout_weight="1"
-                android:autoSizeMaxTextSize="14sp"
-                android:autoSizeMinTextSize="10sp"
+                android:maxLines="1"
+                app:autoSizeMaxTextSize="14sp"
 
-                android:autoSizeStepGranularity="1sp"
-                android:autoSizeTextType="uniform"
-                android:text="TextView" />
+                app:autoSizeMinTextSize="10sp"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform" />
         </LinearLayout>
 
 

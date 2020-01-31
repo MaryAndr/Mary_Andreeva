@@ -39,8 +39,13 @@ class ChangeTariff : MviFragment<ChangeTariffView, ChangeTariffPresenter>(), Cha
 
     override fun render(state: ChangeTariffState) {
         when (state) {
+            is ChangeTariffState.Loading -> {
+                pb.visibility = View.VISIBLE
+                mainDataView.visibility = View.GONE
+            }
             is ChangeTariffState.MainDataLoaded -> {
-                currentTariffView.visibility = View.VISIBLE
+                pb.visibility = View.GONE
+                mainDataView.visibility = View.VISIBLE
                 renderCurrentTariff(state.data.first{pred -> pred.isCurrent})
                 state.data.removeAll { pred -> pred.isCurrent }
                 val titles = state.data.distinctBy { it.category }.map { it.category }
@@ -50,7 +55,7 @@ class ChangeTariff : MviFragment<ChangeTariffView, ChangeTariffPresenter>(), Cha
                         state.data.filter { it.category == title }.toMutableList()
                 }
 
-                val adapter = ExpandableTariffsCategories(context!!, titles, mapOfTariffs)
+                val adapter = ExpandableTariffsCategories(context!!, titles, mapOfTariffs, preLoadTrigger)
                 tariffs_list.setAdapter(adapter)
             }
         }
@@ -118,6 +123,7 @@ class ChangeTariff : MviFragment<ChangeTariffView, ChangeTariffPresenter>(), Cha
         var tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         tvTitle.setTextColor(resources.getColor(R.color.black))
         tvTitle.text = "Тарифы"
+        preLoadTrigger.onNext(1)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -135,7 +141,7 @@ class ChangeTariff : MviFragment<ChangeTariffView, ChangeTariffPresenter>(), Cha
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        preLoadTrigger.onNext(1)
+
     }
 
 

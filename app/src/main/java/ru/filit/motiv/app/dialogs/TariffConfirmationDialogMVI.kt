@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.service_confirmation_dialog.*
 import kotlinx.android.synthetic.main.tariff_change_dialog.*
 import kotlinx.android.synthetic.main.tariff_change_dialog.abonLayout
@@ -22,7 +23,7 @@ import ru.filit.motiv.app.presenters.main.TariffConfirmationDialogPresenter
 import ru.filit.motiv.app.states.main.TariffDialogState
 import ru.filit.motiv.app.views.main.TariffConfirmationDialogView
 
-class TariffConfirmationDialogMVI(val data: TariffDialogModelData) :
+class TariffConfirmationDialogMVI(val data: TariffDialogModelData, private val reloadTrigger: BehaviorSubject<Int>? = null, val parentDialog: MyTariffAboutDialog? = null) :
     BaseBottomDialogMVI<TariffConfirmationDialogView, TariffDialogState, TariffConfirmationDialogPresenter>(),
     TariffConfirmationDialogView {
     override fun createPresenter() = TariffConfirmationDialogPresenter(context!!)
@@ -78,7 +79,9 @@ class TariffConfirmationDialogMVI(val data: TariffDialogModelData) :
                 btnProcess.visibility = View.VISIBLE
                 progressBar.visibility = View.GONE
                 Toast.makeText(context, state.toastText, Toast.LENGTH_LONG).show()
+                reloadTrigger!!.onNext(1)
                 dismiss()
+                parentDialog?.dismiss()
             }
             is TariffDialogState.ErrorShown -> {
                 btnProcess.visibility = View.VISIBLE
@@ -92,8 +95,8 @@ class TariffConfirmationDialogMVI(val data: TariffDialogModelData) :
 
     companion object {
 
-        fun newInstance(data: TariffDialogModelData): TariffConfirmationDialogMVI {
-            return TariffConfirmationDialogMVI(data)
+        fun newInstance(data: TariffDialogModelData, reloadTrigger: BehaviorSubject<Int>? = null, parentDialog: MyTariffAboutDialog? = null): TariffConfirmationDialogMVI {
+            return TariffConfirmationDialogMVI(data, reloadTrigger, parentDialog)
         }
     }
 }

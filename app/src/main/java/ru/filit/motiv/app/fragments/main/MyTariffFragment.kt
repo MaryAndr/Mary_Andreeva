@@ -42,9 +42,13 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         return preLoadTrigger
     }
 
-
     override fun render(state: MyTariffState) {
         when {
+            state.loading -> {
+                Log.d("loading", "triggered")
+                mainConstraint.visibility = View.GONE
+                pgMainData.visibility = View.VISIBLE
+            }
             state.mainDataLoaded -> {
                 pgMainData.visibility = View.GONE
                 mainConstraint.visibility = View.VISIBLE
@@ -82,10 +86,6 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
                 }
                 renderMainData(state)
                 mainDataHolder.visibility = View.VISIBLE
-            }
-            state.loading -> {
-                mainDataHolder.visibility = View.GONE
-                pgMainData.visibility = View.VISIBLE
             }
             state.errorShown -> {
                 Toast.makeText(context, state.errorText, Toast.LENGTH_LONG).show()
