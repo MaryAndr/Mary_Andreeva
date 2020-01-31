@@ -6,4 +6,6 @@ sealed class ChangeTariffState : BaseDialogState {
 
     data class MainDataLoaded(val data: MutableList<TariffShow>) : ChangeTariffState()
 
+    object Loading : ChangeTariffState()
+
 }

@@ -12,6 +12,7 @@ import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
 import ru.filit.motiv.app.states.main.TariffDialogState
 import ru.filit.motiv.app.views.main.TariffConfirmationDialogView
 import retrofit2.HttpException
+import java.util.concurrent.TimeUnit
 
 class TariffConfirmationDialogPresenter(val context: Context) :
     MviBasePresenter<TariffConfirmationDialogView, TariffDialogState>() {
@@ -24,8 +25,9 @@ class TariffConfirmationDialogPresenter(val context: Context) :
                 .flatMap { model ->
                     SubscriberInteractor(context).subService.changeTariff(TariffChangeRequest(model))
                         .map<TariffDialogState> {
-                            TariffDialogState.TariffProcessed("Тариф успешно подключен")
+                            TariffDialogState.Loading
                         }
+                        .concatWith(delayTimer())
                         .subscribeOn(Schedulers.io())
                         .onErrorReturn { error: Throwable ->
                             var errMessage = error.localizedMessage
@@ -52,5 +54,19 @@ class TariffConfirmationDialogPresenter(val context: Context) :
         subscribeViewState(allIntents, TariffConfirmationDialogView::render)
     }
 
+
+    private fun delayTimer(): Observable<TariffDialogState> {
+        val start: Long = 10
+        return Observable.interval(0, 1, TimeUnit.SECONDS)
+            .map { i -> start - i }
+            .take(start + 1)
+            .flatMap<TariffDialogState> {
+                if (it.toInt() == 0) {
+                    Observable.just(TariffDialogState.TariffProcessed("Тариф успешно подключен"))
+                } else {
+                    Observable.just(TariffDialogState.Loading)
+                }
+            }.subscribeOn(Schedulers.io())
+    }
 
 }

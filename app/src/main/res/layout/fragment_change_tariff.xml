@@ -17,8 +17,10 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/mainDataView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:visibility="gone">
 
             <LinearLayout
                 android:id="@+id/currentTariffView"
@@ -32,7 +34,7 @@
                 android:layout_marginBottom="56dp"
                 android:background="@drawable/ic_currenttariff"
                 android:orientation="vertical"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -96,12 +98,12 @@
                             android:layout_height="20dp"
                             android:layout_marginLeft="5dp"
                             android:maxLines="1"
-                            app:autoSizeMaxTextSize="14sp"
+                            android:text="TextView"
 
+                            app:autoSizeMaxTextSize="14sp"
                             app:autoSizeMinTextSize="10sp"
                             app:autoSizeStepGranularity="1sp"
-                            app:autoSizeTextType="uniform"
-                            android:text="TextView" />
+                            app:autoSizeTextType="uniform" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -124,12 +126,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="20dp"
                             android:maxLines="1"
-                            app:autoSizeMaxTextSize="14sp"
+                            android:text="TextView"
 
+                            app:autoSizeMaxTextSize="14sp"
                             app:autoSizeMinTextSize="10sp"
                             app:autoSizeStepGranularity="1sp"
-                            app:autoSizeTextType="uniform"
-                            android:text="TextView" />
+                            app:autoSizeTextType="uniform" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -228,6 +230,13 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+    <ProgressBar
+        android:id="@+id/pb"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
 
 
 </FrameLayout>

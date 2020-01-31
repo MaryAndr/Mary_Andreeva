@@ -20,10 +20,10 @@ class MyTariffPresenter(val ctx: Context) :
         val mainDataLoadIntent: Observable<MyTariffPartialState> =
             intent(MyTariffView::preLoadIntent)
                 .flatMap {
-                    subService.getMyTariffMainData().subscribeOn(Schedulers.io())
-                }.startWith(
-                    MyTariffPartialState.Loading
-                )
+                    subService.getMyTariffMainData().startWith(
+                        MyTariffPartialState.Loading
+                    ).subscribeOn(Schedulers.io())
+                }
 
         val initialState = MyTariffState(false, null, false, null, false)
 
@@ -45,6 +45,7 @@ class MyTariffPresenter(val ctx: Context) :
             is MyTariffPartialState.MainDataLoadedState -> {
                 previousState.mainDataLoaded = true
                 previousState.mainData = changes.data
+                previousState.loading = false
                 previousState
             }
             is MyTariffPartialState.ShowErrorMessage -> {
@@ -56,8 +57,9 @@ class MyTariffPresenter(val ctx: Context) :
             }
             is MyTariffPartialState.Loading -> {
                 previousState.loading = true
-                previousState.mainDataLoaded = false
                 previousState.errorShown = false
+                previousState.mainDataLoaded = false
+                previousState.mainData = null
                 previousState
             }
         }
