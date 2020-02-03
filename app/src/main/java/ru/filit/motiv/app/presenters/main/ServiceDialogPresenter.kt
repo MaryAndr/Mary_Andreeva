@@ -11,6 +11,7 @@ import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
 import ru.filit.motiv.app.states.main.ServiceDialogState
 import ru.filit.motiv.app.views.main.ServiceConfirmationDialogView
 import retrofit2.HttpException
+import java.util.concurrent.TimeUnit
 
 class ServiceDialogPresenter(val context: Context) :
     MviBasePresenter<ServiceConfirmationDialogView, ServiceDialogState>() {
@@ -29,7 +30,8 @@ class ServiceDialogPresenter(val context: Context) :
                                 } else {
                                     Observable.just(ServiceDialogState.ErrorShown(it.status))
                                 }
-                            }.subscribeOn(Schedulers.io()).onErrorReturn { error: Throwable ->
+                            }.subscribeOn(Schedulers.io())
+                            .onErrorReturn { error: Throwable ->
                                 var errMessage = error.localizedMessage
                                 if (error is HttpException) {
                                     errMessage = if (error.code() == 409) {
@@ -38,7 +40,7 @@ class ServiceDialogPresenter(val context: Context) :
                                         val errorBody = error.response()!!.errorBody()
 
                                         val adapter =
-                                            gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                                            gson.getAdapter<ErrorJson>(ErrorJson::class.java)
                                         val errorObj = adapter.fromJson(errorBody!!.string())
                                         errorObj.error_description
                                     }
@@ -53,7 +55,8 @@ class ServiceDialogPresenter(val context: Context) :
                                 } else {
                                     Observable.just(ServiceDialogState.ErrorShown(it.status))
                                 }
-                            }.subscribeOn(Schedulers.io()).onErrorReturn { error: Throwable ->
+                            }.subscribeOn(Schedulers.io())
+                            .onErrorReturn { error: Throwable ->
                                 var errMessage = error.localizedMessage
                                 if (error is HttpException) {
                                     errMessage = if (error.code() == 409) {
@@ -62,7 +65,7 @@ class ServiceDialogPresenter(val context: Context) :
                                         val errorBody = error.response()!!.errorBody()
 
                                         val adapter =
-                                            gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                                            gson.getAdapter<ErrorJson>(ErrorJson::class.java)
                                         val errorObj = adapter.fromJson(errorBody!!.string())
                                         errorObj.error_description
                                     }

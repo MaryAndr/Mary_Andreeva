@@ -9,6 +9,8 @@
         android:id="@+id/tvName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="@color/black"
         android:layout_marginLeft="18dp"
         android:layout_marginRight="18dp"
         android:text="TextView" />
@@ -24,6 +26,7 @@
             android:id="@+id/tvDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="14sp"
             android:layout_weight="1"
             android:text="test" />
 
@@ -48,6 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="18dp"
         android:layout_marginRight="18dp"
+        android:textSize="16sp"
         android:text="TextView"
         android:textColor="#000000"
         android:textStyle="bold" />

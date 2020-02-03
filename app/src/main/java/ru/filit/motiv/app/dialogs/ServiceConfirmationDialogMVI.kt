@@ -1,6 +1,8 @@
 package ru.filit.motiv.app.dialogs
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,12 +15,12 @@ import kotlinx.android.synthetic.main.service_confirmation_dialog.ivClose
 import kotlinx.android.synthetic.main.service_confirmation_dialog.title
 import ru.filit.motiv.app.R
 import ru.filit.motiv.app.adapters.ExpandableServiceAdapter
-import ru.filit.motiv.app.adapters.MyTariffServicesAdapter
 import ru.filit.motiv.app.adapters.ServicesViewHolder
 import ru.filit.motiv.app.adapters.ViewHolder
 import ru.filit.motiv.app.models.main.ServiceDialogModel
 import ru.filit.motiv.app.presenters.main.ServiceDialogPresenter
 import ru.filit.motiv.app.states.main.ServiceDialogState
+import ru.filit.motiv.app.utils.Constants
 import ru.filit.motiv.app.views.main.ServiceConfirmationDialogView
 
 
@@ -29,7 +31,8 @@ class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
     override fun createPresenter() = ServiceDialogPresenter(context!!)
 
     override fun operationIntent(): Observable<ServiceDialogModel> {
-        return RxView.clicks(btnProcess).flatMap {
+        return RxView.clicks(btnProcess)
+            .flatMap {
             Observable.just(data)
         }
     }
@@ -42,35 +45,9 @@ class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
                 } else {
                     "Услуга «${data.serv_name}» успешно отключена"
                 }
-                val dialogBuilder = AlertDialog.Builder(this.context)
-                var itemHolder = when(data.itemHolder){
-                    is ExpandableServiceAdapter.ChildViewHolder -> {
-                        data.itemHolder as ExpandableServiceAdapter.ChildViewHolder
-                    }
-                    is ViewHolder -> {
-                        data.itemHolder as ViewHolder
-                    }
-                    else -> {
-                        data.itemHolder as ServicesViewHolder
-                    }
-                }
-                dialogBuilder
-                    .setMessage(textMessage)
-                    .setPositiveButton("OK") { _, _ ->
-                        when(data.itemHolder){
-                            is ExpandableServiceAdapter.ChildViewHolder -> {
-                                (data.itemHolder as ExpandableServiceAdapter.ChildViewHolder).tgService.isEnabled = false
-                            }
-                            is ViewHolder -> {
-                                (data.itemHolder as ViewHolder).tgButton.isEnabled = false
-                            }
-                            else -> {
-                                (data.itemHolder as ServicesViewHolder).tgService.isEnabled = false
-                            }
-                        }
-                    }
-                    .create()
-                    .show()
+                val intent = activity?.intent
+                intent?.putExtra(Constants.SERVICE_DIALOG_MESSAGE, textMessage)
+                targetFragment?.onActivityResult(Constants.REQUEST_CODE_SERVICE, Activity.RESULT_OK, activity?.intent)
 
                 dismiss()
             }
@@ -101,6 +78,8 @@ class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
         tvAbonValue.text = data.abonPay + resources.getString(R.string.rub_value)
 
         ivClose.setOnClickListener {
+            val intent = activity?.intent
+            targetFragment?.onActivityResult(Constants.REQUEST_CODE_SERVICE, Activity.RESULT_CANCELED, intent)
             dismiss()
         }
 
@@ -119,6 +98,13 @@ class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
             btnProcess.text = "Отключить услугу"
             tvConDateKey.text = "Дата отключения"
         }
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        val intent = activity?.intent
+        targetFragment?.onActivityResult(Constants.REQUEST_CODE_SERVICE, Activity.RESULT_CANCELED, intent)
+
     }
 
     companion object {

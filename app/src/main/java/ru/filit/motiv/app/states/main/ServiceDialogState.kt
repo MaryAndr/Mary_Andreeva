@@ -6,4 +6,6 @@ sealed class ServiceDialogState : BaseDialogState {
 
     data class ErrorShown(val error: String) : ServiceDialogState()
 
+    object Loading : ServiceDialogState()
+
 }

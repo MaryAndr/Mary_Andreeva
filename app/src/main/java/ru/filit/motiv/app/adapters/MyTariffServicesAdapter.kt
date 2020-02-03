@@ -22,6 +22,7 @@ import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
 import retrofit2.HttpException
 import ru.filit.motiv.app.dialogs.ServiceConfirmationDialogMVI
 import ru.filit.motiv.app.models.main.ServiceDialogModel
+import ru.filit.motiv.app.models.main.ToggleButtonState
 import ru.filit.motiv.app.utils.TimeUtils
 import java.util.*
 
@@ -56,24 +57,31 @@ class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val con
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvName.text = items?.get(position)?.serviceName
         holder.tvDescription.text = items?.get(position)?.description
-        holder.tvValue.text =
-            items?.get(position)?.price + " ${context.resources.getString(R.string.rub_value)}/месяц"
-
-        holder.tgButton.isChecked = true
-        holder.tgButton.isEnabled = true
-        holder.tgButton.setOnCheckedChangeListener { compoundButton, isChecked ->
-            if(!isChecked) {
-                val dataToPass = ServiceDialogModel()
-                dataToPass.serv_name = items!![position].serviceName
-                dataToPass.serv_id = items!![position].id
-                dataToPass.isConnection = false
-                dataToPass.itemHolder = holder
-                dataToPass.conDate = TimeUtils().dateToString(Calendar.getInstance())
-                val dialog = ServiceConfirmationDialogMVI.newInstance(dataToPass)
-                dialog.show(
-                    (context as AppCompatActivity).supportFragmentManager,
-                    "Accept Dialog"
-                )
+        holder.tvValue.text = items?.get(position)?.price + " ${context.resources.getString(R.string.rub_value)}/месяц"
+        when(items?.get(position)?.toggleState) {
+            ToggleButtonState.ActiveAndEnabled -> {
+                holder.tgButton.isChecked = true
+                holder.tgButton.isEnabled = true
+                holder.tgButton.setOnCheckedChangeListener { compoundButton, isChecked ->
+                    if (!isChecked) {
+                        val dataToPass = ServiceDialogModel()
+                        dataToPass.serv_name = items!![position].serviceName
+                        dataToPass.serv_id = items!![position].id
+                        dataToPass.isConnection = false
+                        dataToPass.itemHolder = holder
+                        dataToPass.conDate = TimeUtils().dateToString(Calendar.getInstance())
+                        val dialog = ServiceConfirmationDialogMVI.newInstance(dataToPass)
+                        dialog.show(
+                            (context as AppCompatActivity).supportFragmentManager,
+                            "Accept Dialog"
+                        )
+                    }
+                }
+            }
+            ToggleButtonState.ActiveAndDisabled -> {
+                holder.tgButton.isChecked = true
+                holder.tgButton.isEnabled = false
+                holder.tgButton.setBackgroundResource(R.drawable.toggle_dis_on)
             }
         }
 
