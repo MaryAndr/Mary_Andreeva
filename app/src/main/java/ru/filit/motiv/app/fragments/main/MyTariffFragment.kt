@@ -1,6 +1,9 @@
 package ru.filit.motiv.app.fragments.main
 
 
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
@@ -22,24 +25,39 @@ import ru.filit.motiv.app.R
 import ru.filit.motiv.app.adapters.IndicatorsAdapter
 import ru.filit.motiv.app.adapters.MyTariffServicesAdapter
 import ru.filit.motiv.app.dialogs.MyTariffAboutDialog
+import ru.filit.motiv.app.dialogs.ServiceConfirmationDialogMVI
+import ru.filit.motiv.app.listeners.OnServiceToggleChangeListner
 import ru.filit.motiv.app.models.main.IndicatorsModel
 import ru.filit.motiv.app.models.main.MyTariffAboutData
+import ru.filit.motiv.app.models.main.ServiceDialogModel
+import ru.filit.motiv.app.models.main.ServicesListShow
 import ru.filit.motiv.app.presenters.main.MyTariffPresenter
 import ru.filit.motiv.app.states.main.MyTariffState
+import ru.filit.motiv.app.utils.Constants
 import ru.filit.motiv.app.utils.TextConverter
 import ru.filit.motiv.app.utils.TimeUtils
 import ru.filit.motiv.app.views.main.MyTariffView
+import java.util.*
 
 class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
-    MyTariffView {
+    MyTariffView, OnServiceToggleChangeListner {
 
     override fun createPresenter() = MyTariffPresenter(context!!)
 
     private lateinit var preLoadTrigger: BehaviorSubject<Int>
-
+    private lateinit var triggerChangeService: BehaviorSubject<String>
+    private lateinit var cancelChange: BehaviorSubject<String>
 
     override fun preLoadIntent(): Observable<Int> {
         return preLoadTrigger
+    }
+
+    override fun changeServiceIntent(): Observable<String> {
+        return triggerChangeService
+    }
+
+    override fun cancelChangeServiceIntent(): Observable<String> {
+        return cancelChange
     }
 
     override fun render(state: MyTariffState) {
@@ -89,6 +107,16 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
             }
             state.errorShown -> {
                 Toast.makeText(context, state.errorText, Toast.LENGTH_LONG).show()
+            }
+            state.changeService -> {
+                val dialogBuilder = AlertDialog.Builder(this.context)
+                dialogBuilder
+                    .setMessage(state.changeServiceMessage)
+                    .setPositiveButton("OK") { _, _ ->
+                    }
+                    .create()
+                    .show()
+                preLoadTrigger.onNext(1)
             }
         }
     }
@@ -178,7 +206,7 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         addedRecyclerView.layoutManager = LinearLayoutManager(context!!)
         Log.d("tag", "service size: " + state.mainData?.servicesList!!.size)
         addedRecyclerView.adapter =
-            MyTariffServicesAdapter(state.mainData?.servicesList, context!!)
+            MyTariffServicesAdapter(state.mainData?.servicesList, context!!, this)
 
         renderNewIndicators(state.mainData?.indicatorModels!!)
 //                renderIndicators(state.mainData?.indicatorHolder, subTariff?.charge_date)
@@ -279,6 +307,8 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
             throwable.printStackTrace()
         }
         preLoadTrigger = BehaviorSubject.create()
+        triggerChangeService = BehaviorSubject.create()
+        cancelChange = BehaviorSubject.create()
     }
 
     override fun onResume() {
@@ -304,6 +334,32 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
     ): View? {
 
         return inflater.inflate(R.layout.fragment_my_tariff, container, false)
+    }
+
+    override fun onToggleClick(item: ServicesListShow, isChecked: Boolean) {
+        if (!isChecked) {
+            val dataToPass = ServiceDialogModel()
+            dataToPass.serv_name = item.serviceName
+            dataToPass.serv_id = item.id
+            dataToPass.isConnection = isChecked
+            dataToPass.activationPrice = item.activPrice
+            dataToPass.abonPay = item.subFee
+            dataToPass.conDate = TimeUtils().dateToString(Calendar.getInstance())
+            val dialog = ServiceConfirmationDialogMVI.newInstance(dataToPass)
+            dialog.setTargetFragment(this, Constants.REQUEST_CODE_SERVICE)
+            dialog.show(
+                (context as AppCompatActivity).supportFragmentManager,
+                "Accept Dialog"
+            )
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == Constants.REQUEST_CODE_SERVICE&&resultCode == Activity.RESULT_OK){
+            triggerChangeService.onNext(data!!.extras.getString(Constants.SERVICE_DIALOG_MESSAGE))
+        }else{
+            cancelChange.onNext(data!!.extras.getString(Constants.SERVICE_ID))
+        }
     }
 
 

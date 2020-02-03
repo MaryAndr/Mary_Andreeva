@@ -8,5 +8,9 @@ interface MyTariffView : MvpView {
 
     fun preLoadIntent() : Observable<Int>
 
+    fun changeServiceIntent(): Observable<String>
+
+    fun cancelChangeServiceIntent (): Observable<String>
+
     fun render(state: MyTariffState)
 }

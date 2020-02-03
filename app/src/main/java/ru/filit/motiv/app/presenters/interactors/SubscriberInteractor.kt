@@ -407,6 +407,9 @@ class SubscriberInteractor(ctx: Context) {
                                     ?.value.orEmpty()
                             serviceShow.price =
                                 list.first { pred -> pred.id == it.id }.price.toString()
+                            if(list.first {pred -> pred.id==it.id}.unlock){
+                                serviceShow.toggleState = ToggleButtonState.ActiveAndEnabled
+                            }else{ serviceShow.toggleState = ToggleButtonState.ActiveAndDisabled}
                             mainData.servicesList.add(serviceShow)
                         }
                         Observable.just(mainData)

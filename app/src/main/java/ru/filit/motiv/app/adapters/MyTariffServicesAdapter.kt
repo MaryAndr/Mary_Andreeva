@@ -21,12 +21,13 @@ import ru.filit.motiv.app.models.main.ServicesListShow
 import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
 import retrofit2.HttpException
 import ru.filit.motiv.app.dialogs.ServiceConfirmationDialogMVI
+import ru.filit.motiv.app.listeners.OnServiceToggleChangeListner
 import ru.filit.motiv.app.models.main.ServiceDialogModel
 import ru.filit.motiv.app.models.main.ToggleButtonState
 import ru.filit.motiv.app.utils.TimeUtils
 import java.util.*
 
-class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val context: Context) :
+class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val context: Context, val onServiceToggleChangeListner: OnServiceToggleChangeListner) :
     RecyclerView.Adapter<ViewHolder>() {
     private val services = SubscriberInteractor(context)
     private val gson = Gson()
@@ -63,19 +64,7 @@ class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val con
                 holder.tgButton.isChecked = true
                 holder.tgButton.isEnabled = true
                 holder.tgButton.setOnCheckedChangeListener { compoundButton, isChecked ->
-                    if (!isChecked) {
-                        val dataToPass = ServiceDialogModel()
-                        dataToPass.serv_name = items!![position].serviceName
-                        dataToPass.serv_id = items!![position].id
-                        dataToPass.isConnection = false
-                        dataToPass.itemHolder = holder
-                        dataToPass.conDate = TimeUtils().dateToString(Calendar.getInstance())
-                        val dialog = ServiceConfirmationDialogMVI.newInstance(dataToPass)
-                        dialog.show(
-                            (context as AppCompatActivity).supportFragmentManager,
-                            "Accept Dialog"
-                        )
-                    }
+                    onServiceToggleChangeListner.onToggleClick(items[position], isChecked)
                 }
             }
             ToggleButtonState.ActiveAndDisabled -> {

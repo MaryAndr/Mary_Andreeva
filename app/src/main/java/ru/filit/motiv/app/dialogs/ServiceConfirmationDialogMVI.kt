@@ -79,6 +79,7 @@ class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
 
         ivClose.setOnClickListener {
             val intent = activity?.intent
+            intent?.putExtra(Constants.SERVICE_ID, data.serv_id)
             targetFragment?.onActivityResult(Constants.REQUEST_CODE_SERVICE, Activity.RESULT_CANCELED, intent)
             dismiss()
         }
@@ -103,8 +104,8 @@ class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
         val intent = activity?.intent
+        intent?.putExtra(Constants.SERVICE_ID, data.serv_id)
         targetFragment?.onActivityResult(Constants.REQUEST_CODE_SERVICE, Activity.RESULT_CANCELED, intent)
-
     }
 
     companion object {

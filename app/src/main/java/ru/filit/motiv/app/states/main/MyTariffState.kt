@@ -6,5 +6,7 @@ class MyTariffState (var mainDataLoaded: Boolean,
                      var mainData: MyTariffMainData? = null,
                      var errorShown: Boolean,
                      var errorText: String? = null,
-                     var loading: Boolean
+                     var loading: Boolean,
+                     var changeService: Boolean,
+                     var changeServiceMessage: String?
                      )

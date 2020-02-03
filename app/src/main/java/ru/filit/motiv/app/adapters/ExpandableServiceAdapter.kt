@@ -112,7 +112,7 @@ class ExpandableServiceAdapter internal constructor(
         viewHolder.tgService.setOnCheckedChangeListener(null)
         viewHolder.tvInfoName?.text = child.serviceName
         viewHolder.tvDescription?.text = child.description
-        viewHolder.tvPriceRate?.text = child.price + "/" + child.interval
+        viewHolder.tvPriceRate?.text =child.price + " Руб/" + child.interval
 
         when(child.toggleState) {
             ToggleButtonState.ActiveAndDisabled -> {
