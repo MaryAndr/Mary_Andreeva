@@ -3,9 +3,12 @@ package ru.filit.motiv.app.fragments
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import com.hannesdorfmann.mosby3.mvi.MviFragment
@@ -23,9 +26,14 @@ import ru.filit.motiv.app.utils.PhoneTextWatcher
 import ru.filit.motiv.app.utils.TextConverter
 import ru.filit.motiv.app.views.LoginPageView
 
-class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPageView {
+
+
+class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPageView,
+    TextView.OnEditorActionListener {
 
     private lateinit var checkAuthTrigger: BehaviorSubject<Int>
+
+    private lateinit var login: BehaviorSubject<AuthModel>
 
 
     override fun checkAuthIntent(): Observable<Int> {
@@ -41,13 +49,7 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
 
 
     override fun authorizeIntent(): Observable<AuthModel> {
-        return RxView.clicks(buttonAuth)
-            .map<AuthModel> {
-                AuthModel(
-                    TextConverter().getOnlyDigits(etLoginPhone.text.toString()),
-                    etPassword.text.toString()
-                )
-            }
+        return login
     }
 
     override fun createPresenter() = LoginPagePresenter(context!!)
@@ -114,11 +116,53 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
         layoutTextInputPhone.boxStrokeColor = Color.parseColor("#fa6600")
         layoutTextInput.boxStrokeColor = Color.parseColor("#fa6600")
         checkAuthTrigger = BehaviorSubject.createDefault(0)
+        login = BehaviorSubject.create()
         etLoginPhone.addTextChangedListener(PhoneTextWatcher(etLoginPhone))
+        etLoginPhone.setOnEditorActionListener(this)
+        etPassword.setOnEditorActionListener(this)
+
+        etLoginPhone.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                val y = (+buttonAuth.y - etLoginPhone.y).toInt()
+                layoutTextInputPhone.hint = context?.getString(R.string.phone_number)
+                scrollView.scrollTo(0, y)
+            }
+        }
+        etPassword.setOnFocusChangeListener {v, hasFocus ->
+            if(hasFocus){
+                val y = (+buttonAuth.y - etPassword.x).toInt()
+                scrollView.scrollTo(0,y)
+                if (etLoginPhone.text.isNullOrEmpty()){
+                layoutTextInputPhone.hint = context?.getString(R.string.phone_hint)
+                }
+            }
+        }
+
+
+           buttonAuth.setOnClickListener{login.onNext(AuthModel(
+                TextConverter().getOnlyDigits(etLoginPhone.text.toString()),
+                etPassword.text.toString()
+            )) }
 
         RxView.clicks(tvSendSms).subscribe {
             val navController = NavHostFragment.findNavController(this)
             navController.navigate(R.id.sendSMSFragment)
         }
+    }
+
+    override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+        if(actionId==EditorInfo.IME_ACTION_NEXT){
+            etPassword.requestFocus()
+            return true
+        }
+
+        if (actionId==EditorInfo.IME_ACTION_DONE)
+        {
+            login.onNext(AuthModel(
+            TextConverter().getOnlyDigits(etLoginPhone.text.toString()),
+            etPassword.text.toString()))
+        return true
+        }
+        return false
     }
 }

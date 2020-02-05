@@ -27,8 +27,9 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
                         .onErrorResumeNext { error: Throwable ->
                             var errMessage = error.localizedMessage
                             if (error is HttpException) {
+
                                 errMessage = if (error.code() == 409) {
-                                    "Вы не являетесь пользователем мобильной связи"
+                                    "Вы не являетесь пользователем мобильной связи Мотив"
                                 } else {
                                     val errorBody = error.response()!!.errorBody()
 
@@ -36,7 +37,7 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
                                         gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
                                     val errorObj = adapter.fromJson(errorBody!!.string())
                                     if (errorObj.error_description == "Некорректный запрос") {
-                                        "Введите пароль или получите новый по SMS"
+                                        "Некорректный пароль"
                                     } else {
                                         errorObj.error_description
                                     }

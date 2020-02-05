@@ -7,6 +7,11 @@
     android:background="@color/cardview_light_background"
     tools:context=".fragments.LoginFragment">
 
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView">
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/mainView"
@@ -39,7 +44,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="86dp"
-            android:hint="@string/phone_number"
+            android:hint="@string/phone_hint"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/right_vertical_guideline"
             app:layout_constraintHorizontal_bias="0.0"
@@ -51,6 +56,7 @@
                 android:id="@+id/etLoginPhone"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
+                android:imeOptions="actionNext"
                 android:digits="1234567890+- "
                 android:ems="10"
                 android:inputType="phone"
@@ -79,8 +85,7 @@
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-
-                android:imeOptions="actionNext"
+                android:imeOptions="actionDone"
                 android:inputType="textPassword"
                 android:padding="10dp" />
 
@@ -149,6 +154,9 @@
             app:layout_constraintVertical_bias="0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/loading"

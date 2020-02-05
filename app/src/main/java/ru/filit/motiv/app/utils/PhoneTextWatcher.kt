@@ -11,6 +11,7 @@ class PhoneTextWatcher(private val edittext: EditText) : TextWatcher {
     var editedFlag = false
     var backspacingFlag = false
     var cursorComplement: Int = 0
+    var firstDigitsIsEight: Boolean = false
 
     override fun afterTextChanged(s: Editable?) {
         var string = s.toString()
@@ -73,7 +74,11 @@ class PhoneTextWatcher(private val edittext: EditText) : TextWatcher {
                 }
                 phone.length == 1 -> {
                     editedFlag = true
-                    val ans = "+7$phone"
+                    var ans = ""
+                    if (phone=="8"&&!firstDigitsIsEight){
+                        ans = "+7"
+                        firstDigitsIsEight =true
+                    }else{ans = "+7$phone"}
                     edittext.setText(ans)
                     edittext.setSelection(edittext.text.length - cursorComplement)
                 }
@@ -89,6 +94,9 @@ class PhoneTextWatcher(private val edittext: EditText) : TextWatcher {
 
         cursorComplement = s!!.length - edittext.selectionStart
         backspacingFlag = count > after
+        if (backspacingFlag&&after==0){
+            firstDigitsIsEight = false
+        }
     }
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
