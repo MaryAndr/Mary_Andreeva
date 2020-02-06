@@ -10,9 +10,9 @@ class TextConverter {
 
 
     fun descriptionBuilder(min: String? = "0", data: String? = "0.00", sms: String? = "0") : String {
-        var minExist: String? = "0.00"
-        var dataExist: String? = "0.00"
-        var smsExist: String?  = "0.00"
+        var minExist: String? = "0"
+        var dataExist: String? = "0"
+        var smsExist: String?  = "0"
         if (min != null) {
             minExist = min
         }

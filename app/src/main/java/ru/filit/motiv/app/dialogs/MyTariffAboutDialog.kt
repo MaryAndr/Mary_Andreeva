@@ -22,6 +22,7 @@ import ru.filit.motiv.app.models.main.MyTariffAboutData
 import ru.filit.motiv.app.utils.DownloadHelper
 import ru.filit.motiv.app.utils.TextConverter
 import ru.filit.motiv.app.models.catalogTariff.Attribute
+import ru.filit.motiv.app.models.catalogTariff.CatalogTariffResponse
 import ru.filit.motiv.app.models.main.TariffDialogModelData
 
 //TODO: Необходимо переписать под MVI архитектуру, используя абстрактный класс BaseBottomDialogMVI
@@ -104,9 +105,9 @@ class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boole
 
         if (data.subscriberTariff?.tariff?.constructor != null && isSelfTariff) {
             tvTariffDescription.text = TextConverter().descriptionBuilder(
-                data.subscriberTariff?.tariff?.constructor?.min.substringBefore("."),
-                data.subscriberTariff?.tariff?.constructor?.data,
-                data.subscriberTariff?.tariff?.constructor?.sms.substringBefore(".")
+                data.subscriberTariff.tariff.constructor.min,
+                data.subscriberTariff.tariff.constructor.data,
+                data.subscriberTariff.tariff.constructor.sms
             )
         } else {
             tvTariffDescription.text = data.catalogTariff?.tariffs?.first()
@@ -115,19 +116,19 @@ class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boole
         }
 
         if (isSubFee) {
-            if (!attrs?.firstOrNull { it.system_name == "internet_gb_count" }?.value?.orEmpty().isNullOrEmpty()) {
+            if (!attrs?.firstOrNull { it.system_name == "internet_gb_count" }?.value.orEmpty().isNullOrEmpty()) {
                 tvAddData.text =
                     attrs?.firstOrNull { it.system_name == "internet_gb_count" }?.value.orEmpty() + " " + attrs?.firstOrNull { it.system_name == "internet_gb_count" }?.unit.orEmpty()
             } else {
                 tvAddData.text = null
             }
-            if (!attrs?.firstOrNull { it.system_name == "minutes_count" }?.value?.orEmpty().isNullOrEmpty()) {
+            if (!attrs?.firstOrNull { it.system_name == "minutes_count" }?.value.orEmpty().isNullOrEmpty()) {
                 tvAddVoice.text =
                     attrs?.firstOrNull { it.system_name == "minutes_count" }?.value.orEmpty() + " Мин"
             } else {
                 tvAddVoice.text = null
             }
-            if (!attrs?.firstOrNull { it.system_name == "sms_count" }?.value?.orEmpty().isNullOrEmpty()) {
+            if (!attrs?.firstOrNull { it.system_name == "sms_count" }?.value.orEmpty().isNullOrEmpty()) {
                 tvAddSMS.text =
                     attrs?.firstOrNull { it.system_name == "sms_count" }?.value.orEmpty() + " SMS"
             } else {
@@ -146,7 +147,7 @@ class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boole
             } else {
                 tvAddVoice.text = null
             }
-            if (!attrs?.firstOrNull { it.system_name == "sms_cost" }?.value?.orEmpty().isNullOrEmpty()) {
+            if (!attrs?.firstOrNull { it.system_name == "sms_cost" }?.value.orEmpty().isNullOrEmpty()) {
                 tvAddSMS.text =
                     attrs?.firstOrNull { it.system_name == "sms_cost" }?.value.orEmpty() + attrs?.firstOrNull { it.system_name == "sms_cost" }?.unit.orEmpty()
             } else {
@@ -156,37 +157,44 @@ class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boole
 
         if (isSelfTariff) {
 
-            if (data.subscriberTariff?.tariff?.constructor?.abon_discount != null && data.subscriberTariff?.tariff?.constructor?.abon_discount != "0") {
+            if (data.subscriberTariff?.tariff?.constructor?.abon_discount != null && data.subscriberTariff.tariff.constructor.abon_discount != "0") {
                 tvSubFeeDisc.visibility = View.VISIBLE
                 tvSubFeeDisc.text =
-                    data.subscriberTariff?.tariff?.constructor?.abon_discount.toString() + " руб."
+                    "${data.subscriberTariff?.tariff?.constructor?.abon_discount} \u20BD/${getInterval()}"
                 tvSubFee.apply {
                     paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                    text = data.subscriberTariff?.tariff?.constructor?.abon + " руб."
+                    text = "${data.subscriberTariff?.tariff?.constructor?.abon} \u20BD/${getInterval()}"
                 }
             } else {
-                tvSubFee.text = data.subscriberTariff?.tariff?.constructor?.abon + " руб."
+                tvSubFee.text = "${data.subscriberTariff?.tariff?.constructor?.abon} \u20BD/${getInterval()}"
                 tvSubFeeDisc.visibility = View.GONE
             }
 
-        } else if (attrs?.firstOrNull { it.system_name == "subscription_fee" } != null && attrs?.firstOrNull { it.system_name == "subscription_fee" }?.value != "0") {
+        } else if (attrs?.firstOrNull { it.system_name == "subscription_fee" } != null && attrs.firstOrNull { it.system_name == "subscription_fee" }?.value != "0") {
             tvSubFee.text =
                 attrs?.firstOrNull { it.system_name == "subscription_fee" }?.value + " " + attrs?.firstOrNull { it.system_name == "subscription_fee" }?.unit
         } else {
             tvSubFee.visibility = View.GONE
         }
-
-        if (tvAddData.text.isNullOrEmpty()) {
+        if (!data.subscriberTariff?.tariff?.constructor?.data.isNullOrEmpty()){
+            tvAddData.text = "${data.subscriberTariff?.tariff?.constructor?.data} ГБ"
+        }else{
             addDataView.visibility = View.GONE
         }
 
-        if (tvAddVoice.text.isNullOrEmpty()) {
+        if (!data.subscriberTariff?.tariff?.constructor?.min.isNullOrEmpty()){
+            tvAddVoice.text = "${data.subscriberTariff?.tariff?.constructor?.min} Мин"
+        }else {
             addVoiceView.visibility = View.GONE
         }
 
-        if (tvAddSMS.text.isNullOrEmpty()) {
+        if (!data.subscriberTariff?.tariff?.constructor?.sms.isNullOrEmpty()){
+            tvAddSMS.text = "${data.subscriberTariff?.tariff?.constructor?.sms} SMS"
+        }else
+        {
             addSMSView.visibility = View.GONE
         }
+
 
         if (tvAddData.text.isNullOrEmpty() && tvAddVoice.text.isNullOrEmpty() && tvAddSMS.text.isNullOrEmpty()) {
             addHolder.visibility = View.GONE
@@ -316,6 +324,21 @@ class MyTariffAboutDialog(val data: MyTariffAboutData, val isTariffChange: Boole
                 }
             }
         }
+    }
+
+    private fun getInterval():String {
+        var interval = ""
+         data.catalogTariff?.tariffs?.forEach{if (data.subscriberTariff?.tariff?.name.equals(it.name)){
+            it.attributes.forEach{atribute -> if (atribute.name.equals("периодичность списания АП**")){
+                when (atribute.value){
+                    "Ежемесячно" -> interval = "месяц"
+                    else -> interval = "сутки"
+                }
+            }}
+        }
+        }
+        return interval
+
     }
 
     companion object {

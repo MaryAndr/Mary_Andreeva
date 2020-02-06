@@ -1,15 +1,15 @@
 package ru.filit.motiv.app.fragments
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.navigation.fragment.NavHostFragment
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxbinding2.view.RxView
@@ -120,6 +120,10 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
         etLoginPhone.addTextChangedListener(PhoneTextWatcher(etLoginPhone))
         etLoginPhone.setOnEditorActionListener(this)
         etPassword.setOnEditorActionListener(this)
+        activity?.getWindow()?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        if(!etLoginPhone.text!!.isNotEmpty()){
+            layoutTextInputPhone.hint = context?.getString(R.string.phone_number)
+        }
 
         etLoginPhone.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {

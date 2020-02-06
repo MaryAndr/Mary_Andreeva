@@ -49,6 +49,7 @@
                     app:layout_constraintTop_toBottomOf="@id/viewOtherTarrifs"
                     app:layout_constraintVertical_bias="0.0">
 
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/constInternet"
                         android:layout_width="0dp"
@@ -65,8 +66,8 @@
                             android:layout_height="wrap_content"
                             android:text="Интернет"
                             android:textColor="#000000"
+                            android:textSize="22dp"
                             android:textStyle="bold"
-                            android:textSize="16dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0"
@@ -99,9 +100,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:textSize="12dp"
                                     android:text="Перенесенные остатки"
-                                    android:textColor="#000000" />
+                                    android:textColor="#000000"
+                                    android:textSize="12dp" />
 
                                 <TextView
                                     android:id="@+id/tvLeftOversRest"
@@ -298,13 +299,13 @@
                             android:id="@+id/dataRecyclerView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tvInternet"
                             app:layout_constraintVertical_bias="0.0" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/constVoice"
@@ -351,6 +352,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Звонки"
+                            android:textSize="22dp"
                             android:textColor="#000000"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -464,6 +466,7 @@
                             android:text="SMS"
                             android:textColor="#000000"
                             android:textStyle="bold"
+                            android:textSize="22dp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0"
@@ -562,7 +565,7 @@
                         android:layout_marginTop="30dp"
                         android:text="Остатки по пакетам услуг"
                         android:textColor="#000000"
-                        android:textSize="25sp"
+                        android:textSize="26sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/guideline25"
@@ -734,6 +737,7 @@
                         android:layout_height="wrap_content"
                         android:text="TextView"
                         android:textSize="16dp"
+                        android:maxWidth="100dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/guideline23"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -743,7 +747,7 @@
 
                     <TextView
                         android:id="@+id/tvTariffRate"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/blankText"
                         android:textColor="#000000"
@@ -776,11 +780,11 @@
                         android:layout_height="wrap_content"
                         android:text="TextView"
                         android:visibility="visible"
+                        android:layout_marginBottom="10dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/guideline23"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="@+id/guideline22"
-                        app:layout_constraintTop_toBottomOf="@+id/tvTariffRate"
                         app:layout_constraintVertical_bias="0.0" />
 
                     <androidx.constraintlayout.widget.Guideline
@@ -810,19 +814,17 @@
                         android:id="@+id/tvAbonDiscount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginLeft="20dp"
                         android:text="TextView"
                         android:textColor="#000000"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/tvAboutTariff"
-                        app:layout_constraintHorizontal_bias="0.14"
-                        app:layout_constraintStart_toEndOf="@+id/tvTariffRate"
-                        app:layout_constraintTop_toBottomOf="@+id/tvTariffCondition"
-                        app:layout_constraintVertical_bias="0.23000002" />
+                        app:layout_constraintBottom_toTopOf="@+id/tvTariffDate"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline23"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@+id/guideline22"
+                        app:layout_constraintTop_toBottomOf="@+id/tvTariffRate"
+                        app:layout_constraintVertical_bias="0.35000002" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

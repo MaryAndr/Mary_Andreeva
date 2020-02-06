@@ -99,26 +99,24 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="25dp"
-                    android:layout_marginLeft="25dp"
-                    android:layout_marginTop="25dp"
-                    android:layout_marginBottom="25dp"
-                    android:text="TextView"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="абон"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/addHolder"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintTop_toBottomOf="@+id/addHolder" />
 
                 <LinearLayout
                     android:id="@+id/addHolder"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="25dp"
-                    android:layout_marginLeft="25dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginLeft="15dp"
                     android:layout_marginTop="24dp"
-                    android:layout_marginEnd="25dp"
-                    android:layout_marginRight="25dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginRight="15dp"
                     android:layout_marginBottom="24dp"
                     android:orientation="horizontal"
                     android:visibility="visible"
@@ -146,20 +144,19 @@
                             android:id="@+id/tvAddData"
                             android:layout_width="match_parent"
                             android:layout_height="20dp"
-                            android:layout_marginLeft="5dp"
+                            android:layout_marginStart="5dp"
                             android:maxLines="1"
-                            app:autoSizeMaxTextSize="14sp"
+                            android:text="Internet"
 
+                            app:autoSizeMaxTextSize="14sp"
                             app:autoSizeMinTextSize="10sp"
                             app:autoSizeStepGranularity="1sp"
-                            app:autoSizeTextType="uniform"
-                            android:text="TextView" />
+                            app:autoSizeTextType="uniform" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/addVoiceView"
                         android:layout_width="0dp"
-
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
@@ -176,21 +173,21 @@
                             android:layout_width="match_parent"
                             android:layout_height="20dp"
                             android:maxLines="1"
-                            app:autoSizeMaxTextSize="14sp"
+                            android:text="Minut"
 
+                            app:autoSizeMaxTextSize="14sp"
                             app:autoSizeMinTextSize="10sp"
                             app:autoSizeStepGranularity="1sp"
-                            app:autoSizeTextType="uniform"
-                            android:text="TextView" />
+                            app:autoSizeTextType="uniform" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/addSMSView"
                         android:layout_width="0dp"
-
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:visibility="visible">
 
                         <ImageView
                             android:id="@+id/ivSMS"
@@ -204,31 +201,33 @@
                             android:layout_height="20dp"
                             android:layout_marginLeft="5dp"
                             android:maxLines="1"
-                            app:autoSizeMaxTextSize="14sp"
+                            android:text="SMS"
 
+                            app:autoSizeMaxTextSize="14sp"
                             app:autoSizeMinTextSize="10sp"
                             app:autoSizeStepGranularity="1sp"
-                            app:autoSizeTextType="uniform" />
+                            app:autoSizeTextType="uniform"
+                            tools:visibility="visible" />
                     </LinearLayout>
 
 
                 </LinearLayout>
+
                 <TextView
                     android:id="@+id/tvSubFeeDisc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="25dp"
-                    android:layout_marginLeft="25dp"
-                    android:layout_marginTop="25dp"
-                    android:layout_marginBottom="25dp"
-                    android:text="TextView"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="3dp"
+                    android:text="цена со скидкой"
+                    android:textSize="16sp"
                     android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/tvSubFee"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toEndOf="@+id/tvSubFee"
-                    app:layout_constraintTop_toBottomOf="@+id/addHolder"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/addHolder" />
 
                 <TextView
                     android:id="@+id/tvUnlimData"
@@ -253,6 +252,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="TextView"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/guideline27"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -309,7 +309,7 @@
             <View
                 android:id="@+id/view2"
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
+                android:layout_height="1dp"
                 android:layout_marginTop="19dp"
                 android:layout_weight="1"
                 android:background="@android:color/darker_gray"
@@ -357,7 +357,7 @@
             <View
                 android:id="@+id/viewUnderAddInfo"
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
+                android:layout_height="1dp"
                 android:layout_marginTop="19dp"
                 android:layout_weight="1"
                 android:background="@android:color/darker_gray"
@@ -385,9 +385,10 @@
 
             <LinearLayout
                 android:id="@+id/pdfDownload"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
                 android:orientation="horizontal"
+                android:layout_marginBottom="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/guideline27"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -397,23 +398,24 @@
 
                 <ImageView
                     android:id="@+id/imageView7"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
                     app:srcCompat="@drawable/ic_download" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="10dp"
-                    android:layout_weight="1"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="15dp"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/textView6"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
+                        android:layout_height="70dp"
+                        android:gravity="left"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimaryDark"
                         android:text="Скачать информацию о тарифе" />
                 </LinearLayout>
             </LinearLayout>

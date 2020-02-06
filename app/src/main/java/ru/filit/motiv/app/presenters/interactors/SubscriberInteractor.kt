@@ -605,6 +605,7 @@ class SubscriberInteractor(ctx: Context) {
                     if (it.amount != null && it.amount > 0) {
                         val rest = it.amount
                         val total = it.amount
+                        val dueDate = it.due_date
                         val name = "Перенесенные остатки"
                         var indicatorData = IndicatorHolder(
                             rest,
@@ -612,13 +613,15 @@ class SubscriberInteractor(ctx: Context) {
                             100,
                             false,
                             optionsName = name,
-                            type = "DATA"
+                            type = "DATA",
+                            dueDate = dueDate
                         )
                         dataIndicators.add(indicatorData)
                     }
                     if (it.exchange != null && it.exchange > 0) {
                         val rest = it.exchange.toInt()
                         val total = it.exchange.toInt()
+                        val dueDate = it.due_date
                         val name = "Количество обменянных ГБ"
                         var indicatorData = IndicatorHolder(
                             rest,
@@ -636,6 +639,7 @@ class SubscriberInteractor(ctx: Context) {
                     if (it.amount != null && it.amount > 0) {
                         val rest = it.amount
                         val total = it.amount
+                        val dueDate = it.due_date
                         val name = "Перенесенные остатки"
                         var indicatorData = IndicatorHolder(
                             rest,
@@ -651,6 +655,7 @@ class SubscriberInteractor(ctx: Context) {
                         val rest = it.exchange.toInt()
                         val total = it.exchange.toInt()
                         val name = "Количество обменянных Мин."
+                        val dueDate = it.due_date
                         var indicatorData = IndicatorHolder(
                             rest,
                             total,
@@ -668,6 +673,7 @@ class SubscriberInteractor(ctx: Context) {
                         val rest = it.amount
                         val total = it.amount
                         val name = "Перенесенные остатки"
+                        val dueDate = it.due_date
                         var indicatorData = IndicatorHolder(
                             rest,
                             total,
@@ -682,6 +688,7 @@ class SubscriberInteractor(ctx: Context) {
                         val rest = it.exchange.toInt()
                         val total = it.exchange.toInt()
                         val name = "Количество обменянных SMS"
+                        val dueDate = it.due_date
                         var indicatorData = IndicatorHolder(
                             rest,
                             total,
@@ -710,7 +717,7 @@ class SubscriberInteractor(ctx: Context) {
                         remain.services.name.orEmpty()
                     }
                     var dueDate = ""
-                    if (remain.due_date == "2999-12-31") {
+                    if (remain.due_date != "2999-12-31") {
                         dueDate = remain.due_date
                     }
                     var indicatorData: IndicatorHolder?
@@ -744,7 +751,7 @@ class SubscriberInteractor(ctx: Context) {
                         remain.services.name.orEmpty()
                     }
                     var dueDate = ""
-                    if (remain.due_date == "2999-12-31") {
+                    if (remain.due_date != "2999-12-31") {
                         dueDate = remain.due_date
                     }
                     var indicatorData: IndicatorHolder?
@@ -777,7 +784,7 @@ class SubscriberInteractor(ctx: Context) {
                         remain.services.name.orEmpty()
                     }
                     var dueDate = ""
-                    if (remain.due_date == "2999-12-31") {
+                    if (remain.due_date != "2999-12-31") {
                         dueDate = remain.due_date
                     }
 
@@ -839,16 +846,18 @@ class SubscriberInteractor(ctx: Context) {
             if (it.type == "DATA") {
                 var rest = it.rest_amount
                 var total = it.total_amount
+                var dueDate = it.due_date
                 Log.d("HERE", "DATA $rest and $total")
                 var indicatorData: IndicatorHolder?
                 indicatorData = if (rest == 0 && total == 0) {
-                    IndicatorHolder(rest, total, 0, false)
+                    IndicatorHolder(rest, total, 0, false, dueDate = dueDate)
                 } else {
                     IndicatorHolder(
                         rest,
                         total,
                         MathUtils().calculatePercent(rest, total),
-                        false
+                        false,
+                        dueDate = dueDate
                     )
 
                 }
