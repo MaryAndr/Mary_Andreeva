@@ -65,7 +65,7 @@ class IndicatorsAdapter(val indicatorsModels: MutableList<IndicatorHolder>, val 
             holder.pbCondition.progress = indicatorsModels[position].percent!!
         }
 
-        if (indicatorsModels[position].dueDate != null)  {
+        if (!indicatorsModels[position].dueDate.isNullOrEmpty())  {
             val dueDate ="до ${indicatorsModels[position].dueDate?.replace("-", ".")}"
             holder.tvConditionData.text =dueDate
         } else {
