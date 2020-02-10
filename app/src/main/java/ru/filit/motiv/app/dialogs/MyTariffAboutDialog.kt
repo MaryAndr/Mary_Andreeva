@@ -141,6 +141,11 @@ class MyTariffAboutDialog(
             } else {
                 tvAddSMS.text = null
             }
+
+            tvSubFee.apply {
+                visibility = View.VISIBLE
+                text = "${attrs?.firstOrNull {it.system_name=="subscription_fee"}?.value} \u20BD/${getInterval()}"
+            }
             tvSubFeeDisc.visibility = View.GONE
         } else {
             if (!attrs?.firstOrNull { it.system_name == "internet_mb_cost" }?.value.orEmpty().isNullOrEmpty()) {
@@ -346,7 +351,7 @@ class MyTariffAboutDialog(
     }
 
     private fun getInterval(): String {
-        var interval = ""
+        var interval = "месяц"
         data.catalogTariff?.tariffs?.forEach {
             if (data.subscriberTariff?.tariff?.name.equals(it.name)) {
                 it.attributes.forEach { atribute ->

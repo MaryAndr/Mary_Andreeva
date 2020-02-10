@@ -74,6 +74,9 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
                     layoutTextInputPhone.error = " "
                     layoutTextInput.error = state.errorMessage
                 }
+                if (etLoginPhone.text.isNullOrEmpty()) {
+                    layoutTextInputPhone.hint = context?.getString(R.string.phone_number)
+                }else  layoutTextInputPhone.hint = context?.getString(R.string.phone_hint)
             }
             state.successFullyAuthorized -> {
                 mainView.isClickable = true
@@ -97,6 +100,9 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
     override fun onResume() {
         super.onResume()
         (activity as AppCompatActivity).supportActionBar?.hide()
+        if (!etLoginPhone.text.isNullOrEmpty()) {
+            layoutTextInputPhone.hint = context?.getString(R.string.phone_number)
+        }
     }
 
     override fun onCreateView(
@@ -121,9 +127,6 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
         etLoginPhone.setOnEditorActionListener(this)
         etPassword.setOnEditorActionListener(this)
         activity?.getWindow()?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-        if(!etLoginPhone.text!!.isNotEmpty()){
-            layoutTextInputPhone.hint = context?.getString(R.string.phone_number)
-        }
 
         etLoginPhone.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
@@ -132,21 +135,25 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
                 scrollView.scrollTo(0, y)
             }
         }
-        etPassword.setOnFocusChangeListener {v, hasFocus ->
-            if(hasFocus){
+        etPassword.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
                 val y = (+buttonAuth.y - etPassword.x).toInt()
-                scrollView.scrollTo(0,y)
-                if (etLoginPhone.text.isNullOrEmpty()){
-                layoutTextInputPhone.hint = context?.getString(R.string.phone_hint)
+                scrollView.scrollTo(0, y)
+                if (etLoginPhone.text.isNullOrEmpty()) {
+                    layoutTextInputPhone.hint = context?.getString(R.string.phone_hint)
                 }
             }
         }
 
 
-           buttonAuth.setOnClickListener{login.onNext(AuthModel(
-                TextConverter().getOnlyDigits(etLoginPhone.text.toString()),
-                etPassword.text.toString()
-            )) }
+        buttonAuth.setOnClickListener {
+            login.onNext(
+                AuthModel(
+                    TextConverter().getOnlyDigits(etLoginPhone.text.toString()),
+                    etPassword.text.toString()
+                )
+            )
+        }
 
         RxView.clicks(tvSendSms).subscribe {
             val navController = NavHostFragment.findNavController(this)

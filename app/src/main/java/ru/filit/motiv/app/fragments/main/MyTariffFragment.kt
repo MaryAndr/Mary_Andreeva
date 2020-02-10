@@ -26,7 +26,7 @@ import ru.filit.motiv.app.adapters.IndicatorsAdapter
 import ru.filit.motiv.app.adapters.MyTariffServicesAdapter
 import ru.filit.motiv.app.dialogs.MyTariffAboutDialog
 import ru.filit.motiv.app.dialogs.ServiceConfirmationDialogMVI
-import ru.filit.motiv.app.listeners.OnServiceToggleChangeListner
+import ru.filit.motiv.app.listeners.OnServiceToggleChangeListener
 import ru.filit.motiv.app.models.main.IndicatorsModel
 import ru.filit.motiv.app.models.main.MyTariffAboutData
 import ru.filit.motiv.app.models.main.ServiceDialogModel
@@ -40,7 +40,7 @@ import ru.filit.motiv.app.views.main.MyTariffView
 import java.util.*
 
 class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
-    MyTariffView, OnServiceToggleChangeListner {
+    MyTariffView, OnServiceToggleChangeListener {
 
     override fun createPresenter() = MyTariffPresenter(context!!)
 
@@ -338,7 +338,7 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         return inflater.inflate(R.layout.fragment_my_tariff, container, false)
     }
 
-    override fun onToggleClick(item: ServicesListShow, isChecked: Boolean) {
+    override fun onToggleClick(item: ServicesListShow, isChecked: Boolean, position: Int) {
         if (!isChecked) {
             val dataToPass = ServiceDialogModel()
             dataToPass.serv_name = item.serviceName

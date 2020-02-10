@@ -5,28 +5,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import ru.filit.motiv.app.R
-import ru.filit.motiv.app.dialogs.ServiceConfirmationDialogMVI
-import ru.filit.motiv.app.listeners.OnServiceToggleChangeListner
-import ru.filit.motiv.app.models.main.ServiceDialogModel
+import ru.filit.motiv.app.listeners.OnServiceToggleChangeListener
 import ru.filit.motiv.app.models.main.ServicesListShow
 import ru.filit.motiv.app.models.main.ToggleButtonState
-import ru.filit.motiv.app.utils.TimeUtils
-import java.util.*
 
 class ExpandableServiceAdapter internal constructor(
-    private val context: Context,
-
-    private val onToggleChangeListener: OnServiceToggleChangeListner
+    private val onToggleChangeListener: OnServiceToggleChangeListener
 ) : BaseExpandableListAdapter() {
 
-    private var titleList: List<String?> = mutableListOf()
+    private var titleList: MutableList<String?> = mutableListOf()
     private var dataList: MutableMap<String, MutableList<ServicesListShow>> = mutableMapOf()
 
     fun setData(items:MutableList<ServicesListShow>){
-        titleList = items.distinctBy { it.category }.map { it.category }
-        dataList = mutableMapOf<String, MutableList<ServicesListShow>>()
+        titleList.clear()
+        dataList.clear()
+        titleList = items.distinctBy { it.category }.map { it.category }.toMutableList()
         titleList.forEach{title ->
             dataList[title!!] = items.filter {it.category == title}.toMutableList()
         }
@@ -55,7 +49,7 @@ class ExpandableServiceAdapter internal constructor(
         val groupTitle = getGroup(groupPosition)
         val groupCount = dataList[groupTitle]?.size
         if (convertView == null) {
-            val layoutInflater = this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val layoutInflater = parent?.context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             rowView = layoutInflater.inflate(R.layout.services_group_item, null)
             viewHolder = GroupViewHolder(rowView)
             rowView.tag = viewHolder
@@ -100,7 +94,7 @@ class ExpandableServiceAdapter internal constructor(
         val child = getChild(groupPosition, childPosition)
 
         if (convertView == null) {
-            val layoutInflater = this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val layoutInflater = parent?.context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             rowView = layoutInflater.inflate(R.layout.services_item, null)
             viewHolder = ServicesViewHolder(rowView)
             rowView.tag = viewHolder
@@ -112,26 +106,26 @@ class ExpandableServiceAdapter internal constructor(
         viewHolder.tgService.setOnCheckedChangeListener(null)
         viewHolder.tvInfoName?.text = child.serviceName
         viewHolder.tvDescription?.text = child.description
-        viewHolder.tvPriceRate?.text =child.price + " Руб/" + child.interval
+        viewHolder.tvPriceRate?.text =child.price?.substringBefore(".0") + " Руб/" + child.interval
 
         when(child.toggleState) {
             ToggleButtonState.ActiveAndDisabled -> {
                 viewHolder.tgService.isChecked = true
                 viewHolder.tgService.isEnabled = false
-                viewHolder.tgService.setBackgroundResource(R.drawable.toggle_dis_on)
             }
             ToggleButtonState.ActiveAndEnabled -> {
                 viewHolder.tgService.isChecked = true
                 viewHolder.tgService.isEnabled = true
                 viewHolder.tgService.setOnCheckedChangeListener { compoundButton, isChecked ->
-                    onToggleChangeListener.onToggleClick(child, isChecked)}
+                    onToggleChangeListener.onToggleClick(child, isChecked, childPosition)}
             }
             ToggleButtonState.InactiveAndEnabled -> {
                 viewHolder.tgService.isChecked = false
                 viewHolder.tgService.isEnabled = true
                 viewHolder.tgService.setOnCheckedChangeListener { compoundButton, isChecked ->
-                    onToggleChangeListener.onToggleClick(child, isChecked) }
+                    onToggleChangeListener.onToggleClick(child, isChecked, childPosition) }
             }
+            else -> {viewHolder.itemView.visibility = View.GONE}
         }
 
         return rowView as View

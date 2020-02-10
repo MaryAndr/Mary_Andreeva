@@ -71,17 +71,18 @@ class BlockUnblockDialog(val data: SettingsDataModel, val message: String? = nul
         super.onViewCreated(view, savedInstanceState)
 
         if (data.statusId == 1) {
-            tvPhoneNumber.text = data.msisdn!!
+            tvPhoneNumber.text = "+7${data.msisdn!!}"
             title.text = "Блокировка номера"
             viewUnblock.visibility = View.GONE
             btnBlockUnlock.text = "Блокировать номер"
         } else if (data.statusId == 4) {
-            tvPhoneNumber.text = data.msisdn!!
+            tvPhoneNumber.text = "+7${data.msisdn!!}"
             title.text = "Разблокировка номера"
             viewUnblock.visibility = View.VISIBLE
             etKeyWord.visibility = View.VISIBLE
             btnBlockUnlock.text = "Разблокировать номер"
         }
+        ivClose.setOnClickListener{dismiss()}
     }
 
     companion object {

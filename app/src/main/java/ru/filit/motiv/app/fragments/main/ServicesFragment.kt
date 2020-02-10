@@ -23,7 +23,7 @@ import ru.filit.motiv.app.R
 import ru.filit.motiv.app.adapters.EnabledServicesAdapter
 import ru.filit.motiv.app.adapters.ExpandableServiceAdapter
 import ru.filit.motiv.app.dialogs.ServiceConfirmationDialogMVI
-import ru.filit.motiv.app.listeners.OnServiceToggleChangeListner
+import ru.filit.motiv.app.listeners.OnServiceToggleChangeListener
 import ru.filit.motiv.app.models.main.ServiceDialogModel
 import ru.filit.motiv.app.models.main.ServicesListShow
 import ru.filit.motiv.app.presenters.main.ServicesPresenter
@@ -36,11 +36,13 @@ import java.util.*
 /**
  * A simple [Fragment] subclass.
  */
-class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), ServicesPageView, OnServiceToggleChangeListner {
+class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), ServicesPageView, OnServiceToggleChangeListener {
 
     override fun createPresenter() = ServicesPresenter(context!!)
 
     private lateinit var service:ServicesListShow
+
+    private var servicePosition: Int =0
 
     private lateinit var allServicesListAdapter:ExpandableServiceAdapter
 
@@ -74,7 +76,6 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                 servicesList.layoutManager = LinearLayoutManager(context!!)
                 servicesList.adapter = enabledServicesAdapter
                   enabledServicesAdapter.setData(items)
-                (servicesList.adapter as EnabledServicesAdapter).notifyDataSetChanged()
             }
             is ServicesPartialState.FetchAllService -> {
                 pgData.visibility = View.GONE
@@ -87,10 +88,10 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                 items = state.servicesList
                 allServicesList.setAdapter(allServicesListAdapter)
                 allServicesListAdapter.setData(items)
-                servicesList.layoutManager = LinearLayoutManager(context!!)
+                /*servicesList.layoutManager = LinearLayoutManager(context!!)
                 servicesList.adapter = enabledServicesAdapter
                 enabledServicesAdapter.setData(items)
-                (servicesList.adapter as EnabledServicesAdapter).notifyDataSetChanged()
+                (servicesList.adapter as EnabledServicesAdapter).notifyDataSetChanged()*/
             }
             is ServicesPartialState.Loading -> {
                 allServicesLayout.visibility = View.GONE
@@ -122,12 +123,7 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
             is ServicesPartialState.CancelChange -> {
                 items.forEach{if(it.id ==service.id)it.toggleState = service.toggleState }
               if (servicesGroup.checkedRadioButtonId == R.id.activeButton)    {
-                  servicesList.layoutManager = LinearLayoutManager(context!!)
-                  servicesList.adapter = enabledServicesAdapter
-                  enabledServicesAdapter.setData(items)
-                  enabledServicesAdapter.setData(items)
-                  (servicesList.adapter as EnabledServicesAdapter).notifyDataSetChanged()
-
+                  enabledServicesAdapter.cancelChanges(servicePosition)
               }else {allServicesListAdapter.setData(items)}
             }
         }
@@ -149,6 +145,8 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
         triggerChangeService = BehaviorSubject.create()
         changeRadioGroup = BehaviorSubject.create()
         cancelChange = BehaviorSubject.create()
+        allServicesListAdapter = ExpandableServiceAdapter( onToggleChangeListener = this)
+        enabledServicesAdapter =EnabledServicesAdapter(onToggleChangeListener = this)
         RxJavaPlugins.setErrorHandler { throwable ->
             throwable.printStackTrace()
         }
@@ -165,8 +163,6 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        allServicesListAdapter = ExpandableServiceAdapter(context!!, this)
-        enabledServicesAdapter =EnabledServicesAdapter(context!!, this)
         changeRadioGroup.onNext(true)
         servicesGroup.setOnCheckedChangeListener { group, checkedId ->
             if (checkedId==R.id.activeButton) changeRadioGroup.onNext(true)
@@ -174,8 +170,9 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
         }
     }
 
-    override fun onToggleClick(item: ServicesListShow, isChecked:Boolean) {
+    override fun onToggleClick(item: ServicesListShow, isChecked:Boolean, position: Int) {
             service = item
+            servicePosition = position
             val dataToPass = ServiceDialogModel()
             dataToPass.serv_name = service.serviceName
             dataToPass.serv_id = service.id

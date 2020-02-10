@@ -5,36 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.added_services_list.view.*
 import kotlinx.android.synthetic.main.added_services_list.view.tvDescription
 import kotlinx.android.synthetic.main.added_services_list.view.tvName
 import kotlinx.android.synthetic.main.added_services_list.view.tvValue
 import ru.filit.motiv.app.R
-import ru.filit.motiv.app.models.ErrorJson
 import ru.filit.motiv.app.models.main.ServicesListShow
 import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
-import retrofit2.HttpException
-import ru.filit.motiv.app.dialogs.ServiceConfirmationDialogMVI
-import ru.filit.motiv.app.listeners.OnServiceToggleChangeListner
-import ru.filit.motiv.app.models.main.ServiceDialogModel
+import ru.filit.motiv.app.listeners.OnServiceToggleChangeListener
 import ru.filit.motiv.app.models.main.ToggleButtonState
-import ru.filit.motiv.app.utils.TimeUtils
-import java.util.*
 
-class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val context: Context, val onServiceToggleChangeListner: OnServiceToggleChangeListner) :
+class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val context: Context, val onServiceToggleChangeListner: OnServiceToggleChangeListener) :
     RecyclerView.Adapter<ViewHolder>() {
-    private val services = SubscriberInteractor(context)
-    private val gson = Gson()
-    private var myCompositeDisposable: CompositeDisposable? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        myCompositeDisposable = CompositeDisposable()
         return ViewHolder(
             LayoutInflater.from(context).inflate(
                 R.layout.added_services_list,
@@ -49,28 +36,22 @@ class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val con
         return items!!.size
     }
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        super.onDetachedFromRecyclerView(recyclerView)
-        myCompositeDisposable?.clear()
-
-    }
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvName.text = items?.get(position)?.serviceName
         holder.tvDescription.text = items?.get(position)?.description
-        holder.tvValue.text = items?.get(position)?.price + " ${context.resources.getString(R.string.rub_value)}/месяц"
+        holder.tvValue.text = items?.get(position)?.price?.substringBefore(".0") + " ${context.resources.getString(R.string.rub_value)}/" + items?.get(position)?.interval
+        holder.tgButton.setOnCheckedChangeListener(null)
         when(items?.get(position)?.toggleState) {
             ToggleButtonState.ActiveAndEnabled -> {
                 holder.tgButton.isChecked = true
                 holder.tgButton.isEnabled = true
                 holder.tgButton.setOnCheckedChangeListener { compoundButton, isChecked ->
-                    onServiceToggleChangeListner.onToggleClick(items[position], isChecked)
+                    onServiceToggleChangeListner.onToggleClick(items[position], isChecked,position)
                 }
             }
             ToggleButtonState.ActiveAndDisabled -> {
                 holder.tgButton.isChecked = true
                 holder.tgButton.isEnabled = false
-                holder.tgButton.setBackgroundResource(R.drawable.toggle_dis_on)
             }
         }
 
@@ -114,7 +95,12 @@ class MyTariffServicesAdapter(val items: MutableList<ServicesListShow>?, val con
         notifyItemRemoved(position)
     }
 
+ private fun getPrice(price:String?):String?{
+     val cost = price?.substringBefore(",0")
+         return cost
+ }
 }
+
 
 class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val tvName = view.tvName

@@ -62,7 +62,7 @@ class SettingsFragment() : MviFragment<SettingsView, SettingsPresenter>(), Setti
                 pgMainData.visibility = View.GONE
                 mainDataHolder.visibility = View.VISIBLE
                 tvName.text = state.data.full_name
-                tvPhoneValue.text = state.data.msisdn
+                tvPhoneValue.text ="+7${state.data.msisdn}"
                 tvLcNumberValue.text = state.data.pers_account
                 tvContractValue.text = state.data.contractInfo
                 tvRegionValue.text = state.data.region

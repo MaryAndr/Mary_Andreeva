@@ -72,7 +72,7 @@ class MinToGbFragment(private var exchangeInfo: ExchangeResponse?) :
                 }
                 etGb.setText(
                     "${(gb / 1024).toBigDecimal().setScale(
-                        1,
+                        2,
                         RoundingMode.UP
                     ).toDouble()} ГБ"
                 )
@@ -91,7 +91,7 @@ class MinToGbFragment(private var exchangeInfo: ExchangeResponse?) :
 
             is MinToGbState.ExchangeData -> {
                 minToGbSeekBar.max = state.data.max_minutes
-                tvMins.text = "${state.data.max_minutes}"
+                tvMins.text = "${state.data.max_minutes} Мин"
                 tvMbValue.text = "${state.data.rate} Мб"
                 etMin.filters = arrayOf(MinMaxFilterValue(0,state.data.max_minutes))
                 exchangeInfo = state.data

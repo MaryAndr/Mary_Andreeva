@@ -57,7 +57,7 @@ class SubscriberInteractor(ctx: Context) {
                 }
 
                 val dataModel = SettingsDataModel(
-                    subInfoResponse.full_name.replace(" ", "\n"),
+                    subInfoResponse.full_name,
                     subStatusResponse.status.id,
                     subInfoResponse.msisdn,
                     subInfoResponse.personal_account.toString(),
@@ -267,15 +267,10 @@ class SubscriberInteractor(ctx: Context) {
                                 it.attributes.firstOrNull { predicate -> predicate.system_name == "short_description" }
                                     ?.value.orEmpty()
 
-                            if (subServicesListInstance.interval?.type == null) {
-                                serviceShow.price =
-                                    subServicesListInstance
-                                        .priceOn.toString()
-                            } else {
                                 serviceShow.price =
                                     subServicesListInstance
                                         .price.toString()
-                            }
+
                             serviceShow.interval = when {
                                 subServicesListInstance.interval?.type == "day" -> "сутки"
                                 subServicesListInstance.interval?.type == "month" -> "месяц"
@@ -309,9 +304,7 @@ class SubscriberInteractor(ctx: Context) {
                                     ?.value.orEmpty()
 
                             if (subServicesAllListInstance.interval?.type == null) {
-                                serviceShow.price =
-                                    subServicesAllListInstance
-                                        .priceOn.toString()
+                                serviceShow.price = subServicesAllListInstance.price_on.toString()
                             } else {
                                 serviceShow.price =
                                     subServicesAllListInstance
@@ -332,7 +325,9 @@ class SubscriberInteractor(ctx: Context) {
                                     ?.value
                             serviceShow.isExistOnSub = false
 
-                            servicesList.add(serviceShow)
+                            if (serviceShow.toggleState != ToggleButtonState.NotShown) {
+                                servicesList.add(serviceShow)
+                            }
                         }
                     }
                     servicesList
@@ -410,6 +405,13 @@ class SubscriberInteractor(ctx: Context) {
                             if(list.first {pred -> pred.id==it.id}.unlock){
                                 serviceShow.toggleState = ToggleButtonState.ActiveAndEnabled
                             }else{ serviceShow.toggleState = ToggleButtonState.ActiveAndDisabled}
+                            serviceShow.interval = when(list.firstOrNull{pred->
+                                pred.id == it.id}?.interval?.type){
+                                "day" -> "день"
+                                "month" -> "месяц"
+                                else -> "подключение"
+                            }
+
                             mainData.servicesList.add(serviceShow)
                         }
                         Observable.just(mainData)
@@ -622,12 +624,13 @@ class SubscriberInteractor(ctx: Context) {
                         val rest = it.exchange.toInt()
                         val total = it.exchange.toInt()
                         val dueDate = it.due_date
-                        val name = "Количество обменянных ГБ"
+                        val name = "Обменные ГБ"
                         var indicatorData = IndicatorHolder(
                             rest,
                             total,
                             100,
                             false,
+                            dueDate = dueDate,
                             optionsName = name,
                             type = "DATA"
                         )
@@ -647,6 +650,7 @@ class SubscriberInteractor(ctx: Context) {
                             100,
                             false,
                             optionsName = name,
+                            dueDate = dueDate,
                             type = "VOICE"
                         )
                         voiceIndicators.add(indicatorData)
@@ -654,13 +658,14 @@ class SubscriberInteractor(ctx: Context) {
                     if (it.exchange != null && it.exchange > 0) {
                         val rest = it.exchange.toInt()
                         val total = it.exchange.toInt()
-                        val name = "Количество обменянных Мин."
+                        val name = "Обменные Мин."
                         val dueDate = it.due_date
                         var indicatorData = IndicatorHolder(
                             rest,
                             total,
                             100,
                             false,
+                            dueDate = dueDate,
                             optionsName = name,
                             type = "VOICE"
                         )
@@ -680,14 +685,15 @@ class SubscriberInteractor(ctx: Context) {
                             100,
                             false,
                             optionsName = name,
-                            type = "SMS"
+                            type = "SMS",
+                            dueDate = dueDate
                         )
                         smsIndicators.add(indicatorData)
                     }
                     if (it.exchange != null && it.exchange > 0) {
                         val rest = it.exchange.toInt()
                         val total = it.exchange.toInt()
-                        val name = "Количество обменянных SMS"
+                        val name = "Обменные SMS"
                         val dueDate = it.due_date
                         var indicatorData = IndicatorHolder(
                             rest,

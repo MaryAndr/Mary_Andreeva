@@ -34,9 +34,10 @@ class MinToGbPresenter(val ctx: Context) :
         val exchangeIntent: Observable<MinToGbState> =
             intent(MinToGbView::exchangeMinsIntent).flatMap {
                 SubscriberInteractor(ctx).subService.exchangeMins(ExchangeRequest(it))
+                    .subscribeOn(Schedulers.io())
                     .flatMap {
                         Observable.just(MinToGbState.Exchanged("Обмен успешно произведен"))
-                    }.subscribeOn(Schedulers.io()).onErrorReturn { error: Throwable ->
+                    }.onErrorReturn { error: Throwable ->
                         var errMessage = error.localizedMessage
                         if (error is HttpException) {
                             errMessage = if (error.code() == 409) {
