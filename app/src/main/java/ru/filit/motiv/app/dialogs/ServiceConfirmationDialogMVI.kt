@@ -74,8 +74,8 @@ class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
         tvServiceName.text = data.serv_name
         tvConDateValue.text = data.conDate
 
-        tvCostValue.text = data.activationPrice + resources.getString(R.string.rub_value)
-        tvAbonValue.text = data.abonPay + resources.getString(R.string.rub_value)
+        tvCostValue.text = data.activationPrice?.substringBefore(".0") + resources.getString(R.string.rub_value)
+        tvAbonValue.text = data.abonPay?.substringBefore(".0") + resources.getString(R.string.rub_value)
 
         ivClose.setOnClickListener {
             val intent = activity?.intent

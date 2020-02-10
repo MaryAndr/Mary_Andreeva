@@ -296,12 +296,11 @@ class SubscriberInteractor(ctx: Context) {
                                 it.attributes.firstOrNull { predicate -> predicate.system_name == "short_description" }
                                     ?.value.orEmpty()
 
-                            serviceShow.activPrice =
-                                it.attributes.firstOrNull { predicate -> predicate.system_name == "activation_price" }
-                                    ?.value.orEmpty()
+                            serviceShow.activPrice = subServicesAllListInstance.price_on.toString()
+
                             serviceShow.subFee =
-                                it.attributes.firstOrNull { predicate -> predicate.system_name == "subscription_fee" }
-                                    ?.value.orEmpty()
+                                subServicesAllListInstance
+                                    .price.toString()
 
                             if (subServicesAllListInstance.interval?.type == null) {
                                 serviceShow.price = subServicesAllListInstance.price_on.toString()
