@@ -24,7 +24,7 @@ class SubscriberInteractor(ctx: Context) {
     }
 
     val userService by lazy {
-        AuthServices.create()
+        AuthServices.create(ctx)
     }
 
     private val mapOfRegions =
@@ -534,7 +534,6 @@ class SubscriberInteractor(ctx: Context) {
 
 
     fun preLoadData(): Observable<MainPagePartialState> {
-
 
         val subInfo = subService.getSubInfo().onErrorReturn {
             null

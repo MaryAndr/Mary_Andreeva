@@ -1,5 +1,6 @@
 package ru.filit.motiv.app.api
 
+import android.content.Context
 import io.reactivex.Observable
 import ru.filit.motiv.app.models.OAuthModel
 import ru.filit.motiv.app.models.UserType
@@ -14,6 +15,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.http.*
+import ru.filit.motiv.app.utils.IdentificatorsInterceptor
 
 
 interface AuthServices {
@@ -47,7 +49,7 @@ interface AuthServices {
 
 
     companion object {
-        fun create(): AuthServices {
+        fun create(ctx: Context): AuthServices {
             val logging = HttpLoggingInterceptor()
 
             logging.level = HttpLoggingInterceptor.Level.BODY
@@ -56,6 +58,7 @@ interface AuthServices {
                 .addInterceptor(logging)
                 .addInterceptor(AuthenticationInterceptor("testClient", "pass"))
                 .addInterceptor(ContentTypeInterceptor())
+                .addInterceptor(IdentificatorsInterceptor(ctx= ctx))
                 .build()
 
             val retrofit = Retrofit.Builder()

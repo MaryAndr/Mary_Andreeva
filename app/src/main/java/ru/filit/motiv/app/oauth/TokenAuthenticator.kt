@@ -23,7 +23,7 @@ class TokenAuthenticator(val ctx: Context) : Authenticator {
                 return newRequestWithAccessToken(response.request(), newToken!!)
             }
 
-            val refreshedToken = UserInteractor().userService.auth(
+            val refreshedToken = UserInteractor(ctx).userService.auth(
                 RequestBody.create(
                     MediaType.parse("text/plain"),
                     "refresh_token"

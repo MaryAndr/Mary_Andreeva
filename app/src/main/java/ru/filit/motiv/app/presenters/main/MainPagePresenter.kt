@@ -26,6 +26,7 @@ class MainPagePresenter(val ctx: Context) :
                         .startWith(
                             MainPagePartialState.Loading
                         ).subscribeOn(Schedulers.io())
+
                 }
 
 

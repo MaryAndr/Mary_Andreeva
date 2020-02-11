@@ -12,4 +12,6 @@ sealed class MinToGbState {
 
     data class IndicatorChange(val quantity: Int) : MinToGbState()
 
+    object Loading: MinToGbState()
+
 }

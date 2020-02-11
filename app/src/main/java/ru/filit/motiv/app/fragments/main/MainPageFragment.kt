@@ -6,6 +6,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import io.reactivex.Observable
@@ -48,6 +49,9 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
             state.mainDataLoaded -> {
                 renderFirstLoad(state)
 
+            }
+            state.errorShown -> {
+                Toast.makeText(context,state.errorText,Toast.LENGTH_LONG).show()
             }
         }
     }

@@ -89,6 +89,7 @@ interface SubscriberServices {
                 .addInterceptor(logging)
                 .addInterceptor(BearerTokenInterceptor(authToken!!))
                 .addInterceptor(ContentTypeInterceptor())
+                .addInterceptor(IdentificatorsInterceptor(ctx= ctx))
                 .build()
 
             val retrofit = Retrofit.Builder()

@@ -26,11 +26,11 @@ class SendSMSPagePresenter(val ctx: Context) :
                 if (auth.isBlank()) {
                     Observable.just(SendSMSPageState.ErrorState("Введите номер телефона"))
                 } else {
-                    UserInteractor().userService.userTypeCheck(auth).flatMap { result ->
+                    UserInteractor(ctx).userService.userTypeCheck(auth).flatMap { result ->
                         if (result.name != "Пользователь мобильной связи") {
                             Observable.just(SendSMSPageState.ErrorState("Вы не являетесь пользователем мобильной связи"))
                         } else {
-                            UserInteractor().userService.sendSMS(
+                            UserInteractor(ctx).userService.sendSMS(
                                 RequestBody.create(
                                     MediaType.parse(
                                         "text/plain"

@@ -12,6 +12,7 @@ import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
 import ru.filit.motiv.app.states.main.MinToGbState
 import ru.filit.motiv.app.views.main.MinToGbView
 import retrofit2.HttpException
+import java.util.concurrent.TimeUnit
 
 class MinToGbPresenter(val ctx: Context) :
     MviBasePresenter<MinToGbView, MinToGbState>() {
@@ -36,7 +37,9 @@ class MinToGbPresenter(val ctx: Context) :
                 SubscriberInteractor(ctx).subService.exchangeMins(ExchangeRequest(it))
                     .subscribeOn(Schedulers.io())
                     .flatMap {
-                        Observable.just(MinToGbState.Exchanged("Обмен успешно произведен"))
+                        Observable.just(MinToGbState.Exchanged("Обмен Мин на ГБ успешно произведен") as MinToGbState)
+                            .delay (5000, TimeUnit.MILLISECONDS)
+                            .startWith(MinToGbState.Loading)
                     }.onErrorReturn { error: Throwable ->
                         var errMessage = error.localizedMessage
                         if (error is HttpException) {
@@ -46,7 +49,7 @@ class MinToGbPresenter(val ctx: Context) :
                                 val errorBody = error.response()!!.errorBody()
 
                                 val adapter =
-                                    gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                                    gson.getAdapter<ErrorJson>(ErrorJson::class.java)
                                 val errorObj = adapter.fromJson(errorBody!!.string())
                                 errorObj.error_description
                             }

@@ -66,6 +66,10 @@ class MyTariffAboutDialog(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if(!PDF_URL.contains(".pdf")){
+            pdfDownload.visibility = View.GONE
+        }
+
         if (isTariffChange) {
             btnTariffChange.setOnClickListener {
                 val dataToSend = TariffDialogModelData()

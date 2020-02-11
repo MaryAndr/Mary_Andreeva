@@ -1,6 +1,9 @@
 package ru.filit.motiv.app.adapters
 
 import android.content.Context
+import android.content.Intent
+import android.graphics.Paint
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -94,6 +97,25 @@ class MyTariffAboutAdapter(attribute: MutableList<Attribute>, val context: Conte
             attributes[position]?.value.orEmpty() + " " + attributes[position]?.unit.orEmpty()
 
         holder.tvValue.text = value.trim()
+
+        if (value.contains("Приложение №5")){
+            holder.tvValue.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+            holder.tvValue.setOnClickListener{
+                openPdf("http://cell.motivtelecom.ru/uploads/files/files/pril_5.pdf")
+            }
+        }
+        if (value.contains("Приложение №7")){
+            holder.tvValue.paintFlags = Paint.UNDERLINE_TEXT_FLAG
+            holder.tvValue.setOnClickListener{
+                openPdf("http://cell.motivtelecom.ru/uploads/files/files/Prilozhenie_7_010818.pdf")
+            }
+        }
+
+    }
+
+    private fun openPdf(url:String){
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        context.startActivity(intent)
     }
 
 

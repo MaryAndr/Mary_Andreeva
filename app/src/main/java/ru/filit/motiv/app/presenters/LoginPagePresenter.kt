@@ -22,7 +22,7 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
         val authorizeIntent: Observable<LoginPagePartialState> =
             intent(LoginPageView::authorizeIntent)
                 .flatMap { authData ->
-                    UserInteractor().completeAuthorization(authData, ctx)
+                    UserInteractor(ctx = ctx).completeAuthorization(authData, ctx)
                         .startWith(LoginPagePartialState.Loading)
                         .onErrorResumeNext { error: Throwable ->
                             var errMessage = error.localizedMessage
@@ -50,7 +50,7 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
         val checkAuthIntent: Observable<LoginPagePartialState> =
             intent(LoginPageView::checkAuthIntent)
                 .flatMap {
-                    UserInteractor().isAuthenticated(ctx)
+                    UserInteractor(ctx = ctx).isAuthenticated(ctx)
                 }
                 .subscribeOn(Schedulers.io())
 

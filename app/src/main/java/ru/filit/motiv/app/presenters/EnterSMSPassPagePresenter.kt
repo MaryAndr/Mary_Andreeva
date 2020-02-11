@@ -28,7 +28,7 @@ class EnterSMSPassPagePresenter(val ctx: Context) :
         var authorizationAuth: Observable<EnterSMSPagePartialState> =
             intent(EnterSMSPassView::authorizeIntent)
                 .flatMap { authData ->
-                    UserInteractor().smsAuthorization(authData, ctx)
+                    UserInteractor(ctx = ctx).smsAuthorization(authData, ctx)
                         .onErrorResumeNext { error: Throwable ->
                             var errMessage = error.localizedMessage
                             if (error is HttpException) {
@@ -51,7 +51,7 @@ class EnterSMSPassPagePresenter(val ctx: Context) :
         var resendApiIntent: Observable<EnterSMSPagePartialState> =
             intent(EnterSMSPassView::resendSMSIntent)
                 .flatMap {
-                    UserInteractor().userService.sendSMS(
+                    UserInteractor(ctx =ctx).userService.sendSMS(
                         RequestBody.create(
                             MediaType.parse("text/plain"),
                             TextConverter().getOnlyDigits(it)

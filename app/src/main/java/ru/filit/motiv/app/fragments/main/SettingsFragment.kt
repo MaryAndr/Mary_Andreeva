@@ -23,6 +23,7 @@ import ru.filit.motiv.app.states.main.SettingsState
 import ru.filit.motiv.app.utils.Constants
 import ru.filit.motiv.app.utils.PreferenceHelper
 import ru.filit.motiv.app.utils.PreferenceHelper.set
+import ru.filit.motiv.app.utils.TextConverter
 import ru.filit.motiv.app.views.main.SettingsView
 
 /**
@@ -62,7 +63,8 @@ class SettingsFragment() : MviFragment<SettingsView, SettingsPresenter>(), Setti
                 pgMainData.visibility = View.GONE
                 mainDataHolder.visibility = View.VISIBLE
                 tvName.text = state.data.full_name
-                tvPhoneValue.text ="+7${state.data.msisdn}"
+                val textConverter = TextConverter()
+                tvPhoneValue.text =textConverter.getFormattedPhone(state.data.msisdn!!)
                 tvLcNumberValue.text = state.data.pers_account
                 tvContractValue.text = state.data.contractInfo
                 tvRegionValue.text = state.data.region
@@ -88,7 +90,7 @@ class SettingsFragment() : MviFragment<SettingsView, SettingsPresenter>(), Setti
                 viewChangePass.setOnClickListener{
                     val fr = ChangePassFragment()
                     val fm = activity!!.supportFragmentManager
-                    val fragmentTransaction = fm!!.beginTransaction().addToBackStack("Settings_tag")
+                    val fragmentTransaction = fm.beginTransaction().addToBackStack("Settings_tag")
                     fragmentTransaction.replace(R.id.container, fr)
                     fragmentTransaction.commit()
                 }

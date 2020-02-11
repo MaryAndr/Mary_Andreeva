@@ -6,7 +6,7 @@ sealed class MainPagePartialState {
     
     data class ShowDataState(val data: MainPagaAccumData) : MainPagePartialState()
 
-    data class ShowErrorMessage(val error: String) : MainPagePartialState()
+    data class ShowErrorMessage(val error: String?) : MainPagePartialState()
 
     object Loading : MainPagePartialState()
 }

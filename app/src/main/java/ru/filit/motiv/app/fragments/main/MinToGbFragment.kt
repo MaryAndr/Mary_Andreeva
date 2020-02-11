@@ -1,6 +1,7 @@
 package ru.filit.motiv.app.fragments.main
 
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -79,14 +80,25 @@ class MinToGbFragment(private var exchangeInfo: ExchangeResponse?) :
             }
 
             is MinToGbState.Exchanged -> {
-                Toast.makeText(context, state.status, Toast.LENGTH_LONG).show()
-                if (state.status == "Обмен успешно произведен") {
+                mainConstaint.visibility = View.VISIBLE
+                constraintLayout.visibility = View.VISIBLE
+                constraintLayout2.visibility = View.VISIBLE
+                pgLoading.visibility = View.GONE
+                val dialogBuilder = AlertDialog.Builder(this.context)
+                dialogBuilder
+                    .setMessage(state.status)
+                    .setPositiveButton("OK") { _, _ ->
+                    }
+                    .create()
+                    .show()
+                if (state.status == "Обмен Мин на ГБ успешно произведен") {
                     val fr = MainPageFragment()
                     val fm = activity!!.supportFragmentManager
-                    val fragmentTransaction = fm!!.beginTransaction().addToBackStack("minToGb")
+                    val fragmentTransaction = fm.beginTransaction().addToBackStack("minToGb")
                     fragmentTransaction.replace(R.id.container, fr)
                     fragmentTransaction.commit()
                 }
+
             }
 
             is MinToGbState.ExchangeData -> {
@@ -99,6 +111,12 @@ class MinToGbFragment(private var exchangeInfo: ExchangeResponse?) :
 
             is MinToGbState.IndicatorChange -> {
                 minToGbSeekBar.progress = state.quantity
+            }
+            is MinToGbState.Loading -> {
+                mainConstaint.visibility = View.GONE
+                constraintLayout.visibility = View.GONE
+                constraintLayout2.visibility = View.GONE
+                pgLoading.visibility = View.VISIBLE
             }
         }
     }
