@@ -14,10 +14,10 @@ import ru.filit.motiv.app.utils.PreferenceHelper
 import okhttp3.MediaType
 import okhttp3.RequestBody
 
-class UserInteractor {
+class UserInteractor(val ctx: Context) {
 
     val userService by lazy {
-        AuthServices.create()
+        AuthServices.create(ctx)
     }
 
     fun completeAuthorization(
