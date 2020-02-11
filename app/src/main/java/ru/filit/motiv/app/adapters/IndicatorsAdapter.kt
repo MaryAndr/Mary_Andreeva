@@ -33,6 +33,7 @@ class IndicatorsAdapter(val indicatorsModels: MutableList<IndicatorHolder>, val 
 
     override fun onBindViewHolder(holder: IndicatorViewHolder, position: Int) {
         holder.tvConditionName.text = indicatorsModels[position].optionsName
+        holder.tvconditionTotal.visibility = View.VISIBLE
         if (indicatorsModels[position].unlim) {
             holder.tvConditionRest.text = "Безлимит"
             holder.tvconditionTotal.text = ""
@@ -61,6 +62,9 @@ class IndicatorsAdapter(val indicatorsModels: MutableList<IndicatorHolder>, val 
                         holder.tvconditionTotal.text =
                             "из ${indicatorsModels[position].total.toString()} SMS"
                     }
+            }
+            if (indicatorsModels[position].optionsName == "Обменные ГБ"||indicatorsModels[position].optionsName == "Перенесенные остатки"){
+                holder.tvconditionTotal.visibility = View.GONE
             }
             holder.pbCondition.progress = indicatorsModels[position].percent!!
         }
