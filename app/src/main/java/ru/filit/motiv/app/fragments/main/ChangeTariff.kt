@@ -47,12 +47,12 @@ class ChangeTariff : MviFragment<ChangeTariffView, ChangeTariffPresenter>(), Cha
                 pb.visibility = View.GONE
                 mainDataView.visibility = View.VISIBLE
                 renderCurrentTariff(state.data.first{pred -> pred.isCurrent})
-                state.data.removeAll { pred -> pred.isCurrent }
-                val titles = state.data.distinctBy { it.category }.map { it.category }
+                val tariffList = state.data.filter { pred -> !pred.isCurrent }
+                val titles = tariffList.distinctBy { it.category }.map { it.category }
                 val mapOfTariffs = mutableMapOf<String, MutableList<TariffShow>>()
                 titles.forEach { title ->
                     mapOfTariffs[title!!] =
-                        state.data.filter { it.category == title }.toMutableList()
+                        tariffList.filter { it.category == title }.toMutableList()
                 }
 
                 val adapter = ExpandableTariffsCategories(context!!, titles, mapOfTariffs, preLoadTrigger)

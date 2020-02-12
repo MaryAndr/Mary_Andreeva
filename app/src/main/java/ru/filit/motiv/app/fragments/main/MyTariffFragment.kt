@@ -149,9 +149,9 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         tvTariffName.text = "\"" + subTariff?.tariff?.name + "\""
         if (subTariff?.tariff?.id in mutableListOf(14, 26, 27, 28)) {
             tvTariffCondition.text = TextConverter().descriptionBuilder(
-                subTariff?.tariff?.constructor?.min!!,
-                subTariff.tariff.constructor.data,
-                subTariff.tariff.constructor.sms
+                subTariff?.tariff?.constructor?.min,
+                subTariff?.tariff?.constructor?.data,
+                subTariff?.tariff?.constructor?.sms
             )
 
         } else {

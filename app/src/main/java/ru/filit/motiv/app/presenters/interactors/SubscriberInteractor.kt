@@ -135,7 +135,7 @@ class SubscriberInteractor(ctx: Context) {
                             curTariff.voiceValueUnit = subTariffResp.tariff.constructor.min
                             curTariff.price = subTariffResp.tariff.constructor.abon
                             curTariff.description = TextConverter().descriptionBuilder(
-                                subTariffResp?.tariff?.constructor?.min!!.substringBefore(","),
+                                subTariffResp.tariff.constructor.min?.substringBefore(","),
                                 subTariffResp?.tariff?.constructor?.data,
                                 subTariffResp?.tariff?.constructor?.sms?.substringBefore(",")
                             )
