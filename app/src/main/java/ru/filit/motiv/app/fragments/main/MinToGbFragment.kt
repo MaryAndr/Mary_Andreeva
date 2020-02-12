@@ -103,6 +103,7 @@ class MinToGbFragment(private var exchangeInfo: ExchangeResponse?) :
                     val fragmentTransaction = fm.beginTransaction().addToBackStack("minToGb")
                     fragmentTransaction.replace(R.id.container, fr)
                     fragmentTransaction.commit()
+                    activity!!.nav_view.selectedItemId = R.id.navigation_home
                 }
 
             }
