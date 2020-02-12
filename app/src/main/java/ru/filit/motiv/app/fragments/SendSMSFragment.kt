@@ -84,6 +84,11 @@ class SendSMSFragment : MviFragment<SendSMSScreenView, SendSMSPagePresenter>(), 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        etSendSMSPhone.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                layoutTextInputSendSMSPhone.hint = context?.getString(R.string.phone_number)
+            }
+        }
         etSendSMSPhone.addTextChangedListener(PhoneTextWatcher(etSendSMSPhone))
     }
 }
