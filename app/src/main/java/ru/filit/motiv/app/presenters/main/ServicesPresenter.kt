@@ -16,7 +16,7 @@ import ru.filit.motiv.app.states.main.ServicesState
 import ru.filit.motiv.app.views.main.ServicesPageView
 import java.util.concurrent.TimeUnit
 
-class ServicesPresenter (val ctx: Context) : MviBasePresenter<ServicesPageView, ServicesPartialState>(){
+class   ServicesPresenter (val ctx: Context) : MviBasePresenter<ServicesPageView, ServicesPartialState>(){
 
     private val subService = SubscriberInteractor(ctx)
 
@@ -25,8 +25,9 @@ class ServicesPresenter (val ctx: Context) : MviBasePresenter<ServicesPageView, 
             intent(ServicesPageView::showEnabledServiceIntent)
                 .switchMap { isExistOnSub ->
                 subService.getEnabledServices(isExistOnSub).subscribeOn(Schedulers.io())
-                    .flatMap {
+                    .flatMap {it.sortByDescending{servicesListShow -> servicesListShow.price}
                            if (isExistOnSub) {
+
                                 Observable.just(ServicesPartialState.FetchEnabledService(it))
                         } else {
                             Observable.just(ServicesPartialState.FetchAllService(it))

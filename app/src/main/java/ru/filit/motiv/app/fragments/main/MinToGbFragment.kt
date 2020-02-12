@@ -37,6 +37,7 @@ class MinToGbFragment(private var exchangeInfo: ExchangeResponse?) :
     override fun changeIndicatorIntent(): Observable<Int> {
         return RxTextView.textChanges(etMin).map<Int> {
             try {
+                etMin.setSelection(it.length)
                 it.toString().replace("[^0-9]".toRegex(), "").toInt()
             } catch (ex: Exception) {
                 0

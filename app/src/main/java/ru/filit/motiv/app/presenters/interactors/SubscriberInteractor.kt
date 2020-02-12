@@ -412,6 +412,7 @@ class SubscriberInteractor(ctx: Context) {
 
                             mainData.servicesList.add(serviceShow)
                         }
+                        mainData.servicesList.sortByDescending { servicesListShow -> servicesListShow.price }
                         Observable.just(mainData)
                     }.onErrorReturn {
                         it.printStackTrace()
@@ -488,6 +489,11 @@ class SubscriberInteractor(ctx: Context) {
     }
 
     fun msisdnLoad(): Observable<CostsEmailState> {
+
+//        val subInfo = subService.getSubInfo().onErrorReturn { null }
+//        val servises = subService.g
+
+
         return subService.getSubInfo().flatMap {
             val monthAgo = Calendar.getInstance()
             monthAgo.add(Calendar.DAY_OF_MONTH, -30)

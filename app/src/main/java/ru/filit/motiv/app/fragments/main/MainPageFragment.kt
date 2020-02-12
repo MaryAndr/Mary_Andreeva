@@ -42,7 +42,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         when {
             state.loading -> {
                 pgMainData.visibility = View.VISIBLE
-                dataView.visibility = View.INVISIBLE
+                dataView.visibility = View.GONE
                 layoutGbToMin.visibility = View.GONE
                 layoutServices.visibility = View.GONE
             }

@@ -26,7 +26,7 @@ class UserInteractor(val ctx: Context) {
     ): Observable<LoginPagePartialState> {
         return when {
             authData.username.length < 10 -> Observable.just(LoginPagePartialState.ErrorState("Введите корректный номер телефона"))
-            authData.password.length < 8 -> Observable.just(LoginPagePartialState.ErrorState("Введите пароль или получите новый по SMS"))
+            authData.password.length < 8 -> Observable.just(LoginPagePartialState.ErrorState("Некорректный пароль"))
             authData.password.isBlank() -> Observable.just(LoginPagePartialState.ErrorState("Пароль не может быть пустым"))
             authData.username.isBlank() -> Observable.just(LoginPagePartialState.ErrorState("Номер не может быть пустым"))
             else -> userService.userTypeCheck(authData.username).flatMap { result ->

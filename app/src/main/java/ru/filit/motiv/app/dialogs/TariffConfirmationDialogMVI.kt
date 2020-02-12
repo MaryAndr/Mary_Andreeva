@@ -1,5 +1,6 @@
 package ru.filit.motiv.app.dialogs
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -78,7 +79,13 @@ class TariffConfirmationDialogMVI(val data: TariffDialogModelData, private val r
             is TariffDialogState.TariffProcessed -> {
                 btnProcess.visibility = View.VISIBLE
                 progressBar.visibility = View.GONE
-                Toast.makeText(context, state.toastText, Toast.LENGTH_LONG).show()
+                val dialogBuilder = AlertDialog.Builder(this.context)
+                dialogBuilder
+                    .setMessage(state.toastText)
+                    .setPositiveButton("OK") { _, _ ->
+                    }
+                    .create()
+                    .show()
                 reloadTrigger!!.onNext(1)
                 dismiss()
                 parentDialog?.dismiss()

@@ -11,6 +11,7 @@ import com.hannesdorfmann.mosby3.mvi.MviFragment
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_help.*
+import ru.filit.motiv.app.BuildConfig
 import ru.filit.motiv.app.R
 import ru.filit.motiv.app.presenters.main.HelpPresenter
 import ru.filit.motiv.app.states.main.HelpState
@@ -37,6 +38,7 @@ class HelpFragment: MviFragment<HelpView, HelpPresenter>(), HelpView{
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.hide()
+        version_app.text = "${resources.getText(R.string.version_app)} ${BuildConfig.VERSION_NAME}"
     }
     override fun render(state: HelpState){
         when (state ){

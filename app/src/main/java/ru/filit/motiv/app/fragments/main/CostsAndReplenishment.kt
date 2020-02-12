@@ -113,6 +113,7 @@ class CostsAndReplenishment :
             state.mainData!!.balance.toString() + resources.getString(R.string.rub_value)
         tvTariff.text = "Тариф \"${state.mainData!!.tariffData!!.tariff.name}\""
 
+
         if (state.mainData!!.isDetalization) {
             tvDesc.text = getString(R.string.isDetalDescText)
             btOrderDetails.visibility = View.VISIBLE
