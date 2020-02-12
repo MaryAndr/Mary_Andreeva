@@ -27,5 +27,4 @@ class ChangeTariffPresenter(val ctx: Context) :
 
         subscribeViewState(allIntents, ChangeTariffView::render)
     }
-
 }

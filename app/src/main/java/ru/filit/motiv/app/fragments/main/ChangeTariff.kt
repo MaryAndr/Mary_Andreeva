@@ -69,8 +69,9 @@ class ChangeTariff : MviFragment<ChangeTariffView, ChangeTariffPresenter>(), Cha
         tvName.text = child.name
 
         if (child.dataValueUnit != null) {
+            val text = child.dataValueUnit
             addDataView.visibility = View.VISIBLE
-            tvAddData.text = child.dataValueUnit
+            tvAddData.text = text
         } else {
             addDataView.visibility = View.INVISIBLE
         }

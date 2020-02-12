@@ -122,7 +122,6 @@ class SubscriberInteractor(ctx: Context) {
                             }
                         }
                         curTariff.name = tariff.name
-                        curTariff.isCurrent = subTariffResp.tariff.id == tariff.id
 
                         if (tariff.id in mutableListOf(
                                 14,

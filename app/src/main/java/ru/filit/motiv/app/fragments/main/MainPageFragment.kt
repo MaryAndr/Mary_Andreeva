@@ -80,13 +80,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 fragmentTransaction.commit()
             }
         }
-        ivProfilePic.setOnClickListener {
-            val fr = SettingsFragment()
-            val fm = activity!!.supportFragmentManager
-            val fragmentTransaction = fm!!.beginTransaction().addToBackStack("settings")
-            fragmentTransaction.replace(R.id.container, fr)
-            fragmentTransaction.commit()
-        }
+
         tvAbonNumber.text = TextConverter().getFormattedPhone(phoneNumber!!)
         if (state.mainData?.tariffData?.tariff?.name != null) {
             tvTariffName.text = "Тариф \"${state.mainData?.tariffData?.tariff?.name}\""
@@ -260,6 +254,13 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
 
         tvTariffName.setOnClickListener {
             activity!!.nav_view.selectedItemId = R.id.navigation_tariff
+        }
+        ivProfilePic.setOnClickListener {
+            val fr = SettingsFragment()
+            val fm = activity!!.supportFragmentManager
+            val fragmentTransaction = fm!!.beginTransaction().addToBackStack("settings")
+            fragmentTransaction.replace(R.id.container, fr)
+            fragmentTransaction.commit()
         }
 
         groupData.visibility = View.INVISIBLE

@@ -4,7 +4,7 @@
     <foreground>
         <!-- 10dp padding on each side of 108dp asset -->
         <inset
-            android:drawable="@drawable/ic_app"
+            android:drawable="@drawable/ic_launcher_main_foreground"
             android:inset="9.26%" />
     </foreground>
 </adaptive-icon>
