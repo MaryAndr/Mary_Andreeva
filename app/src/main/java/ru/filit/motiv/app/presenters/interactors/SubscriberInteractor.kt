@@ -138,7 +138,7 @@ class SubscriberInteractor(ctx: Context) {
                             curTariff.description = TextConverter().descriptionBuilder(
                                 subTariffResp?.tariff?.constructor?.min!!.substringBefore(","),
                                 subTariffResp?.tariff?.constructor?.data,
-                                subTariffResp?.tariff?.constructor?.sms!!.substringBefore(",")
+                                subTariffResp?.tariff?.constructor?.sms?.substringBefore(",")
                             )
                         } else {
                             val isSubFee =

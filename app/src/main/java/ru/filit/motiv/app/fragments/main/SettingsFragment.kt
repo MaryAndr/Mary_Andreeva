@@ -124,11 +124,4 @@ class SettingsFragment() : MviFragment<SettingsView, SettingsPresenter>(), Setti
         tvTitle.text = "Настройки абонента"
         preLoadTrigger.onNext(1)
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-    }
-
-
 }

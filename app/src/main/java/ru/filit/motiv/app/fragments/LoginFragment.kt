@@ -113,6 +113,11 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
         return view
     }
 
+    override fun onStart() {
+        super.onStart()
+
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
@@ -121,12 +126,11 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
 //        prefs[Constants.AUTH_TOKEN] = null
         layoutTextInputPhone.boxStrokeColor = Color.parseColor("#fa6600")
         layoutTextInput.boxStrokeColor = Color.parseColor("#fa6600")
-        checkAuthTrigger = BehaviorSubject.createDefault(0)
         login = BehaviorSubject.create()
+        checkAuthTrigger = BehaviorSubject.createDefault(0)
         etLoginPhone.addTextChangedListener(PhoneTextWatcher(etLoginPhone))
         etLoginPhone.setOnEditorActionListener(this)
         etPassword.setOnEditorActionListener(this)
-        activity?.getWindow()?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         etLoginPhone.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {

@@ -9,21 +9,21 @@ class TextConverter {
     }
 
 
-    fun descriptionBuilder(min: String? = "0", data: String? = "0.00", sms: String? = "0") : String {
-        var minExist: String? = "0"
-        var dataExist: String? = "0"
-        var smsExist: String?  = "0"
+    fun descriptionBuilder(min: String? = "0", data: String?, sms: String?) : String {
+        var minExist: String? = ""
+        var dataExist: String? = ""
+        var smsExist: String?  = ""
         if (min != null) {
-            minExist = min
+            minExist = "$min минут"
         }
         if (data != null) {
-            dataExist = data
+            dataExist = ", $data ГБ"
         }
         if (sms != null) {
-            smsExist = sms
+            smsExist = ", $sms SMS"
         }
 
-        return "Свой тариф: $minExist минут, $dataExist ГБ, $smsExist SMS"
+        return "Свой тариф: $minExist$dataExist$smsExist"
     }
 
 

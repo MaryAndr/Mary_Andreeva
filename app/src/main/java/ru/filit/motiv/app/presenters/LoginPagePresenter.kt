@@ -50,7 +50,7 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
         val checkAuthIntent: Observable<LoginPagePartialState> =
             intent(LoginPageView::checkAuthIntent)
                 .flatMap {
-                    UserInteractor(ctx = ctx).isAuthenticated(ctx)
+                    UserInteractor(ctx = ctx).isAuthenticated()
                 }
                 .subscribeOn(Schedulers.io())
 

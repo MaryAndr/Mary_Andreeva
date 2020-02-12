@@ -1,12 +1,10 @@
 package ru.filit.motiv.app.adapters
 
 import android.content.Context
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.LinearLayout
 import android.widget.TextView
 import ru.filit.motiv.app.R
 import ru.filit.motiv.app.models.main.SubPaymentsResponse
@@ -23,7 +21,7 @@ class RepAdapter(var context: Context, var payments: List<SubPaymentsResponse>) 
         val rowView: View?
 
         if (convertView == null) {
-            rowView = layoutInflater.inflate(R.layout.rep_list_view, parent, false)
+            rowView = layoutInflater.inflate(R.layout.replenichment_item, parent, false)
 
             viewHolder = ViewHolder(rowView)
             rowView.tag = viewHolder
@@ -38,20 +36,20 @@ class RepAdapter(var context: Context, var payments: List<SubPaymentsResponse>) 
         if(position != 0) {
             previousPayment = getItem(position - 1)
         }
-        val mainHolderParam = viewHolder.mainHolder.layoutParams as LinearLayout.LayoutParams
+        /*val mainHolderParam = viewHolder.mainHolder.layoutParams as LinearLayout.LayoutParams*/
         if(previousPayment == null || (TimeUtils().getMonthAndYearFromDate(payment.date) != TimeUtils().getMonthAndYearFromDate(previousPayment.date))) {
-            mainHolderParam.setMargins(0, TypedValue.applyDimension(
+            /*mainHolderParam.setMargins(0, TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 16f,
                 context.resources.displayMetrics
-            ).toInt(),0,0)
-            viewHolder.mainHolder.layoutParams = mainHolderParam
+            ).toInt(),10,0)
+            viewHolder.mainHolder.layoutParams = mainHolderParam*/
             viewHolder.monthDivider.visibility = View.VISIBLE
             viewHolder.monthDivider.text = TimeUtils().getMonthAndYearFromDate(payment.date)
         } else {
             viewHolder.monthDivider.visibility = View.GONE
-            mainHolderParam.setMargins(0, 0,0,0)
-            viewHolder.mainHolder.layoutParams = mainHolderParam
+            /*mainHolderParam.setMargins(0, 0,10,0)
+            viewHolder.mainHolder.layoutParams = mainHolderParam*/
         }
 
 //        if (currentMonth != TimeUtils().getMonthAndYearFromDate(payment.date)) {
@@ -95,8 +93,8 @@ class RepAdapter(var context: Context, var payments: List<SubPaymentsResponse>) 
         val gateway = view?.findViewById(R.id.tvGateway) as TextView
         val date = view?.findViewById(R.id.tvDate) as TextView
         val sum = view?.findViewById(R.id.tvSum) as TextView
-        val mainHolder = view?.findViewById(R.id.lvMainHolder) as LinearLayout
-        val isFirstDate: Boolean? = null
+        /*val mainHolder = view?.findViewById(R.id.lvMainHolder) as LinearLayout
+        val isFirstDate: Boolean? = null*/
     }
 
 }

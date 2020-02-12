@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
@@ -35,6 +36,7 @@ class HelpFragment: MviFragment<HelpView, HelpPresenter>(), HelpView{
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.hide()
     }
     override fun render(state: HelpState){
         when (state ){

@@ -46,8 +46,16 @@ class MinToGbFragment(private var exchangeInfo: ExchangeResponse?) :
 
     override fun exchangeMinsIntent(): Observable<Int> {
         return RxView.clicks(btnExchange).flatMap {
-            val mins = etMin.text.toString().replace("[^0-9]".toRegex(), "")
-            Observable.just(mins.toInt())
+            val mins = if (etMin.text.isNullOrEmpty()) { 0 }else {
+                etMin.text.toString().replace("[^0-9]".toRegex(), "").toInt()}
+
+                if (0 < mins && mins <= exchangeInfo!!.max_minutes) {
+                    Observable.just(mins)
+                } else {
+                    Observable.just(0)
+
+            }
+
         }
     }
 
@@ -68,9 +76,7 @@ class MinToGbFragment(private var exchangeInfo: ExchangeResponse?) :
         when (state) {
             is MinToGbState.EtQuantityChanged -> {
                 val gb = state.quantity * exchangeInfo!!.rate
-                if (!etMin.isFocused) {
                     etMin.setText("${state.quantity}")
-                }
                 etGb.setText(
                     "${(gb / 1024).toBigDecimal().setScale(
                         2,

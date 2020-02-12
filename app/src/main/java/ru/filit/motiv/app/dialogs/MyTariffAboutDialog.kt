@@ -66,7 +66,7 @@ class MyTariffAboutDialog(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if(!PDF_URL.contains(".pdf")){
+        if (!PDF_URL.contains(".pdf")) {
             pdfDownload.visibility = View.GONE
         }
 
@@ -131,24 +131,25 @@ class MyTariffAboutDialog(
                 tvAddData.text =
                     attrs?.firstOrNull { it.system_name == "internet_gb_count" }?.value.orEmpty() + " " + attrs?.firstOrNull { it.system_name == "internet_gb_count" }?.unit.orEmpty()
             } else {
-                tvAddData.text = null
+                addDataView.visibility = View.GONE
             }
             if (!attrs?.firstOrNull { it.system_name == "minutes_count" }?.value.orEmpty().isNullOrEmpty()) {
                 tvAddVoice.text =
                     attrs?.firstOrNull { it.system_name == "minutes_count" }?.value.orEmpty() + " Мин"
             } else {
-                tvAddVoice.text = null
+                addVoiceView.visibility = View.GONE
             }
             if (!attrs?.firstOrNull { it.system_name == "sms_count" }?.value.orEmpty().isNullOrEmpty()) {
                 tvAddSMS.text =
                     attrs?.firstOrNull { it.system_name == "sms_count" }?.value.orEmpty() + " SMS"
             } else {
-                tvAddSMS.text = null
+                addSMSView.visibility = View.GONE
             }
 
             tvSubFee.apply {
                 visibility = View.VISIBLE
-                text = "${attrs?.firstOrNull {it.system_name=="subscription_fee"}?.value} \u20BD/${getInterval()}"
+                text =
+                    "${attrs?.firstOrNull { it.system_name == "subscription_fee" }?.value} \u20BD/${getInterval()}"
             }
             tvSubFeeDisc.visibility = View.GONE
         } else {
@@ -156,24 +157,25 @@ class MyTariffAboutDialog(
                 tvAddData.text =
                     attrs?.firstOrNull { it.system_name == "internet_mb_cost" }?.value.orEmpty() + " " + attrs?.firstOrNull { it.system_name == "internet_mb_cost" }?.unit.orEmpty()
             } else {
-                tvAddData.text = null
+                addDataView.visibility = View.GONE
             }
             if (!attrs?.firstOrNull { it.system_name == "minute_cost" }?.value.orEmpty().isNullOrEmpty()) {
                 tvAddVoice.text =
                     attrs?.firstOrNull { it.system_name == "minute_cost" }?.value.orEmpty() + attrs?.firstOrNull { it.system_name == "minute_cost" }?.unit.orEmpty()
             } else {
-                tvAddVoice.text = null
+                addVoiceView.visibility = View.GONE
             }
             if (!attrs?.firstOrNull { it.system_name == "sms_cost" }?.value.orEmpty().isNullOrEmpty()) {
                 tvAddSMS.text =
                     attrs?.firstOrNull { it.system_name == "sms_cost" }?.value.orEmpty() + attrs?.firstOrNull { it.system_name == "sms_cost" }?.unit.orEmpty()
             } else {
-                tvAddSMS.text = null
+                addSMSView.visibility = View.GONE
             }
 
             tvSubFee.apply {
                 visibility = View.VISIBLE
-                text = "${attrs?.firstOrNull {it.system_name=="subscription_fee"}?.value} \u20BD/${getInterval()}"
+                text =
+                    "${attrs?.firstOrNull { it.system_name == "subscription_fee" }?.value} \u20BD/${getInterval()}"
             }
         }
 
@@ -190,30 +192,35 @@ class MyTariffAboutDialog(
                         "${data.subscriberTariff?.tariff?.constructor?.abon} \u20BD/${getInterval()}"
                 }
             } else {
-                tvSubFee.text =
-                    "${data.subscriberTariff?.tariff?.constructor?.abon} \u20BD/${getInterval()}"
                 tvSubFeeDisc.visibility = View.GONE
             }
-
-            if (attrs?.firstOrNull { it.system_name == "subscription_fee" } != null && attrs.firstOrNull { it.system_name == "subscription_fee" }?.value != "0") {
+            if (data.subscriberTariff?.tariff?.constructor?.abon != null) {
                 tvSubFee.text =
-                    attrs?.firstOrNull { it.system_name == "subscription_fee" }?.value + " " + attrs?.firstOrNull { it.system_name == "subscription_fee" }?.unit
+                    "${data.subscriberTariff?.tariff?.constructor?.abon} \u20BD/${getInterval()}"
             } else {
-                tvSubFee.visibility = View.GONE
+                if (attrs?.firstOrNull { it.system_name == "subscription_fee" } != null && attrs.firstOrNull { it.system_name == "subscription_fee" }?.value != "0") {
+                    tvSubFee.text =
+                        "${attrs?.firstOrNull { it.system_name == "subscription_fee" }?.value} ₽/${getInterval()}"
+                } else {
+                    tvSubFee.visibility = View.GONE
+                }
             }
             if (!data.subscriberTariff?.tariff?.constructor?.data.isNullOrEmpty()) {
+                addDataView.visibility = View.VISIBLE
                 tvAddData.text = "${data.subscriberTariff?.tariff?.constructor?.data} ГБ"
             } else {
                 addDataView.visibility = View.GONE
             }
 
             if (!data.subscriberTariff?.tariff?.constructor?.min.isNullOrEmpty()) {
+                addVoiceView.visibility = View.VISIBLE
                 tvAddVoice.text = "${data.subscriberTariff?.tariff?.constructor?.min} Мин"
             } else {
                 addVoiceView.visibility = View.GONE
             }
 
             if (!data.subscriberTariff?.tariff?.constructor?.sms.isNullOrEmpty()) {
+                addSMSView.visibility = View.VISIBLE
                 tvAddSMS.text = "${data.subscriberTariff?.tariff?.constructor?.sms} SMS"
             } else {
                 addSMSView.visibility = View.GONE
@@ -233,7 +240,7 @@ class MyTariffAboutDialog(
             infoList.layoutManager = LinearLayoutManager(context!!)
             infoList.adapter =
                 InfoAdapter(context!!, attributesInfo)
-        }else {
+        } else {
             tvTariffInformation.visibility = View.GONE
         }
 

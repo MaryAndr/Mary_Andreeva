@@ -19,7 +19,7 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/mainDataHolder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="719dp"
         android:layout_marginBottom="56dp"
         android:visibility="visible">
 

@@ -77,7 +77,7 @@ class UserInteractor(val ctx: Context) {
     }
 
 
-    fun isAuthenticated(ctx: Context): Observable<LoginPagePartialState> {
+    fun isAuthenticated(): Observable<LoginPagePartialState> {
         val prefs = PreferenceHelper.customPrefs(ctx, Constants.AUTH_PREF_NAME)
         val authToken: String? = prefs[Constants.AUTH_TOKEN]
 
