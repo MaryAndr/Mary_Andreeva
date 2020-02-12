@@ -21,12 +21,16 @@ class CostsEmailPresenter(val ctx: Context) :
     override fun bindIntents() {
         val msisdnLoadIntent: Observable<CostsEmailState> =
             intent(CostsEmailView::msisdnLoadIntent).flatMap {
-                subService.msisdnLoad().subscribeOn(Schedulers.io())
+                subService.msisdnLoad()
+                    .startWith(CostsEmailState.Loading)
+                    .subscribeOn(Schedulers.io())
             }
 
         val emailSendIntent: Observable<CostsEmailState> =
             intent(CostsEmailView::sendEmailIntent).flatMap {
-                subService.sendDetalEmail(it).subscribeOn(Schedulers.io())
+                subService.sendDetalEmail(it)
+                    .startWith(CostsEmailState.Loading)
+                    .subscribeOn(Schedulers.io())
                     .onErrorResumeNext { error: Throwable ->
                         var errMessage = error.localizedMessage
                         if (error is HttpException) {

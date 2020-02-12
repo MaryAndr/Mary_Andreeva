@@ -67,9 +67,11 @@ class ChangeTariff : MviFragment<ChangeTariffView, ChangeTariffPresenter>(), Cha
         }
 
         tvName.text = child.name
+        val isSelfTariff = child.aboutData?.subscriberTariff?.tariff?.constructor!=null
 
         if (child.dataValueUnit != null) {
-            val text = child.dataValueUnit
+            var text = child.dataValueUnit
+            if (isSelfTariff)text+=" Гб"
             addDataView.visibility = View.VISIBLE
             tvAddData.text = text
         } else {
@@ -78,14 +80,18 @@ class ChangeTariff : MviFragment<ChangeTariffView, ChangeTariffPresenter>(), Cha
 
         if (child.voiceValueUnit != null) {
             addVoiceView.visibility = View.VISIBLE
-            tvAddVoice.text = child.voiceValueUnit
+            var text = child.voiceValueUnit
+            if (isSelfTariff)text+=" Мин"
+            tvAddVoice.text = text
         } else {
             addVoiceView.visibility = View.INVISIBLE
         }
 
         if (child.smsValueUnit != null) {
             addSMSView.visibility = View.VISIBLE
-            tvAddSMS.text = child.smsValueUnit
+            var text = child.smsValueUnit
+            if (isSelfTariff)text+=" SMS"
+            tvAddSMS.text = text
         } else {
             addSMSView.visibility = View.INVISIBLE
         }

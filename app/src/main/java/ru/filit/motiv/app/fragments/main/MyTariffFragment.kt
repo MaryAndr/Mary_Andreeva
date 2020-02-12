@@ -215,22 +215,33 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
     }
 
     private fun renderNewIndicators(indicatorsModel: IndicatorsModel) {
-        if (indicatorsModel.dataIndicators.size > 0) {
+        val indicatorSMS = indicatorsModel.smsIndicators.filter{it.rest!=0&&it.total!=0}.toMutableList()
+        val indicatorVoice =indicatorsModel.voiceIndicators.filter{it.rest!=0&&it.total!=0}.toMutableList()
+        val indicatorData = indicatorsModel.dataIndicators.filter{it.rest!=0&&it.total!=0}.toMutableList()
+
+        if (indicatorData.size > 0) {
             dataRecyclerView.layoutManager = LinearLayoutManager(context!!)
-            dataRecyclerView.adapter = IndicatorsAdapter(indicatorsModel.dataIndicators, context!!)
+            dataRecyclerView.adapter = IndicatorsAdapter(
+                indicatorData
+                , context!!
+            )
         } else {
             constInternet.visibility = View.GONE
         }
-        if (indicatorsModel.voiceIndicators.size > 0) {
+        if (indicatorVoice.size > 0) {
             voiceRecyclerView.layoutManager = LinearLayoutManager(context!!)
             voiceRecyclerView.adapter =
-                IndicatorsAdapter(indicatorsModel.voiceIndicators, context!!)
+                IndicatorsAdapter(
+                    indicatorVoice
+                    , context!!)
         } else {
             constVoice.visibility = View.GONE
         }
-        if (indicatorsModel.smsIndicators.size > 0) {
+        if (indicatorSMS.size > 0) {
             smsRecyclerView.layoutManager = LinearLayoutManager(context!!)
-            smsRecyclerView.adapter = IndicatorsAdapter(indicatorsModel.smsIndicators, context!!)
+            smsRecyclerView.adapter = IndicatorsAdapter(
+                indicatorSMS
+                , context!!)
         } else {
             constSms.visibility = View.GONE
         }

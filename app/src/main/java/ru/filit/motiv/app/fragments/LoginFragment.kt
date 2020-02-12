@@ -74,9 +74,7 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
                     layoutTextInputPhone.error = " "
                     layoutTextInput.error = state.errorMessage
                 }
-                if (etLoginPhone.text.isNullOrEmpty()) {
-                    layoutTextInputPhone.hint = context?.getString(R.string.phone_number)
-                }else  layoutTextInputPhone.hint = context?.getString(R.string.phone_hint)
+                layoutTextInputPhone.hint = context?.getString(R.string.phone_number)
             }
             state.successFullyAuthorized -> {
                 mainView.isClickable = true
@@ -89,6 +87,9 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
             state.defaultState -> {
                 mainView.isClickable = true
                 loading.visibility = View.GONE
+                if (etLoginPhone.text.isNullOrEmpty()) {
+                    layoutTextInputPhone.hint = context?.getString(R.string.phone_hint)
+                }else{layoutTextInputPhone.hint = context?.getString(R.string.phone_number)}
                 layoutTextInputPhone.boxStrokeColor = Color.parseColor("#fa6600")
                 layoutTextInput.boxStrokeColor = Color.parseColor("#fa6600")
                 layoutTextInputPhone.error = ""
@@ -139,11 +140,12 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
                 scrollView.scrollTo(0, y)
             }
         }
+
         etPassword.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 val y = (+buttonAuth.y - etPassword.x).toInt()
                 scrollView.scrollTo(0, y)
-                if (etLoginPhone.text.isNullOrEmpty()) {
+                if (etLoginPhone.text.isNullOrEmpty()&&!layoutTextInputPhone.isErrorEnabled) {
                     layoutTextInputPhone.hint = context?.getString(R.string.phone_hint)
                 }
             }

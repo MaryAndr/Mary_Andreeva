@@ -1,6 +1,7 @@
 package ru.filit.motiv.app.fragments.main
 
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -43,11 +44,32 @@ class CostsEmailFragment :
     override fun render(state: CostsEmailState) {
         when(state) {
             is CostsEmailState.MsisdnShown -> {
+                group.visibility = View.VISIBLE
+                pgCostEmail.visibility = View.GONE
                 tvPhoneNumber.text = TextConverter().getFormattedPhone(state.msisdn)
                 tvPeriod.text = state.defPeriod
+                costs_service.text = "Стоимость услуги - ${state.costsDetalization.toInt()} руб"
             }
             is CostsEmailState.ErrorShown -> {
+                group.visibility = View.VISIBLE
+                pgCostEmail.visibility = View.GONE
                 layoutTextInputEnterEmail.error = state.error
+            }
+            is CostsEmailState.Loading -> {
+                group.visibility = View.GONE
+                pgCostEmail.visibility = View.VISIBLE
+
+            }
+            is CostsEmailState.EmailSent ->{
+                group.visibility = View.VISIBLE
+                pgCostEmail.visibility = View.GONE
+                val dialogBuilder = AlertDialog.Builder(this.context)
+                dialogBuilder
+                    .setMessage("Отчет успешно отправлен")
+                    .setPositiveButton("OK") { _, _ ->
+                    }
+                    .create()
+                    .show()
             }
         }
     }

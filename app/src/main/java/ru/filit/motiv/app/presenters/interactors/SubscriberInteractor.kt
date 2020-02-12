@@ -490,18 +490,26 @@ class SubscriberInteractor(ctx: Context) {
 
     fun msisdnLoad(): Observable<CostsEmailState> {
 
-//        val subInfo = subService.getSubInfo().onErrorReturn { null }
-//        val servises = subService.g
+          val subInfo = subService.getSubInfo().onErrorReturn { null }
+          val servises = subService.getAllServicesList().onErrorReturn { null }
 
 
-        return subService.getSubInfo().flatMap {
+        return Observable.zip(subInfo,servises, BiFunction<SubInfoResponse,List<ServicesListResponse>, CostsEmailState> {subInfoResponse,services->
+            var costDetalization:Double = 0.0
             val monthAgo = Calendar.getInstance()
             monthAgo.add(Calendar.DAY_OF_MONTH, -30)
             val period =
                 "${TimeUtils().dateToString(monthAgo)}-${TimeUtils().dateToString(Calendar.getInstance())}"
-            Observable.just(CostsEmailState.MsisdnShown(it.msisdn, period))
+            subInfoResponse.msisdn
+                costDetalization =
+                    services.firstOrNull() { pred -> pred.id == 1322 }?.price_on ?: 0.0
+
+
+
+                CostsEmailState.MsisdnShown(subInfoResponse.msisdn, period, costsDetalization = costDetalization)
+            })
         }
-    }
+
 
 
     fun costsMainData(): Observable<CostAndReplenishmentPartialState> {
