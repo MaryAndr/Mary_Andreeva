@@ -14,16 +14,16 @@ class TextConverter {
         var dataExist: String? = ""
         var smsExist: String?  = ""
         if (min != null) {
-            minExist = "$min минут"
+            minExist = ", $min минут"
         }
         if (data != null) {
-            dataExist = ", $data ГБ"
+            dataExist = "$data ГБ"
         }
         if (sms != null) {
             smsExist = ", $sms SMS"
         }
 
-        return "Свой тариф: $minExist$dataExist$smsExist"
+        return "Свой тариф: $dataExist$minExist$smsExist"
     }
 
 

@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentActivity
 import io.reactivex.subjects.BehaviorSubject
 import ru.filit.motiv.app.R
 import ru.filit.motiv.app.dialogs.MyTariffAboutDialog
+import ru.filit.motiv.app.models.main.MyTariffAboutData
 import ru.filit.motiv.app.models.main.TariffShow
 
 class ExpandableTariffsCategories internal constructor(
@@ -143,7 +144,7 @@ class ExpandableTariffsCategories internal constructor(
         if (child.aboutData != null) {
             val activity = context as FragmentActivity
             viewHolder.tvDetails.setOnClickListener {
-                val aboutDialog = MyTariffAboutDialog.newInstance(child.aboutData!!, true, reloadTrigger)
+                val aboutDialog = MyTariffAboutDialog.newInstance(MyTariffAboutData( catalogTariff = child.aboutData!!.catalogTariff, subscriberServices = child.aboutData!!.subscriberServices), true, reloadTrigger)
                 aboutDialog.show(
                     activity!!.supportFragmentManager,
                     "my_tariff_dialog_fragment"
