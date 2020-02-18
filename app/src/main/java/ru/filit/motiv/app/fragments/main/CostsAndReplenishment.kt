@@ -1,5 +1,7 @@
 package ru.filit.motiv.app.fragments.main
 
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,6 +24,7 @@ import ru.filit.motiv.app.adapters.RepAdapter
 import ru.filit.motiv.app.presenters.main.CostsAndReplenishmentPresenter
 import ru.filit.motiv.app.states.main.CostAndReplenishmentState
 import ru.filit.motiv.app.utils.CalendarView
+import ru.filit.motiv.app.utils.ConnectivityReceiver
 import ru.filit.motiv.app.utils.TextConverter
 import ru.filit.motiv.app.utils.TimeUtils
 import ru.filit.motiv.app.views.main.CostAndReplenishmentView
@@ -30,8 +33,20 @@ import ru.slybeaver.slycalendarview.SlyCalendarDialog
 
 class CostsAndReplenishment :
     MviFragment<CostAndReplenishmentView, CostsAndReplenishmentPresenter>(),
-    CostAndReplenishmentView {
+    CostAndReplenishmentView, ConnectivityReceiver.ConnectivityReceiverListener {
+
+
+    private val connectivityReceiver = ConnectivityReceiver()
+
+    private lateinit var networkAvailabilityTrigger : BehaviorSubject<Boolean>
+
+    override fun checkInternetConnectivityIntent(): Observable<Boolean> {
+        return networkAvailabilityTrigger
+    }
+
+
     override fun getReplenishmentDataIntent(): Observable<String> {
+
         return showReplenishmentDataTrigger.map<String> {
             tvRepPeriod.text.toString()
         }
@@ -92,6 +107,29 @@ class CostsAndReplenishment :
                 tvBalance.visibility = View.INVISIBLE
                 tvTariff.visibility = View.INVISIBLE
             }
+            state.connectionLost -> {
+                description.visibility = View.GONE
+                costsLayout.visibility = View.GONE
+                replenishmentLayout.visibility = View.GONE
+                costsAndReplenishmentGroup.visibility = View.GONE
+                no_internet_view.visibility = View.VISIBLE
+            }
+            state.connectionResume -> {
+                description.visibility = View.VISIBLE
+                no_internet_view.visibility = View.GONE
+                costsAndReplenishmentGroup.visibility = View.VISIBLE
+                mainDataLoadTrigger.onNext(1)
+                when(costsAndReplenishmentGroup.checkedRadioButtonId){
+                    R.id.costsButton -> {
+                        costsLayout.visibility = View.VISIBLE
+                        showCostsTrigger.onNext(1)
+                    }
+                    R.id.replenishmentButton -> {
+                        replenishmentLayout.visibility= View.VISIBLE
+                        showReplenishmentDataTrigger.onNext(1)
+                    }
+                }
+            }
         }
     }
 
@@ -102,7 +140,7 @@ class CostsAndReplenishment :
     }
 
     private fun renderMainData(state: CostAndReplenishmentState) {
-        pgMainData.visibility = View.INVISIBLE
+        pgMainData.visibility = View.GONE
         tvPhoneNumber.visibility = View.VISIBLE
         tvBalance.visibility = View.VISIBLE
         tvTariff.visibility = View.VISIBLE
@@ -131,15 +169,19 @@ class CostsAndReplenishment :
         showCostsTrigger = BehaviorSubject.create()
         showReplenishmentTrigger = BehaviorSubject.create()
         showReplenishmentDataTrigger = BehaviorSubject.create()
+        networkAvailabilityTrigger = BehaviorSubject.create()
+        networkAvailabilityTrigger = BehaviorSubject.create()
+        activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 
     override fun onResume() {
         super.onResume()
+        ConnectivityReceiver.connectivityReceiverListener = this
         (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         activity!!.nav_view.visibility = View.VISIBLE
         showCostsTrigger.onNext(1)
-        var tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
+        val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         tvTitle.setTextColor(resources.getColor(R.color.black))
         tvTitle.text = "Расходы"
 
@@ -195,6 +237,19 @@ class CostsAndReplenishment :
                 .show(activity!!.supportFragmentManager, "TAG_SLYCALENDAR")
         }
     }
+    override fun onStart() {
+        super.onStart()
+        mainDataLoadTrigger.onNext(1)
+    }
 
+    override fun onNetworkConnectionChanged(isConnected: Boolean) {
+        if (isConnected) {
+            networkAvailabilityTrigger.onNext(true)
+        }
+    }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        activity!!.unregisterReceiver(connectivityReceiver)
+    }
 }

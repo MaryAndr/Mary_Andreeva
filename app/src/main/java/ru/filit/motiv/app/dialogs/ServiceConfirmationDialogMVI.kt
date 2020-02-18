@@ -17,16 +17,19 @@ import ru.filit.motiv.app.R
 import ru.filit.motiv.app.adapters.ExpandableServiceAdapter
 import ru.filit.motiv.app.adapters.ServicesViewHolder
 import ru.filit.motiv.app.adapters.ViewHolder
+import ru.filit.motiv.app.fragments.InternetLostFragment
 import ru.filit.motiv.app.models.main.ServiceDialogModel
 import ru.filit.motiv.app.presenters.main.ServiceDialogPresenter
 import ru.filit.motiv.app.states.main.ServiceDialogState
+import ru.filit.motiv.app.utils.ConnectivityReceiver
 import ru.filit.motiv.app.utils.Constants
 import ru.filit.motiv.app.views.main.ServiceConfirmationDialogView
 
 
 class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
     BaseBottomDialogMVI<ServiceConfirmationDialogView, ServiceDialogState, ServiceDialogPresenter>(),
-    ServiceConfirmationDialogView {
+    ServiceConfirmationDialogView{
+
 
     override fun createPresenter() = ServiceDialogPresenter(context!!)
 
@@ -53,6 +56,14 @@ class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
             }
             is ServiceDialogState.ErrorShown -> {
                 Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
+            }
+            is ServiceDialogState.InternetState -> {
+                val fragment = InternetLostFragment()
+                activity!!.supportFragmentManager.beginTransaction()
+                    .addToBackStack("internetlost")
+                    .replace(R.id.container, fragment)
+                    .commit()
+                dismiss()
             }
         }
     }

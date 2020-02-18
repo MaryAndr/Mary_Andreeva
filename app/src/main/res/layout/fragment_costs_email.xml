@@ -163,4 +163,11 @@
         android:layout_height="wrap_content"
         app:constraint_referenced_ids="costs_service,btnSend,layoutTextInputEnterEmail,view2,viewCalendar,textView7,tvPhoneNumber" />
 
+    <include
+        android:id="@+id/no_internet_view"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/no_internet_layout" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

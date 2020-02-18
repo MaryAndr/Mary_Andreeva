@@ -1,5 +1,8 @@
 package ru.filit.motiv.app.dialogs
 
+import android.content.DialogInterface
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,17 +10,27 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.dialog_block_unblock.*
 import ru.filit.motiv.app.R
+import ru.filit.motiv.app.fragments.InternetLostFragment
 import ru.filit.motiv.app.models.main.BlockUnblockDataModel
 import ru.filit.motiv.app.models.main.SettingsDataModel
 import ru.filit.motiv.app.presenters.main.BlockUnblockDialogPresenter
 import ru.filit.motiv.app.states.main.BlockUnblockDialogState
+import ru.filit.motiv.app.utils.ConnectivityReceiver
 import ru.filit.motiv.app.views.main.BlockUnblockDialogView
 
 class BlockUnblockDialog(val data: SettingsDataModel, val message: String? = null) :
     BaseBottomDialogMVI<BlockUnblockDialogView, BlockUnblockDialogState, BlockUnblockDialogPresenter>(),
-    BlockUnblockDialogView {
+    BlockUnblockDialogView{
+
+
+    private lateinit var networkAvailabilityTrigger : BehaviorSubject<Boolean>
+
+    override fun checkInternetConnectivityIntent(): Observable<Boolean> {
+        return networkAvailabilityTrigger
+    }
 
     override fun createPresenter() = BlockUnblockDialogPresenter(context!!)
 
@@ -35,6 +48,8 @@ class BlockUnblockDialog(val data: SettingsDataModel, val message: String? = nul
     override fun render(state: BlockUnblockDialogState) {
         when (state) {
             is BlockUnblockDialogState.RequestProcessed -> {
+                viewUnblock.visibility = View.VISIBLE
+                no_internet_view.visibility = View.GONE
                 if (state.isProcessed) {
                     Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
                     targetFragment?.activity?.onBackPressed()
@@ -53,6 +68,14 @@ class BlockUnblockDialog(val data: SettingsDataModel, val message: String? = nul
                     }
                 }
             }
+            is BlockUnblockDialogState.InternetState -> {
+                val fragment = InternetLostFragment()
+                activity!!.supportFragmentManager.beginTransaction()
+                    .addToBackStack("internetlost")
+                    .replace(R.id.container, fragment)
+                    .commit()
+                dismiss()
+            }
         }
     }
 
@@ -65,6 +88,11 @@ class BlockUnblockDialog(val data: SettingsDataModel, val message: String? = nul
             R.layout.dialog_block_unblock, container,
             false
         )
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        networkAvailabilityTrigger = BehaviorSubject.create()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -83,6 +111,12 @@ class BlockUnblockDialog(val data: SettingsDataModel, val message: String? = nul
             btnBlockUnlock.text = "Разблокировать номер"
         }
         ivClose.setOnClickListener{dismiss()}
+    }
+
+
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
     }
 
     companion object {

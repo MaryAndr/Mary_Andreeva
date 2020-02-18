@@ -2,6 +2,8 @@ package ru.filit.motiv.app.fragments.main
 
 
 import android.app.AlertDialog
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +22,7 @@ import ru.filit.motiv.app.models.EmailDetalModel
 import ru.filit.motiv.app.presenters.main.CostsEmailPresenter
 import ru.filit.motiv.app.states.main.CostsEmailState
 import ru.filit.motiv.app.utils.CalendarView
+import ru.filit.motiv.app.utils.ConnectivityReceiver
 import ru.filit.motiv.app.utils.TextConverter
 import ru.filit.motiv.app.views.main.CostsEmailView
 import ru.slybeaver.slycalendarview.SlyCalendarDialog
@@ -27,7 +30,15 @@ import ru.slybeaver.slycalendarview.SlyCalendarDialog
 
 class CostsEmailFragment :
     MviFragment<CostsEmailView, CostsEmailPresenter>(),
-    CostsEmailView  {
+    CostsEmailView , ConnectivityReceiver.ConnectivityReceiverListener {
+
+    private val connectivityReceiver = ConnectivityReceiver()
+
+    private lateinit var networkAvailabilityTrigger : BehaviorSubject<Boolean>
+
+    override fun checkInternetConnectivityIntent(): Observable<Boolean> {
+        return networkAvailabilityTrigger
+    }
 
     private lateinit var msisdnLoadTrigger: BehaviorSubject<Int>
 
@@ -71,6 +82,15 @@ class CostsEmailFragment :
                     .create()
                     .show()
             }
+            is CostsEmailState.InternetState -> {
+                if (state.active){
+                    no_internet_view.visibility = View.GONE
+                    group.visibility = View.VISIBLE
+                }else{
+                    no_internet_view.visibility = View.VISIBLE
+                    group.visibility = View.GONE
+                }
+            }
         }
     }
 
@@ -78,6 +98,7 @@ class CostsEmailFragment :
 
     override fun onResume() {
         super.onResume()
+        ConnectivityReceiver.connectivityReceiverListener = this
         (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_backbutton_black)
@@ -91,6 +112,8 @@ class CostsEmailFragment :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         msisdnLoadTrigger = BehaviorSubject.create()
+        networkAvailabilityTrigger = BehaviorSubject.create()
+        activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 
 
@@ -110,5 +133,16 @@ class CostsEmailFragment :
                 .setCallback(CalendarView(tvPeriod))
                 .show(activity!!.supportFragmentManager, "TAG_SLYCALENDAR")
         }
+    }
+
+    override fun onNetworkConnectionChanged(isConnected: Boolean) {
+        if (isConnected) {
+            networkAvailabilityTrigger.onNext(true)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        activity!!.unregisterReceiver(connectivityReceiver)
     }
 }

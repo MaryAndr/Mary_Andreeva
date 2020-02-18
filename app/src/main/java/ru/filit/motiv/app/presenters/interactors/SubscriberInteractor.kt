@@ -1,6 +1,7 @@
 package ru.filit.motiv.app.presenters.interactors
 
 import android.content.Context
+import android.net.ConnectivityManager
 import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
@@ -16,7 +17,7 @@ import ru.filit.motiv.app.states.main.*
 import ru.filit.motiv.app.utils.*
 import java.util.*
 
-class SubscriberInteractor(ctx: Context) {
+class SubscriberInteractor(val ctx: Context) {
 
 
     val subService by lazy {
@@ -338,6 +339,9 @@ class SubscriberInteractor(ctx: Context) {
 
 
     fun getMyTariffMainData(): Observable<MyTariffPartialState> {
+        if (!isConnect(ctx)){
+            return Observable.just(MyTariffPartialState.InternetState(false))
+        }
         val subTariff = subService.getSubTariff().onErrorReturn {
             null
         }
@@ -405,7 +409,7 @@ class SubscriberInteractor(ctx: Context) {
                             }else{ serviceShow.toggleState = ToggleButtonState.ActiveAndDisabled}
                             serviceShow.interval = when(list.firstOrNull{pred->
                                 pred.id == it.id}?.interval?.type){
-                                "day" -> "день"
+                                "day" -> "сутки"
                                 "month" -> "месяц"
                                 else -> "подключение"
                             }
@@ -436,6 +440,9 @@ class SubscriberInteractor(ctx: Context) {
 
 
     fun getReplenishmentData(period: String): Observable<CostAndReplenishmentPartialState> {
+        if (!isConnect(ctx = ctx)){
+            return Observable.just(CostAndReplenishmentPartialState.InternetState(active = false))
+        }
         val dates = period.split("-")
         var dateFrom: String?
         var dateTo: String?
@@ -513,6 +520,9 @@ class SubscriberInteractor(ctx: Context) {
 
 
     fun costsMainData(): Observable<CostAndReplenishmentPartialState> {
+        if (!isConnect(ctx = ctx)){
+            return Observable.just(CostAndReplenishmentPartialState.InternetState(false))
+        }
         val subInfo = subService.getSubInfo().onErrorReturn {
             null
         }
@@ -547,6 +557,9 @@ class SubscriberInteractor(ctx: Context) {
 
 
     fun preLoadData(): Observable<MainPagePartialState> {
+        if (!isConnect(ctx)){
+            return Observable.just(MainPagePartialState.InternetState(false))
+        }
 
         val subInfo = subService.getSubInfo().onErrorReturn {
             null
@@ -965,4 +978,5 @@ class SubscriberInteractor(ctx: Context) {
         }
         return outputMap
     }
+
 }

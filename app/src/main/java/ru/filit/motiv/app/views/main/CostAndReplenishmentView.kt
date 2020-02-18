@@ -6,6 +6,8 @@ import ru.filit.motiv.app.states.main.CostAndReplenishmentState
 
 interface CostAndReplenishmentView : MvpView {
 
+    fun checkInternetConnectivityIntent(): Observable<Boolean>
+
     fun mainDataLoadIntent() : Observable<Int>
 
     fun showCostsIntent() : Observable<Int>

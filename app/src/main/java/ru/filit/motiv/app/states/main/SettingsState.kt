@@ -10,4 +10,6 @@ sealed class SettingsState {
 
     object Loading : SettingsState()
 
+    data class InternetState(val active: Boolean): SettingsState()
+
 }

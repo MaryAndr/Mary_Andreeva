@@ -8,4 +8,5 @@ sealed class ServiceDialogState : BaseDialogState {
 
     object Loading : ServiceDialogState()
 
+    data class InternetState(val active: Boolean): ServiceDialogState()
 }

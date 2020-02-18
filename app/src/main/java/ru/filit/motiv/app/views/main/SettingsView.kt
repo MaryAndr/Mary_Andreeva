@@ -11,4 +11,6 @@ interface SettingsView : MvpView {
     fun render(state : SettingsState)
 
     fun logoutIntent(): Observable<Any>
+
+    fun checkInternetConnectivityIntent(): Observable<Boolean>
 }

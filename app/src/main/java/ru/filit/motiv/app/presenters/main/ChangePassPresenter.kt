@@ -12,6 +12,7 @@ import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
 import ru.filit.motiv.app.states.main.ChangePassState
 import ru.filit.motiv.app.views.main.ChangePassView
 import retrofit2.HttpException
+import ru.filit.motiv.app.utils.isConnect
 
 class ChangePassPresenter(val ctx: Context) :
     MviBasePresenter<ChangePassView, ChangePassState>() {
@@ -23,6 +24,9 @@ class ChangePassPresenter(val ctx: Context) :
         val processRequestIntent: Observable<ChangePassState> =
             intent(ChangePassView::processIntent)
                 .flatMap {
+                    if (!isConnect(ctx)){
+                        return@flatMap Observable.just(ChangePassState.InternetState(false))
+                    }
                     var curErr: String? = null
                     var newErr: String? = null
                     if (it.currentPass.length < 8) {
@@ -56,8 +60,12 @@ class ChangePassPresenter(val ctx: Context) :
                         )
                     }
                 }
+        val changeInternetConnectionIntent: Observable<ChangePassState> =
+            intent (ChangePassView::checkInternetConnectivityIntent).flatMap {
+                Observable.just(ChangePassState.InternetState(it))
+            }
 
-        val allIntents = processRequestIntent
+        val allIntents = Observable.merge(processRequestIntent, changeInternetConnectionIntent)
             .observeOn(AndroidSchedulers.mainThread())
 
         subscribeViewState(allIntents, ChangePassView::render)

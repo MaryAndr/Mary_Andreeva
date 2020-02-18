@@ -1,5 +1,6 @@
 package ru.filit.motiv.app.adapters
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Paint
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.my_tariff_services_list.view.*
 import ru.filit.motiv.app.R
 import ru.filit.motiv.app.models.catalogTariff.Attribute
+import ru.filit.motiv.app.utils.isConnect
 
 class MyTariffAboutAdapter(attribute: MutableList<Attribute>, val context: Context) :
     RecyclerView.Adapter<AboutViewHolder>() {
@@ -114,8 +116,18 @@ class MyTariffAboutAdapter(attribute: MutableList<Attribute>, val context: Conte
     }
 
     private fun openPdf(url:String){
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        context.startActivity(intent)
+        if (!isConnect(context)) {
+            val dialogBuilder = AlertDialog.Builder(this.context)
+            dialogBuilder
+                .setMessage("Нет интернет соединения")
+                .setPositiveButton("OK") { _, _ ->
+                }
+                .create()
+                .show()
+        } else {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            context.startActivity(intent)
+        }
     }
 
 

@@ -1,6 +1,7 @@
 package ru.filit.motiv.app.dialogs
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.graphics.Paint
 import android.os.Build
@@ -22,8 +23,8 @@ import ru.filit.motiv.app.models.main.MyTariffAboutData
 import ru.filit.motiv.app.utils.DownloadHelper
 import ru.filit.motiv.app.utils.TextConverter
 import ru.filit.motiv.app.models.catalogTariff.Attribute
-import ru.filit.motiv.app.models.catalogTariff.CatalogTariffResponse
 import ru.filit.motiv.app.models.main.TariffDialogModelData
+import ru.filit.motiv.app.utils.isConnect
 
 //TODO: Необходимо переписать под MVI архитектуру, используя абстрактный класс BaseBottomDialogMVI
 class MyTariffAboutDialog(
@@ -88,7 +89,7 @@ class MyTariffAboutDialog(
                     (context as AppCompatActivity).supportFragmentManager,
                     "Accept Dialog"
                 )
-            }
+        }
         } else {
             btnTariffChange.visibility = View.GONE
         }
@@ -111,7 +112,17 @@ class MyTariffAboutDialog(
         )
 
         pdfDownload.setOnClickListener {
-            downloadPdf()
+            if (!isConnect(context!!)) {
+                val dialogBuilder = AlertDialog.Builder(this.context)
+                dialogBuilder
+                    .setMessage("Нет интернет соединения")
+                    .setPositiveButton("OK") { _, _ ->
+                    }
+                    .create()
+                    .show()
+            } else {
+                downloadPdf()
+            }
         }
 
         if (data.subscriberTariff?.tariff?.constructor != null && isSelfTariff) {

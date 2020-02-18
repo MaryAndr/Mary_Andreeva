@@ -12,4 +12,6 @@ interface CostsEmailView : MvpView {
     fun sendEmailIntent() : Observable<EmailDetalModel>
 
     fun render(state: CostsEmailState)
+
+    fun checkInternetConnectivityIntent(): Observable<Boolean>
 }

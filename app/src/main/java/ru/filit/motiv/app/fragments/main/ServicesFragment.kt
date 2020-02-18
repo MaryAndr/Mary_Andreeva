@@ -4,6 +4,8 @@ package ru.filit.motiv.app.fragments.main
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -28,6 +30,7 @@ import ru.filit.motiv.app.models.main.ServiceDialogModel
 import ru.filit.motiv.app.models.main.ServicesListShow
 import ru.filit.motiv.app.presenters.main.ServicesPresenter
 import ru.filit.motiv.app.states.main.ServicesPartialState
+import ru.filit.motiv.app.utils.ConnectivityReceiver
 import ru.filit.motiv.app.utils.Constants
 import ru.filit.motiv.app.utils.TimeUtils
 import ru.filit.motiv.app.views.main.ServicesPageView
@@ -36,7 +39,16 @@ import java.util.*
 /**
  * A simple [Fragment] subclass.
  */
-class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), ServicesPageView, OnServiceToggleChangeListener {
+class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), ServicesPageView, OnServiceToggleChangeListener, ConnectivityReceiver.ConnectivityReceiverListener{
+
+
+    private val connectivityReceiver = ConnectivityReceiver()
+
+    private lateinit var networkAvailabilityTrigger : BehaviorSubject<Boolean>
+
+    override fun checkInternetConnectivityIntent(): Observable<Boolean> {
+        return networkAvailabilityTrigger
+    }
 
     override fun createPresenter() = ServicesPresenter(context!!)
 
@@ -70,6 +82,7 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                   addedServicesLayout.visibility = View.VISIBLE
                   servicesGroup.visibility = View.VISIBLE
                   pgChangeService.visibility = View.GONE
+                  no_internet_view.visibility = View.GONE
                 allButton.isChecked = false
                 activeButton.isChecked = true
                   items = state.servicesList
@@ -86,6 +99,7 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                 allButton.isChecked = true
                 activeButton.isChecked = false
                 items = state.servicesList
+                no_internet_view.visibility = View.GONE
                 allServicesList.setAdapter(allServicesListAdapter)
                 allServicesListAdapter.setData(items)
                 /*servicesList.layoutManager = LinearLayoutManager(context!!)
@@ -99,6 +113,7 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                 pgData.visibility = View.VISIBLE
                 servicesGroup.visibility = View.VISIBLE
                 pgChangeService.visibility = View.GONE
+                no_internet_view.visibility = View.GONE
             }
 
             is ServicesPartialState.LoadingChangeService -> {
@@ -106,6 +121,7 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                 addedServicesLayout.visibility = View.GONE
                 servicesGroup.visibility = View.GONE
                 pgData.visibility = View.GONE
+                no_internet_view.visibility = View.GONE
                 pgChangeService.visibility = View.VISIBLE
             }
 
@@ -126,11 +142,26 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                   enabledServicesAdapter.cancelChanges(servicePosition)
               }else {allServicesListAdapter.setData(items)}
             }
+            is ServicesPartialState.InternetState -> {
+                if (state.active){
+                    changeRadioGroup.onNext(true)
+                }else {
+                    allServicesLayout.visibility = View.GONE
+                    addedServicesLayout.visibility = View.GONE
+                    servicesGroup.visibility = View.GONE
+                    pgData.visibility = View.GONE
+                    pgChangeService.visibility = View.GONE
+                    no_internet_view.visibility = View.VISIBLE
+                }
+            }
+
+
         }
     }
 
     override fun onResume() {
         super.onResume()
+        ConnectivityReceiver.connectivityReceiverListener = this
         (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_backbutton_black)
@@ -145,6 +176,8 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
         triggerChangeService = BehaviorSubject.create()
         changeRadioGroup = BehaviorSubject.create()
         cancelChange = BehaviorSubject.create()
+        networkAvailabilityTrigger = BehaviorSubject.create()
+        activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         allServicesListAdapter = ExpandableServiceAdapter( onToggleChangeListener = this)
         enabledServicesAdapter =EnabledServicesAdapter(onToggleChangeListener = this)
         RxJavaPlugins.setErrorHandler { throwable ->
@@ -202,5 +235,16 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
 
     override fun cancelChangeServiceIntent(): Observable<Boolean> {
         return cancelChange
+    }
+
+    override fun onNetworkConnectionChanged(isConnected: Boolean) {
+        if (isConnected) {
+            networkAvailabilityTrigger.onNext(true)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        activity!!.unregisterReceiver(connectivityReceiver)
     }
 }

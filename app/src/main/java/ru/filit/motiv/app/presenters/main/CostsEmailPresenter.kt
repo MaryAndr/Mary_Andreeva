@@ -11,6 +11,9 @@ import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
 import ru.filit.motiv.app.states.main.CostsEmailState
 import ru.filit.motiv.app.views.main.CostsEmailView
 import retrofit2.HttpException
+import ru.filit.motiv.app.states.main.ChangePassState
+import ru.filit.motiv.app.utils.isConnect
+import ru.filit.motiv.app.views.main.ChangePassView
 
 class CostsEmailPresenter(val ctx: Context) :
     MviBasePresenter<CostsEmailView, CostsEmailState>() {
@@ -21,6 +24,9 @@ class CostsEmailPresenter(val ctx: Context) :
     override fun bindIntents() {
         val msisdnLoadIntent: Observable<CostsEmailState> =
             intent(CostsEmailView::msisdnLoadIntent).flatMap {
+                if (!isConnect(ctx)){
+                    return@flatMap Observable.just(CostsEmailState.InternetState(false))
+                }
                 subService.msisdnLoad()
                     .startWith(CostsEmailState.Loading)
                     .subscribeOn(Schedulers.io())
@@ -28,6 +34,9 @@ class CostsEmailPresenter(val ctx: Context) :
 
         val emailSendIntent: Observable<CostsEmailState> =
             intent(CostsEmailView::sendEmailIntent).flatMap {
+                if (!isConnect(ctx)){
+                    return@flatMap Observable.just(CostsEmailState.InternetState(false))
+                }
                 subService.sendDetalEmail(it)
                     .startWith(CostsEmailState.Loading)
                     .subscribeOn(Schedulers.io())
@@ -49,7 +58,12 @@ class CostsEmailPresenter(val ctx: Context) :
                     }
             }
 
-        val allIntents = Observable.merge(msisdnLoadIntent, emailSendIntent)
+        val changeInternetConnectionIntent: Observable<CostsEmailState> =
+            intent (CostsEmailView::checkInternetConnectivityIntent).flatMap {
+                Observable.just(CostsEmailState.InternetState(it))
+            }
+
+        val allIntents = Observable.merge(msisdnLoadIntent, emailSendIntent, changeInternetConnectionIntent)
             .observeOn(AndroidSchedulers.mainThread())
 
 

@@ -10,4 +10,6 @@ sealed class CostsEmailState {
 
     object Loading : CostsEmailState()
 
+    data class InternetState(val active: Boolean): CostsEmailState()
+
 }

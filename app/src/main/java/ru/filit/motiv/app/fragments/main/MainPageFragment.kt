@@ -1,5 +1,8 @@
 package ru.filit.motiv.app.fragments.main
 
+import android.content.Context
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -19,6 +22,7 @@ import ru.filit.motiv.app.R
 import ru.filit.motiv.app.models.main.IndicatorHolder
 import ru.filit.motiv.app.presenters.main.MainPagePresenter
 import ru.filit.motiv.app.states.main.MainPageState
+import ru.filit.motiv.app.utils.ConnectivityReceiver
 import ru.filit.motiv.app.utils.StringUtils
 import ru.filit.motiv.app.utils.TextConverter
 import ru.filit.motiv.app.views.main.MainPageView
@@ -27,9 +31,17 @@ import java.text.DecimalFormat
 
 
 class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
-    MainPageView {
+    MainPageView, ConnectivityReceiver.ConnectivityReceiverListener {
 
     override fun createPresenter() = MainPagePresenter(context!!)
+
+    private val connectivityReceiver = ConnectivityReceiver()
+
+    private lateinit var networkAvailabilityTrigger : BehaviorSubject<Boolean>
+
+    override fun checkInternetConnectivityIntent(): Observable<Boolean> {
+        return networkAvailabilityTrigger
+    }
 
     private lateinit var preLoadTrigger: BehaviorSubject<Int>
 
@@ -45,6 +57,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 dataView.visibility = View.GONE
                 layoutGbToMin.visibility = View.GONE
                 layoutServices.visibility = View.GONE
+                no_internet_view.visibility = View.GONE
             }
             state.mainDataLoaded -> {
                 renderFirstLoad(state)
@@ -53,6 +66,16 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
             state.errorShown -> {
                 Toast.makeText(context,state.errorText,Toast.LENGTH_LONG).show()
             }
+            state.connectionLost -> {
+                    dataView.visibility = View.GONE
+                    layoutGbToMin.visibility = View.GONE
+                    layoutServices.visibility = View.GONE
+                    pgMainData.visibility = View.GONE
+                    no_internet_view.visibility = View.VISIBLE
+            }
+            state.connectionResume -> {
+                preLoadTrigger.onNext(0)
+            }
         }
     }
 
@@ -60,6 +83,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         val phoneNumber = state.mainData?.phoneNumber
         dataView.visibility = View.VISIBLE
         pgMainData.visibility = View.GONE
+        no_internet_view.visibility = View.GONE
         layoutServices.visibility = View.VISIBLE
 
         layoutServices.setOnClickListener {
@@ -116,7 +140,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 }
             } else if (indicatorHolder["DATA"]!!.unlim) {
                 groupData.visibility = View.VISIBLE
-                dataView.pbInternet.visibility = View.GONE
+                dataView.pbInternet.visibility = View.INVISIBLE
                 tvDataRestAmount.text = "Безлимит"
                 tvDataTotalAmount.text = indicatorHolder["DATA"]?.optionsName
                 if (indicatorHolder["DATA"]?.optionsName!!.length > 25) {
@@ -128,7 +152,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 }
             } else if (indicatorHolder["DATA"]!!.valueUnit != null) {
                 groupData.visibility = View.VISIBLE
-                dataView.pbInternet.visibility = View.GONE
+                dataView.pbInternet.visibility = View.INVISIBLE
                 tvDataRestAmount.text = indicatorHolder["DATA"]!!.valueUnit
                 tvDataTotalAmount.text = "Интернет"
             }
@@ -147,7 +171,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 }
             } else if (indicatorHolder["VOICE"]!!.unlim) {
                 groupVoice.visibility = View.VISIBLE
-                dataView.pbPhone.visibility = View.GONE
+                dataView.pbPhone.visibility = View.INVISIBLE
                 tvVoiceRestAmount.text = "Безлимит"
                 tvVoiceTotalAmount.text = indicatorHolder["VOICE"]?.optionsName
                 if (indicatorHolder["VOICE"]?.optionsName!!.length > 25) {
@@ -159,7 +183,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 }
             } else if (indicatorHolder["VOICE"]!!.valueUnit != null) {
                 groupVoice.visibility = View.VISIBLE
-                dataView.pbPhone.visibility = View.GONE
+                dataView.pbPhone.visibility = View.INVISIBLE
                 tvVoiceRestAmount.text = indicatorHolder["VOICE"]!!.valueUnit
                 tvVoiceTotalAmount.text = "Исходящие звонки"
             }
@@ -177,7 +201,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 }
             } else if (indicatorHolder["SMS"]!!.unlim) {
                 groupSMS.visibility = View.VISIBLE
-                dataView.pbSms.visibility = View.GONE
+                dataView.pbSms.visibility = View.INVISIBLE
                 tvSMSRestAmount.text = "Безлимит"
                 tvSmsTotalAmount.text = indicatorHolder["SMS"]?.optionsName
                 if (indicatorHolder["SMS"]?.optionsName!!.length > 25) {
@@ -189,12 +213,12 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 }
             } else if (indicatorHolder["SMS"]!!.valueUnit != null) {
                 groupSMS.visibility = View.VISIBLE
-                dataView.pbSms.visibility = View.GONE
+                dataView.pbSms.visibility = View.INVISIBLE
                 tvSMSRestAmount.text = indicatorHolder["SMS"]!!.valueUnit
                 tvSmsTotalAmount.text = "SMS"
             }
         }
-        if (pbInternet.visibility == View.GONE && pbPhone.visibility == View.GONE && pbSms.visibility == View.GONE) {
+        if (pbInternet.visibility == View.INVISIBLE && pbPhone.visibility == View.INVISIBLE && pbSms.visibility == View.INVISIBLE) {
             dataView.layoutParams.height = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 240f,
@@ -214,7 +238,8 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         preLoadTrigger = BehaviorSubject.create()
-
+        networkAvailabilityTrigger = BehaviorSubject.create()
+        activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 
 
@@ -222,7 +247,12 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         super.onResume()
         (activity as AppCompatActivity).supportActionBar?.hide()
         activity!!.nav_view.visibility = View.VISIBLE
-        preLoadTrigger.onNext(1)
+        ConnectivityReceiver.connectivityReceiverListener = this
+    }
+
+    override fun onStart() {
+        super.onStart()
+       preLoadTrigger.onNext(0)
     }
 
     override fun onCreateView(
@@ -270,4 +300,14 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         layoutServices.visibility = View.GONE
     }
 
+    override fun onNetworkConnectionChanged(isConnected: Boolean) {
+        if (isConnected) {
+            networkAvailabilityTrigger.onNext(true)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        activity!!.unregisterReceiver(connectivityReceiver)
+    }
 }

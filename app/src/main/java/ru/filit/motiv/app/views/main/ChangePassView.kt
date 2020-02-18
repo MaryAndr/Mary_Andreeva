@@ -11,4 +11,6 @@ interface ChangePassView : MvpView {
 
     fun render(state: ChangePassState)
 
+    fun checkInternetConnectivityIntent(): Observable<Boolean>
+
 }

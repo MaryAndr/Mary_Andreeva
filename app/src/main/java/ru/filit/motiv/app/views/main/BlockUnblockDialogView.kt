@@ -10,4 +10,6 @@ interface BlockUnblockDialogView : MvpView {
     fun processIntent() : Observable<BlockUnblockDataModel>
 
     fun render(state: BlockUnblockDialogState)
+
+    fun checkInternetConnectivityIntent(): Observable<Boolean>
 }

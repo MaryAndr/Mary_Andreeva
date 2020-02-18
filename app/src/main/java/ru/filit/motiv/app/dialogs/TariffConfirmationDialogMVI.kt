@@ -19,14 +19,17 @@ import kotlinx.android.synthetic.main.tariff_change_dialog.tvAbonValue
 import kotlinx.android.synthetic.main.tariff_change_dialog.tvCostValue
 import kotlinx.android.synthetic.main.tariff_change_dialog.tvServiceName
 import ru.filit.motiv.app.R
+import ru.filit.motiv.app.fragments.InternetLostFragment
 import ru.filit.motiv.app.models.main.TariffDialogModelData
 import ru.filit.motiv.app.presenters.main.TariffConfirmationDialogPresenter
 import ru.filit.motiv.app.states.main.TariffDialogState
+import ru.filit.motiv.app.utils.ConnectivityReceiver
 import ru.filit.motiv.app.views.main.TariffConfirmationDialogView
 
 class TariffConfirmationDialogMVI(val data: TariffDialogModelData, private val reloadTrigger: BehaviorSubject<Int>? = null, val parentDialog: MyTariffAboutDialog? = null) :
     BaseBottomDialogMVI<TariffConfirmationDialogView, TariffDialogState, TariffConfirmationDialogPresenter>(),
     TariffConfirmationDialogView {
+
     override fun createPresenter() = TariffConfirmationDialogPresenter(context!!)
 
     override fun operationIntent(): Observable<String> {
@@ -94,6 +97,14 @@ class TariffConfirmationDialogMVI(val data: TariffDialogModelData, private val r
                 btnProcess.visibility = View.VISIBLE
                 progressBar.visibility = View.GONE
                 Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
+                dismiss()
+            }
+            is TariffDialogState.InternetState -> {
+                val fragment = InternetLostFragment()
+                activity!!.supportFragmentManager.beginTransaction()
+                    .addToBackStack("internetlost")
+                    .replace(R.id.container, fragment)
+                    .commit()
                 dismiss()
             }
         }

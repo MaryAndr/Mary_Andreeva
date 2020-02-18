@@ -11,6 +11,7 @@ import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
 import ru.filit.motiv.app.states.main.ServiceDialogState
 import ru.filit.motiv.app.views.main.ServiceConfirmationDialogView
 import retrofit2.HttpException
+import ru.filit.motiv.app.utils.isConnect
 import java.util.concurrent.TimeUnit
 
 class ServiceDialogPresenter(val context: Context) :
@@ -22,6 +23,9 @@ class ServiceDialogPresenter(val context: Context) :
         val operationIntent: Observable<ServiceDialogState> =
             intent(ServiceConfirmationDialogView::operationIntent)
                 .flatMap { model ->
+                    if (!isConnect(context)){
+                        return@flatMap Observable.just(ServiceDialogState.InternetState(false))
+                    }
                     if (!model.isConnection) {
                         SubscriberInteractor(context).subService.deleteService(model.serv_id)
                             .flatMap {

@@ -15,4 +15,6 @@ interface MinToGbView : MvpView {
     fun changeIndicatorIntent() : Observable<Int>
 
     fun render(state: MinToGbState)
+
+    fun checkInternetConnectivityIntent(): Observable<Boolean>
 }

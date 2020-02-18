@@ -13,4 +13,6 @@ sealed class MyTariffPartialState {
     data class CancelChange(val idService: String): MyTariffPartialState()
 
     object Loading : MyTariffPartialState()
+
+    data class InternetState(val active: Boolean): MyTariffPartialState()
 }

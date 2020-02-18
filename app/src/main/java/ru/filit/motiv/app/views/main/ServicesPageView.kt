@@ -15,4 +15,6 @@ interface ServicesPageView : MvpView {
     fun render(state: ServicesPartialState)
 
     fun cancelChangeServiceIntent (): Observable<Boolean>
+
+    fun checkInternetConnectivityIntent(): Observable<Boolean>
 }

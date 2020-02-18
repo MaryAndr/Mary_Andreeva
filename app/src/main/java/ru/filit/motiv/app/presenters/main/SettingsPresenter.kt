@@ -7,6 +7,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
 import ru.filit.motiv.app.states.main.SettingsState
+import ru.filit.motiv.app.utils.isConnect
 import ru.filit.motiv.app.views.main.SettingsView
 
 class SettingsPresenter(val ctx: Context) : MviBasePresenter<SettingsView, SettingsState>() {
@@ -18,6 +19,9 @@ class SettingsPresenter(val ctx: Context) : MviBasePresenter<SettingsView, Setti
         val fetchMainData: Observable<SettingsState> =
             intent(SettingsView::mainDataLoadingIntent)
                 .flatMap {
+                    if (!isConnect(ctx)){
+                        return@flatMap Observable.just(SettingsState.InternetState(active = false))
+                    }
                     subService.getSettingsMainData()
                         .map<SettingsState> {
                             SettingsState.MainDataLoaded(it)
@@ -33,8 +37,12 @@ class SettingsPresenter(val ctx: Context) : MviBasePresenter<SettingsView, Setti
                         Observable.just(SettingsState.LogOut)
                     }.subscribeOn(Schedulers.io())
                 }
+        val changeInternetConnectionIntent: Observable<SettingsState> =
+            intent (SettingsView::checkInternetConnectivityIntent).flatMap {
+                Observable.just(SettingsState.InternetState(it))
+            }
 
-        val allIntents = Observable.merge(fetchMainData, logoutIntent)
+        val allIntents = Observable.merge(fetchMainData, logoutIntent, changeInternetConnectionIntent)
             .observeOn(AndroidSchedulers.mainThread())
 
         subscribeViewState(allIntents, SettingsView::render)

@@ -7,7 +7,7 @@ import ru.filit.motiv.app.states.SplashScreenState
 
 interface SplashScreenView : MvpView {
 
-    fun checkInternetConnectivityIntent(): Observable<Int>
+    fun checkInternetConnectivityIntent(): Observable<Boolean>
 
     fun render(state: SplashScreenState)
 }

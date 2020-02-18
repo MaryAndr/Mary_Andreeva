@@ -13,6 +13,7 @@ import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
 import ru.filit.motiv.app.states.main.ServiceDialogState
 import ru.filit.motiv.app.states.main.ServicesPartialState
 import ru.filit.motiv.app.states.main.ServicesState
+import ru.filit.motiv.app.utils.isConnect
 import ru.filit.motiv.app.views.main.ServicesPageView
 import java.util.concurrent.TimeUnit
 
@@ -24,6 +25,9 @@ class   ServicesPresenter (val ctx: Context) : MviBasePresenter<ServicesPageView
         val fetchEnabledServicesIntent : Observable<ServicesPartialState> =
             intent(ServicesPageView::showEnabledServiceIntent)
                 .switchMap { isExistOnSub ->
+                    if (!isConnect(ctx = ctx)){
+                        return@switchMap Observable.just(ServicesPartialState.InternetState(false))
+                    }
                 subService.getEnabledServices(isExistOnSub).subscribeOn(Schedulers.io())
                     .flatMap {it.sortByDescending{servicesListShow -> servicesListShow.price}
                            if (isExistOnSub) {
@@ -49,11 +53,19 @@ class   ServicesPresenter (val ctx: Context) : MviBasePresenter<ServicesPageView
             intent (ServicesPageView::cancelChangeServiceIntent)
                 .flatMap {model-> Observable.just(ServicesPartialState.CancelChange(model) as ServicesPartialState)}
 
+        val changeInternetIntent: Observable<ServicesPartialState> =
+            intent (ServicesPageView::checkInternetConnectivityIntent).flatMap {
+
+                Observable.just(ServicesPartialState.InternetState(it))
+            }
+
 
         val allIntents:Observable<ServicesPartialState> =
-           Observable.merge(fetchEnabledServicesIntent
-                    ,changeServiceIntent
-                    ,cancelChange)
+           Observable.merge(
+               fetchEnabledServicesIntent
+               ,changeServiceIntent
+               ,cancelChange
+               ,changeInternetIntent)
             .observeOn(AndroidSchedulers.mainThread())
 
         subscribeViewState(allIntents, ServicesPageView::render)

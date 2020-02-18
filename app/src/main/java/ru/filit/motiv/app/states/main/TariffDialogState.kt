@@ -8,4 +8,5 @@ sealed class TariffDialogState {
 
     object Loading : TariffDialogState()
 
+    data class InternetState(val active: Boolean): TariffDialogState()
 }

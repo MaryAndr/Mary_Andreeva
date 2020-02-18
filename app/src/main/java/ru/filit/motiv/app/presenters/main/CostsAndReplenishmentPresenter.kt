@@ -13,6 +13,7 @@ import ru.filit.motiv.app.states.main.CostAndReplenishmentPartialState
 import ru.filit.motiv.app.states.main.CostAndReplenishmentState
 import ru.filit.motiv.app.views.main.CostAndReplenishmentView
 import retrofit2.HttpException
+import java.util.concurrent.TimeUnit
 
 class CostsAndReplenishmentPresenter(val ctx: Context) :
     MviBasePresenter<CostAndReplenishmentView, CostAndReplenishmentState>() {
@@ -63,6 +64,10 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
                         CostAndReplenishmentPartialState.ShowErrorState(errMessage)
                     }
                 }
+        val checkInternetIntent: Observable<CostAndReplenishmentPartialState> =
+            intent (CostAndReplenishmentView::checkInternetConnectivityIntent).flatMap {
+                Observable.just(CostAndReplenishmentPartialState.InternetState(it))
+            }
 
 
         val initialState = CostAndReplenishmentState(
@@ -71,15 +76,17 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
             errorText = null,
             replenishmentDataLoaded = false,
             replenishmentData = null,
-            loading = false
-        )
+            loading = false,
+            connectionResume = false,
+            connectionLost = false
+            )
+        val partialIntents =Observable.merge(mainDataLoadIntent, checkInternetIntent)
 
         val allIntents = Observable.merge(
-            mainDataLoadIntent,
+            partialIntents,
             costsShownIntent,
             replenishmentShownIntent,
-            replenishmentDataShownIntent
-        )
+            replenishmentDataShownIntent)
             .observeOn(AndroidSchedulers.mainThread())
 
         val stateObservable = allIntents.scan(initialState, this::viewStateReducer)
@@ -150,6 +157,17 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
                 previousState.costsShown = false
                 previousState.mainDataLoaded = false
                 previousState.replenishmentShown = false
+                return previousState
+            }
+            is CostAndReplenishmentPartialState.InternetState -> {
+                previousState.loading = false
+                previousState.errorShown = false
+                previousState.replenishmentDataLoaded = false
+                previousState.costsShown = false
+                previousState.mainDataLoaded = false
+                previousState.replenishmentShown = false
+                previousState.connectionLost = !changes.active
+                previousState.connectionResume = changes.active
                 return previousState
             }
         }

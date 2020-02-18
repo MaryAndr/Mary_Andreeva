@@ -9,4 +9,6 @@ interface ChangeTariffView : MvpView {
     fun showMainDataIntent() : Observable<Int>
 
     fun render(state: ChangeTariffState)
+
+    fun checkInternetConnectivityIntent(): Observable<Boolean>
 }

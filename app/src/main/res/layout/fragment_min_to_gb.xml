@@ -254,4 +254,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/constraintLayout" />
+
+    <include
+        android:id="@+id/no_internet_view"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/no_internet_layout" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,4 +16,5 @@ sealed class MinToGbState {
 
     object Loading: MinToGbState()
 
+    data class InternetState(val active: Boolean): MinToGbState()
 }
