@@ -4,18 +4,23 @@ import android.content.Context
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import ru.filit.motiv.app.states.SplashScreenState
+import ru.filit.motiv.app.utils.getNetworkStatus
 import ru.filit.motiv.app.views.SplashScreenView
+import java.util.concurrent.TimeUnit
 
 class SplashScreenPresenter(val ctx : Context) : MviBasePresenter<SplashScreenView, SplashScreenState> (){
 
     override fun bindIntents() {
 
         val splashScreenState : Observable<SplashScreenState> = intent(SplashScreenView::checkInternetConnectivityIntent)
-            .flatMap {
-                Observable.just(SplashScreenState.InternetState(it) as SplashScreenState)
-                .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .debounce(400, TimeUnit.MILLISECONDS)
+            .switchMap{
+                getNetworkStatus(ctx)
             }
+            .observeOn(AndroidSchedulers.mainThread())
 
         subscribeViewState(splashScreenState, SplashScreenView :: render)
     }

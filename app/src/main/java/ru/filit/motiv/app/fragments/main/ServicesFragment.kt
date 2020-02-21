@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -49,7 +50,6 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
     override fun checkInternetConnectivityIntent(): Observable<Boolean> {
         return networkAvailabilityTrigger
     }
-
     override fun createPresenter() = ServicesPresenter(context!!)
 
     private lateinit var service:ServicesListShow
@@ -102,10 +102,6 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                 no_internet_view.visibility = View.GONE
                 allServicesList.setAdapter(allServicesListAdapter)
                 allServicesListAdapter.setData(items)
-                /*servicesList.layoutManager = LinearLayoutManager(context!!)
-                servicesList.adapter = enabledServicesAdapter
-                enabledServicesAdapter.setData(items)
-                (servicesList.adapter as EnabledServicesAdapter).notifyDataSetChanged()*/
             }
             is ServicesPartialState.Loading -> {
                 allServicesLayout.visibility = View.GONE
@@ -154,8 +150,9 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                     no_internet_view.visibility = View.VISIBLE
                 }
             }
-
-
+            is ServicesPartialState.ShowErrorMessage -> {
+                Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -213,6 +210,7 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
             dataToPass.activationPrice = service.activPrice
             dataToPass.abonPay = service.subFee
             dataToPass.conDate = TimeUtils().dateToString(Calendar.getInstance())
+            dataToPass.interval = service.interval
             val dialog = ServiceConfirmationDialogMVI.newInstance(dataToPass)
             dialog.setTargetFragment(this,Constants.REQUEST_CODE_SERVICE)
             dialog.show(

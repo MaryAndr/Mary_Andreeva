@@ -114,11 +114,6 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
         return view
     }
 
-    override fun onStart() {
-        super.onStart()
-
-    }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 

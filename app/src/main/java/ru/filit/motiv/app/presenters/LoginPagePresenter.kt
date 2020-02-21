@@ -22,10 +22,10 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
         val authorizeIntent: Observable<LoginPagePartialState> =
             intent(LoginPageView::authorizeIntent)
                 .flatMap { authData ->
-                    UserInteractor(ctx = ctx).completeAuthorization(authData, ctx)
+                    UserInteractor(ctx = ctx).completeAuthorization(authData)
                         .startWith(LoginPagePartialState.Loading)
                         .onErrorResumeNext { error: Throwable ->
-                            var errMessage = error.localizedMessage
+                            var errMessage = "Произошла обшибка при попытке подключения. Повторите попытку позже."
                             if (error is HttpException) {
 
                                 errMessage = if (error.code() == 409) {

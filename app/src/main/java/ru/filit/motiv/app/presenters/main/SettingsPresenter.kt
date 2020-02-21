@@ -23,9 +23,6 @@ class SettingsPresenter(val ctx: Context) : MviBasePresenter<SettingsView, Setti
                         return@flatMap Observable.just(SettingsState.InternetState(active = false))
                     }
                     subService.getSettingsMainData()
-                        .map<SettingsState> {
-                            SettingsState.MainDataLoaded(it)
-                        }
                         .subscribeOn(Schedulers.io())
                 }
                 .startWith (SettingsState.Loading)

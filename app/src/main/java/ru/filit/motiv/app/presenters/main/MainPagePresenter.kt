@@ -22,7 +22,6 @@ class MainPagePresenter(val ctx: Context) :
             intent(MainPageView::preLoadIntent)
                 .flatMap {
                     subService.preLoadData()
-                        .onErrorReturn {MainPagePartialState.ShowErrorMessage(it.message) }
                         .startWith(
                             MainPagePartialState.Loading
                         ).subscribeOn(Schedulers.io())

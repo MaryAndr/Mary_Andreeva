@@ -12,4 +12,6 @@ sealed class SettingsState {
 
     data class InternetState(val active: Boolean): SettingsState()
 
+    data class ShowErrorMessage( val message: String): SettingsState()
+
 }

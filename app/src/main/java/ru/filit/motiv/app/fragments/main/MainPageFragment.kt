@@ -218,13 +218,13 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 tvSmsTotalAmount.text = "SMS"
             }
         }
-        if (pbInternet.visibility == View.INVISIBLE && pbPhone.visibility == View.INVISIBLE && pbSms.visibility == View.INVISIBLE) {
+        /*if (pbInternet.visibility == View.INVISIBLE && pbPhone.visibility == View.INVISIBLE && pbSms.visibility == View.INVISIBLE) {
             dataView.layoutParams.height = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 240f,
                 resources.displayMetrics
             ).toInt()
-        }
+        }*/
         if (indicatorHolder.isEmpty()) {
             dataView.layoutParams.height = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,

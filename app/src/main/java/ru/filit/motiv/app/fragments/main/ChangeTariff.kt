@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.FragmentActivity
@@ -79,6 +80,9 @@ class ChangeTariff : MviFragment<ChangeTariffView, ChangeTariffPresenter>(), Cha
                     mainDataView.visibility = View.GONE
                     no_internet_view.visibility = View.VISIBLE
                 }
+            }
+            is ChangeTariffState.ShowErrorMessage -> {
+                Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
             }
         }
     }

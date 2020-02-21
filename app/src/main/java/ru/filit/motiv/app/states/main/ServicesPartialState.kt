@@ -18,4 +18,6 @@ sealed class ServicesPartialState {
     object LoadingChangeService : ServicesPartialState()
 
     data class InternetState(val active: Boolean): ServicesPartialState()
+
+    data class ShowErrorMessage (val message: String): ServicesPartialState()
 }

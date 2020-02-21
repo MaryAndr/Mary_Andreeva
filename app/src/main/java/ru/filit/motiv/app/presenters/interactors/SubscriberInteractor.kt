@@ -3,11 +3,13 @@ package ru.filit.motiv.app.presenters.interactors
 import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log
+import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import io.reactivex.functions.Function4
 import io.reactivex.functions.Function5
+import retrofit2.HttpException
 import ru.filit.motiv.app.api.AuthServices
 import ru.filit.motiv.app.api.SubscriberServices
 import ru.filit.motiv.app.models.*
@@ -16,6 +18,7 @@ import ru.filit.motiv.app.models.main.*
 import ru.filit.motiv.app.states.main.*
 import ru.filit.motiv.app.utils.*
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class SubscriberInteractor(val ctx: Context) {
 
@@ -28,6 +31,8 @@ class SubscriberInteractor(val ctx: Context) {
         AuthServices.create(ctx)
     }
 
+    val gson = Gson()
+
     private val mapOfRegions =
         mapOf(
             0 to "СврдО",
@@ -36,25 +41,21 @@ class SubscriberInteractor(val ctx: Context) {
             5 to "ЯНАО"
         )
 
-    fun getSettingsMainData(): Observable<SettingsDataModel> {
+    fun getSettingsMainData(): Observable<SettingsState> {
 
-        val subInfo = subService.subscriberInfo().onErrorReturn {
-            null
-        }
+        val subInfo = subService.subscriberInfo()
 
-        val subStatus = subService.subscriberStatus().onErrorReturn {
-            null
-        }
+        val subStatus = subService.subscriberStatus().onErrorReturn { null }
 
 
         return Observable.combineLatest(
             subInfo,
             subStatus,
-            BiFunction { subInfoResponse, subStatusResponse ->
+            BiFunction<SubscriberInfoResponse, SubscriberStatusResponse, Observable<SettingsState>> { subInfoResponse, subStatusResponse ->
                 val contract = if (subInfoResponse.contract_date != null) {
                     "${subInfoResponse.contract_number} от ${subInfoResponse.contract_date}"
                 } else {
-                    "${subInfoResponse.contract_number}"
+                    subInfoResponse.contract_number
                 }
 
                 val dataModel = SettingsDataModel(
@@ -65,28 +66,34 @@ class SubscriberInteractor(val ctx: Context) {
                     contract,
                     subInfoResponse.region.name
                 )
-                dataModel
-            })
+                Observable.just(SettingsState.MainDataLoaded(dataModel))
+            }).flatMap { it }.onErrorReturn { error->
+            if (error is HttpException) {
+                val errorBody = error.response()!!.errorBody()
+                val adapter =
+                    gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                val errorObj = adapter.fromJson(errorBody!!.string())
+                SettingsState.ShowErrorMessage(errorObj.error_description)
+            }else {
+                SettingsState.ShowErrorMessage("Что-то пошло не так, возможно у вас пропало интернет соединение.")
+            }
+        }.retry()
 
     }
 
 
     fun getTariffs(): Observable<ChangeTariffState> {
-        val subTariff = subService.getSubTariff().onErrorReturn {
-            null
-        }
+        val subTariff = subService.getSubTariff()
 
-        val subAvalTariff = subService.getAvailableTariffs().onErrorReturn {
-            mutableListOf()
-        }
+        val subAvalTariff = subService.getAvailableTariffs()
 
-        val subServices = subService.getServicesList().onErrorReturn { mutableListOf() }
+        val subServices = subService.getServicesList()
 
         return Observable.combineLatest(
             subTariff,
             subAvalTariff,
             subServices,
-            Function3 { subTariffResp, subAvalTariffResp, subServicesResponse ->
+            Function3<TariffResponse, List<AvailableTariffs>, List<ServicesListResponse>, Observable<ChangeTariffState>> { subTariffResp, subAvalTariffResp, subServicesResponse ->
 
                 val currentTariff = TariffShow()
                 var allTariffsInfo: CatalogTariffResponse? = null
@@ -196,7 +203,7 @@ class SubscriberInteractor(val ctx: Context) {
                         changeTariffMainData.add(curTariff)
                     }
                     Observable.just(ChangeTariffState.MainDataLoaded(changeTariffMainData))
-                }.blockingFirst()
+                }
 
 //                currentTariff.id = subTariffResp.tariff.id.toString()
 //                currentTariff.category =
@@ -218,28 +225,36 @@ class SubscriberInteractor(val ctx: Context) {
 
 
             }
-        )
+        ).flatMap { it }.onErrorReturn { error->
+            if (error is HttpException) {
+                val errorBody = error.response()!!.errorBody()
+                val adapter =
+                    gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                val errorObj = adapter.fromJson(errorBody!!.string())
+                ChangeTariffState.ShowErrorMessage(errorObj.error_description)
+            }else {
+                ChangeTariffState.ShowErrorMessage("Что-то пошло не так, возможно у вас пропало интернет соединение.")
+            }
+        }.retry()
 
     }
 
-    fun getEnabledServices(isExist: Boolean): Observable<MutableList<ServicesListShow>> {
-        val subInfo = subService.getSubInfo().onErrorReturn {
-            null
-        }
+    fun getEnabledServices(isExist: Boolean):  Observable<ServicesPartialState> {
+        val subInfo = subService.getSubInfo()
 
-        val subServices = subService.getServicesList().onErrorReturn { mutableListOf() }
+        val subServices = subService.getServicesList()
 
         val subAllService = if (isExist) {
             Observable.just(mutableListOf<ServicesListResponse>())
         } else {
-            subService.getAllServicesList().onErrorReturn { mutableListOf() }
+            subService.getAllServicesList()
         }
 
         return Observable.combineLatest(
             subInfo,
             subServices,
             subAllService,
-            Function3 { subInfoResponse, subServiceResponse, subAllServiceResponse ->
+            Function3<SubInfoResponse, List<ServicesListResponse>, List<ServicesListResponse>, Observable<MutableList<ServicesListShow>>> { subInfoResponse, subServiceResponse, subAllServiceResponse ->
 
                 val servicesList: MutableList<ServicesListShow> = mutableListOf()
 
@@ -332,9 +347,27 @@ class SubscriberInteractor(val ctx: Context) {
                     servicesList
                 }.subscribe()
 
-                servicesList
-            })
+                Observable.just(servicesList)
+            }).flatMap {it}
+            .flatMap {it.sortByDescending{servicesListShow -> servicesListShow.price}
+                if (isExist) {
 
+                    Observable.just(ServicesPartialState.FetchEnabledService(it))
+                } else {
+                    Observable.just(ServicesPartialState.FetchAllService(it))
+                }
+
+        }.onErrorReturn { error->
+                if (error is HttpException) {
+                    val errorBody = error.response()!!.errorBody()
+                    val adapter =
+                        gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                    val errorObj = adapter.fromJson(errorBody!!.string())
+                    ServicesPartialState.ShowErrorMessage(errorObj.error_description)
+                }else {
+                    ServicesPartialState.ShowErrorMessage("Что-то пошло не так, возможно у вас пропало интернет соединение.")
+                }
+            }.retry()
     }
 
 
@@ -342,21 +375,16 @@ class SubscriberInteractor(val ctx: Context) {
         if (!isConnect(ctx)){
             return Observable.just(MyTariffPartialState.InternetState(false))
         }
-        val subTariff = subService.getSubTariff().onErrorReturn {
-            null
-        }
+        val subTariff = subService.getSubTariff()
 
-        val subInfo = subService.getSubInfo().onErrorReturn {
-            null
-        }
+        val subInfo = subService.getSubInfo()
 
         val subRemains = subService.getSubRemains().onErrorReturn {
-            mutableListOf()
+            listOf<RemainsResponse>()
         }
 
-        val transHistory = subService.getTransferedHistory().onErrorReturn {
-            mutableListOf()
-        }
+        val transHistory = subService.getTransferedHistory().onErrorReturn { listOf() }
+
         val exchangeInfo = subService.getExchangeInfo()
 
 //        subTariff.flatMap { subTariffResponse ->
@@ -378,7 +406,7 @@ class SubscriberInteractor(val ctx: Context) {
             transHistory,
             subRemains,
             exchangeInfo,
-            Function5 { subTariffResponse, subInfoResponse, transHistoryResponse, subRemainsResponse, exResponse ->
+            Function5<TariffResponse, SubInfoResponse, List<TransferredHistoryResponse>, List<RemainsResponse>, ExchangeResponse, Observable<MyTariffPartialState>> { subTariffResponse, subInfoResponse, transHistoryResponse, subRemainsResponse, exResponse ->
                 val mainData = MyTariffMainData(subTariffResponse)
                 mainData.exchangeInfo = exResponse
                 userService.getCatalogTariff(subTariffResponse.tariff.id.toString()).flatMap {
@@ -389,7 +417,7 @@ class SubscriberInteractor(val ctx: Context) {
                     mainData
                 }.blockingFirst()
 
-                subService.getServicesList().subscribe { list ->
+                subService.getServicesList().subscribe ({ list ->
                     mainData.servicesListOriginal = list
                     userService.getCatalogService(
                         list.joinToString { it.id.toString() },
@@ -423,7 +451,8 @@ class SubscriberInteractor(val ctx: Context) {
                         mainData.servicesList = mutableListOf()
                         mainData
                     }.blockingFirst()
-                }
+
+                },{error->MyTariffPartialState.ShowErrorMessage(error.localizedMessage)})
 
                 mainData.indicatorHolder = calculateIndicators(null, subRemainsResponse, null)
                 mainData.indicatorModels =
@@ -433,8 +462,18 @@ class SubscriberInteractor(val ctx: Context) {
                         transHistoryResponse
                     )
 
-                MyTariffPartialState.MainDataLoadedState(mainData)
-            })
+                Observable.just(MyTariffPartialState.MainDataLoadedState(mainData))
+            }).flatMap { it }.onErrorReturn { error->
+            if (error is HttpException) {
+                val errorBody = error.response()!!.errorBody()
+                val adapter =
+                    gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                val errorObj = adapter.fromJson(errorBody!!.string())
+                MyTariffPartialState.ShowErrorMessage(errorObj.error_description)
+            }else {
+                MyTariffPartialState.ShowErrorMessage("Что-то пошло не так, возможно у вас пропало интернет соединение.")
+            }
+        }.retry()
 
     }
 
@@ -523,35 +562,37 @@ class SubscriberInteractor(val ctx: Context) {
         if (!isConnect(ctx = ctx)){
             return Observable.just(CostAndReplenishmentPartialState.InternetState(false))
         }
-        val subInfo = subService.getSubInfo().onErrorReturn {
-            null
-        }
+        val subInfo = subService.getSubInfo()
 
-        val subBalance = subService.getSubBalance().onErrorReturn {
-            null
-        }
+        val subBalance = subService.getSubBalance()
 
-        val subTariff = subService.getSubTariff().onErrorReturn {
-            null
-        }
+        val subTariff = subService.getSubTariff()
 
-        val subServices = subService.getAllServicesList().onErrorReturn {
-            mutableListOf()
-        }
+        val subServices = subService.getAllServicesList()
 
         return Observable.combineLatest(
             subInfo,
             subTariff,
             subBalance,
             subServices,
-            Function4 { subInfo, subT, subBal, subServiceResponse ->
+            Function4<SubInfoResponse, TariffResponse,SubBalanceResponse, List<ServicesListResponse>, Observable<CostAndReplenishmentPartialState>> {subInfo, subT, subBal, subServiceResponse ->
                 val accumData = MainPagaAccumData()
                 accumData.tariffData = subT
                 accumData.phoneNumber = subInfo.msisdn
                 accumData.balance = subBal.value
                 accumData.isDetalization = subServiceResponse.any { it.id == 1322 }
-                CostAndReplenishmentPartialState.ShowMainDataState(accumData)
-            })
+                Observable.just(CostAndReplenishmentPartialState.ShowMainDataState(accumData) as CostAndReplenishmentPartialState)
+            }).flatMap { it }.onErrorReturn { error->
+            if (error is HttpException) {
+                val errorBody = error.response()!!.errorBody()
+                val adapter =
+                    gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                val errorObj = adapter.fromJson(errorBody!!.string())
+                CostAndReplenishmentPartialState.ShowErrorState(errorObj.error_description)
+            }else {
+                CostAndReplenishmentPartialState.ShowErrorState("Что-то пошло не так, возможно у вас пропало интернет соединение.")
+            }
+        }.retry()
 
     }
 
@@ -561,21 +602,13 @@ class SubscriberInteractor(val ctx: Context) {
             return Observable.just(MainPagePartialState.InternetState(false))
         }
 
-        val subInfo = subService.getSubInfo().onErrorReturn {
-            null
-        }
+        val subInfo = subService.getSubInfo()
 
-        val subTariff = subService.getSubTariff().onErrorReturn {
-            null
-        }
+        val subTariff = subService.getSubTariff()
 
-        val subBalance = subService.getSubBalance().onErrorReturn {
-            null
-        }
+        val subBalance = subService.getSubBalance()
 
-        val subRemains = subService.getSubRemains().onErrorReturn {
-            mutableListOf()
-        }
+        val subRemains = subService.getSubRemains().onErrorReturn { listOf() }
 
         val exchangeInfo = subService.getExchangeInfo()
 
@@ -586,7 +619,7 @@ class SubscriberInteractor(val ctx: Context) {
             subBalance,
             subRemains,
             exchangeInfo,
-            Function5 { subInfo, subT, subBal, subRem, subEx ->
+            Function5<SubInfoResponse,TariffResponse, SubBalanceResponse, List<RemainsResponse>,ExchangeResponse, Observable<MainPagePartialState>> { subInfo, subT, subBal, subRem, subEx ->
                 val accumData = MainPagaAccumData()
                 accumData.subExchange = subEx
                 accumData.phoneNumber = subInfo.msisdn
@@ -602,16 +635,26 @@ class SubscriberInteractor(val ctx: Context) {
                     userService.getCatalogTariff(subT.tariff.id.toString()).flatMap { catTar ->
                         Log.d("DEBUG", "HERE")
                         accumData.indicatorHolder = calculateIndicators(subT, subRem, catTar)
-                        Observable.just(MainPagePartialState.ShowDataState(accumData))
+                       Observable.just(MainPagePartialState.ShowDataState(accumData) as MainPagePartialState)
                     }.onErrorReturn {
                         accumData.indicatorHolder = calculateIndicators(subT, subRem, null)
-                        MainPagePartialState.ShowDataState(accumData)
-                    }.blockingFirst()
+                        MainPagePartialState.ShowDataState(accumData)as MainPagePartialState
+                    }
                 } else {
                     accumData.indicatorHolder = calculateIndicators(subT, subRem, null)
-                    MainPagePartialState.ShowDataState(accumData)
+                    Observable.just(MainPagePartialState.ShowDataState(accumData))
                 }
-            })
+            }).flatMap { it }.onErrorReturn { error->
+            if (error is HttpException) {
+                val errorBody = error.response()!!.errorBody()
+                val adapter =
+                    gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                val errorObj = adapter.fromJson(errorBody!!.string())
+                MainPagePartialState.ShowErrorMessage(errorObj.error_description)
+            }else {
+                MainPagePartialState.ShowErrorMessage("Что-то пошло не так, возможно у вас пропало интернет соединение.")
+            }
+        }.retry()
 
     }
 

@@ -18,21 +18,14 @@ import ru.filit.motiv.app.utils.ConnectivityReceiver
 import ru.filit.motiv.app.utils.isConnect
 import ru.filit.motiv.app.views.SplashScreenView
 
-class SplashScreen : MviActivity<SplashScreenView,SplashScreenPresenter>(), SplashScreenView, ConnectivityReceiver.ConnectivityReceiverListener {
+class SplashScreen : MviActivity<SplashScreenView,SplashScreenPresenter>(), SplashScreenView {
 
     override fun createPresenter() = SplashScreenPresenter(this)
 
     private lateinit var networkAvailabilityTrigger : BehaviorSubject<Boolean>
-    private val connectivityReceiver = ConnectivityReceiver()
 
     override fun checkInternetConnectivityIntent(): Observable<Boolean> {
        return networkAvailabilityTrigger
-    }
-
-    override fun onNetworkConnectionChanged(isConnected: Boolean) {
-        if (isConnected) {
-            networkAvailabilityTrigger.onNext(true)
-        }
     }
 
     override fun render(state: SplashScreenState) {
@@ -60,18 +53,15 @@ class SplashScreen : MviActivity<SplashScreenView,SplashScreenPresenter>(), Spla
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
         networkAvailabilityTrigger = BehaviorSubject.createDefault(isConnect(this))
-        registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
 
 
     }
 
     override fun onResume() {
         super.onResume()
-        ConnectivityReceiver.connectivityReceiverListener = this
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(connectivityReceiver)
     }
 }

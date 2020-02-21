@@ -14,7 +14,7 @@
         android:layout_height="280dp"
         android:layout_marginTop="54dp"
         android:background="@drawable/ultimate_path"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
@@ -152,7 +152,8 @@
                     android:layout_weight="0.1"
                     android:max="100"
                     android:progress="50"
-                    android:progressDrawable="@drawable/tariff_progress_bar" />
+                    android:progressDrawable="@drawable/tariff_progress_bar"
+                    tools:visibility="invisible" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -199,7 +200,8 @@
                     android:layout_weight="0.1"
                     android:max="100"
                     android:progress="80"
-                    android:progressDrawable="@drawable/tariff_progress_bar" />
+                    android:progressDrawable="@drawable/tariff_progress_bar"
+                    tools:visibility="invisible" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -220,7 +222,7 @@
 
                     <TextView
                         android:id="@+id/tvVoiceTotalAmount"
-                        android:layout_width="wrap_content"
+                        android:layout_width="59dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|left"
 
@@ -248,7 +250,8 @@
 
                     android:max="100"
                     android:progress="50"
-                    android:progressDrawable="@drawable/tariff_progress_bar" />
+                    android:progressDrawable="@drawable/tariff_progress_bar"
+                    tools:visibility="invisible" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"

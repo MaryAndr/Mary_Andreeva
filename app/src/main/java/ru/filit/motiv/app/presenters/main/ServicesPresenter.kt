@@ -5,14 +5,8 @@ import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import retrofit2.HttpException
-import ru.filit.motiv.app.models.ErrorJson
-import ru.filit.motiv.app.models.main.ServicesListShow
-import ru.filit.motiv.app.models.main.ToggleButtonState
 import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
-import ru.filit.motiv.app.states.main.ServiceDialogState
 import ru.filit.motiv.app.states.main.ServicesPartialState
-import ru.filit.motiv.app.states.main.ServicesState
 import ru.filit.motiv.app.utils.isConnect
 import ru.filit.motiv.app.views.main.ServicesPageView
 import java.util.concurrent.TimeUnit
@@ -29,14 +23,7 @@ class   ServicesPresenter (val ctx: Context) : MviBasePresenter<ServicesPageView
                         return@switchMap Observable.just(ServicesPartialState.InternetState(false))
                     }
                 subService.getEnabledServices(isExistOnSub).subscribeOn(Schedulers.io())
-                    .flatMap {it.sortByDescending{servicesListShow -> servicesListShow.price}
-                           if (isExistOnSub) {
-
-                                Observable.just(ServicesPartialState.FetchEnabledService(it))
-                        } else {
-                            Observable.just(ServicesPartialState.FetchAllService(it))
-                        }
-                    }.startWith(
+                    .startWith(
                         ServicesPartialState.Loading
                     )
             }
@@ -53,7 +40,7 @@ class   ServicesPresenter (val ctx: Context) : MviBasePresenter<ServicesPageView
             intent (ServicesPageView::cancelChangeServiceIntent)
                 .flatMap {model-> Observable.just(ServicesPartialState.CancelChange(model) as ServicesPartialState)}
 
-        val changeInternetIntent: Observable<ServicesPartialState> =
+        val changeInternetConnectionIntent: Observable<ServicesPartialState> =
             intent (ServicesPageView::checkInternetConnectivityIntent).flatMap {
 
                 Observable.just(ServicesPartialState.InternetState(it))
@@ -65,7 +52,7 @@ class   ServicesPresenter (val ctx: Context) : MviBasePresenter<ServicesPageView
                fetchEnabledServicesIntent
                ,changeServiceIntent
                ,cancelChange
-               ,changeInternetIntent)
+               ,changeInternetConnectionIntent)
             .observeOn(AndroidSchedulers.mainThread())
 
         subscribeViewState(allIntents, ServicesPageView::render)
