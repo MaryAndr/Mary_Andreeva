@@ -28,7 +28,7 @@ import ru.filit.motiv.app.views.main.CostsEmailView
 import ru.slybeaver.slycalendarview.SlyCalendarDialog
 
 
-class CostsEmailFragment :
+class CostsEmailFragment (private val phoneNumber: String, private val costDetalization: Double) :
     MviFragment<CostsEmailView, CostsEmailPresenter>(),
     CostsEmailView , ConnectivityReceiver.ConnectivityReceiverListener {
 
@@ -55,21 +55,15 @@ class CostsEmailFragment :
     override fun render(state: CostsEmailState) {
         when(state) {
             is CostsEmailState.MsisdnShown -> {
-                group.visibility = View.VISIBLE
-                pgCostEmail.visibility = View.GONE
-                tvPhoneNumber.text = TextConverter().getFormattedPhone(state.msisdn)
+                tvPhoneNumber.text = TextConverter().getFormattedPhone(phoneNumber)
                 tvPeriod.text = state.defPeriod
-                costs_service.text = "Стоимость услуги - ${state.costsDetalization.toInt()} руб"
+                costs_service.text = "Стоимость услуги - $costDetalization руб"
             }
+
             is CostsEmailState.ErrorShown -> {
                 group.visibility = View.VISIBLE
                 pgCostEmail.visibility = View.GONE
                 layoutTextInputEnterEmail.error = state.error
-            }
-            is CostsEmailState.Loading -> {
-                group.visibility = View.GONE
-                pgCostEmail.visibility = View.VISIBLE
-
             }
             is CostsEmailState.EmailSent ->{
                 group.visibility = View.VISIBLE
@@ -82,6 +76,7 @@ class CostsEmailFragment :
                     .create()
                     .show()
             }
+
             is CostsEmailState.InternetState -> {
                 if (state.active){
                     no_internet_view.visibility = View.GONE
@@ -102,17 +97,17 @@ class CostsEmailFragment :
         (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_backbutton_black)
-        var tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
+        val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         activity!!.nav_view.visibility = View.INVISIBLE
         tvTitle.setTextColor(resources.getColor(R.color.black))
         tvTitle.text = "Заказать детализацию"
-        msisdnLoadTrigger.onNext(1)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         msisdnLoadTrigger = BehaviorSubject.create()
         networkAvailabilityTrigger = BehaviorSubject.create()
+        msisdnLoadTrigger.onNext(1)
         activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 
@@ -144,5 +139,15 @@ class CostsEmailFragment :
     override fun onDestroy() {
         super.onDestroy()
         activity!!.unregisterReceiver(connectivityReceiver)
+    }
+
+    private fun setVisibility(visibility: Int) {
+        costs_service.visibility = visibility
+        btnSend.visibility = visibility
+        layoutTextInputEnterEmail.visibility = visibility
+        view2.visibility = visibility
+        viewCalendar.visibility = visibility
+        textView7.visibility = visibility
+        tvPhoneNumber.visibility = visibility
     }
 }

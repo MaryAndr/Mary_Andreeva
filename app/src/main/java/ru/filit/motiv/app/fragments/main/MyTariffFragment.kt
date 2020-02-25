@@ -344,20 +344,17 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         cancelChange = BehaviorSubject.create()
         networkAvailabilityTrigger = BehaviorSubject.create()
         activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-        (activity as AppCompatActivity).supportActionBar!!.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.costs)))
-        (activity as AppCompatActivity).supportActionBar!!.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
-        (activity as AppCompatActivity).supportActionBar!!.setCustomView(R.layout.abs_layout)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        ConnectivityReceiver.connectivityReceiverListener = this
         (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         activity!!.nav_view.visibility = View.VISIBLE
         val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         tvTitle.setTextColor(resources.getColor(R.color.black))
         tvTitle.text = "Мой Тариф"
-    }
-
-    override fun onResume() {
-        super.onResume()
-        ConnectivityReceiver.connectivityReceiverListener = this
     }
 
     override fun onCreateView(

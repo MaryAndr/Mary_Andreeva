@@ -157,6 +157,14 @@ class CostsAndReplenishment :
         if (state.mainData!!.isDetalization) {
             tvDesc.text = getString(R.string.isDetalDescText)
             btOrderDetails.visibility = View.VISIBLE
+            btOrderDetails.setOnClickListener {
+
+                val fr = CostsEmailFragment(state.mainData?.phoneNumber!!, state.mainData?.costDetalization!!)
+                val fm = fragmentManager
+                val fragmentTransaction = fm!!.beginTransaction().addToBackStack("costsAndRep")
+                fragmentTransaction.replace(R.id.container, fr)
+                fragmentTransaction.commit()
+            }
         } else {
             tvDesc.text = getString(R.string.isNotDetalDescText)
             btOrderDetails.visibility = View.GONE
@@ -174,19 +182,16 @@ class CostsAndReplenishment :
         networkAvailabilityTrigger = BehaviorSubject.create()
         networkAvailabilityTrigger = BehaviorSubject.create()
         activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-        (activity as AppCompatActivity).supportActionBar!!.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.costs)))
-        (activity as AppCompatActivity).supportActionBar!!.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
-        (activity as AppCompatActivity).supportActionBar!!.setCustomView(R.layout.abs_layout)
-        (activity as AppCompatActivity).supportActionBar?.show()
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        activity!!.nav_view.visibility = View.VISIBLE
-        val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
-        tvTitle.setTextColor(resources.getColor(R.color.black))
-        tvTitle.text = "Расходы"
     }
 
     override fun onResume() {
         super.onResume()
+        (activity as AppCompatActivity).supportActionBar?.show()
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
+        tvTitle.setTextColor(resources.getColor(R.color.black))
+        tvTitle.text = "Расходы"
+        activity!!.nav_view.visibility = View.VISIBLE
         ConnectivityReceiver.connectivityReceiverListener = this
         showCostsTrigger.onNext(1)
 
@@ -208,19 +213,6 @@ class CostsAndReplenishment :
         tvRepPeriod.text = TimeUtils().returnPeriodMinusThreeMonth()
 //        activity!!.nav_view.visibility = View.GONE
         mainDataLoadTrigger.onNext(1)
-        btOrderDetails.setOnClickListener {
-
-            val fr = CostsEmailFragment()
-            val fm = fragmentManager
-            val fragmentTransaction = fm!!.beginTransaction().addToBackStack("costsAndRep")
-            fragmentTransaction.replace(R.id.container, fr)
-            fragmentTransaction.commit()
-//            SlyCalendarDialog()
-//                .setSingle(false)
-//                .setFirstMonday(false)
-//                .setCallback(CalendarView())
-//                .show(activity!!.supportFragmentManager, "TAG_SLYCALENDAR")
-        }
 
         costsAndReplenishmentGroup.setOnCheckedChangeListener { _, checkedId ->
             val radio: RadioButton = view.findViewById(checkedId)

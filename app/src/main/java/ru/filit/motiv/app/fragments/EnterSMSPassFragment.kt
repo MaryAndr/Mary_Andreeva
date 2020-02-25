@@ -56,6 +56,8 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
                 layoutTextInputEnterPassSms.error = ""
                 Log.d("Auth intent", "TRIGGERED")
                 val intent = Intent (activity, MainPageActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 activity?.startActivity(intent)
             }
             state.showTimer -> {

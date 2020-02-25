@@ -240,13 +240,13 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         preLoadTrigger = BehaviorSubject.create()
         networkAvailabilityTrigger = BehaviorSubject.create()
         activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
 
     override fun onResume() {
         super.onResume()
         activity!!.nav_view.visibility = View.VISIBLE
+        (activity as AppCompatActivity).supportActionBar?.hide()
         ConnectivityReceiver.connectivityReceiverListener = this
     }
 
