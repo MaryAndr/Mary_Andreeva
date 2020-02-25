@@ -42,7 +42,7 @@ class MinToGbPresenter(val ctx: Context) :
                     .subscribeOn(Schedulers.io())
                     .flatMap {
                         Observable.just(MinToGbState.Exchanged("Обмен Мин на ГБ успешно произведен") as MinToGbState)
-                            .delay (5000, TimeUnit.MILLISECONDS)
+                            .delay (3000, TimeUnit.MILLISECONDS)
                             .startWith(MinToGbState.Loading)
                     }.onErrorReturn { error: Throwable ->
                         var errMessage = error.localizedMessage

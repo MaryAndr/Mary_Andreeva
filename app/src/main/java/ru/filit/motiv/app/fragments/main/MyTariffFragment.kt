@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Paint
+import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat.getSystemService
@@ -236,9 +238,9 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
     }
 
     private fun renderNewIndicators(indicatorsModel: IndicatorsModel) {
-        val indicatorSMS = indicatorsModel.smsIndicators.filter{it.rest!=0&&it.total!=0}.toMutableList()
-        val indicatorVoice =indicatorsModel.voiceIndicators.filter{it.rest!=0&&it.total!=0}.toMutableList()
-        val indicatorData = indicatorsModel.dataIndicators.filter{it.rest!=0&&it.total!=0}.toMutableList()
+        val indicatorSMS = indicatorsModel.smsIndicators
+        val indicatorVoice =indicatorsModel.voiceIndicators
+        val indicatorData = indicatorsModel.dataIndicators
 
         if (indicatorData.size > 0) {
             dataRecyclerView.layoutManager = LinearLayoutManager(context!!)
@@ -342,17 +344,20 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         cancelChange = BehaviorSubject.create()
         networkAvailabilityTrigger = BehaviorSubject.create()
         activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-    }
-
-    override fun onResume() {
-        super.onResume()
-        ConnectivityReceiver.connectivityReceiverListener = this
+        (activity as AppCompatActivity).supportActionBar!!.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.costs)))
+        (activity as AppCompatActivity).supportActionBar!!.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
+        (activity as AppCompatActivity).supportActionBar!!.setCustomView(R.layout.abs_layout)
         (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         activity!!.nav_view.visibility = View.VISIBLE
         val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         tvTitle.setTextColor(resources.getColor(R.color.black))
         tvTitle.text = "Мой Тариф"
+    }
+
+    override fun onResume() {
+        super.onResume()
+        ConnectivityReceiver.connectivityReceiverListener = this
     }
 
     override fun onCreateView(

@@ -37,6 +37,7 @@ class HelpFragment: MviFragment<HelpView, HelpPresenter>(), HelpView{
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.setShowHideAnimationEnabled(true)
         (activity as AppCompatActivity).supportActionBar?.hide()
         version_app.text = "${resources.getText(R.string.version_app)} ${BuildConfig.VERSION_NAME}"
     }

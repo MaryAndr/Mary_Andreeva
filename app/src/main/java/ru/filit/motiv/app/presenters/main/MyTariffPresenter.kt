@@ -31,7 +31,7 @@ class MyTariffPresenter(val ctx: Context) :
             intent (MyTariffView::changeServiceIntent)
                 .flatMap {
                     Observable.just(MyTariffPartialState.ChangeAvailableService(it) as MyTariffPartialState)
-                        .delay (5000, TimeUnit.MILLISECONDS)
+                        .delay (3000, TimeUnit.MILLISECONDS)
                         .startWith(MyTariffPartialState.Loading)
                 }
 

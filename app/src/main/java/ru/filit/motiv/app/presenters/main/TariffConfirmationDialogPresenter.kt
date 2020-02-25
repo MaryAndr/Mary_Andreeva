@@ -60,7 +60,7 @@ class TariffConfirmationDialogPresenter(val context: Context) :
 
 
     private fun delayTimer(): Observable<TariffDialogState> {
-        val start: Long = 10
+        val start: Long = 6
         return Observable.interval(0, 1, TimeUnit.SECONDS)
             .map { i -> start - i }
             .take(start + 1)

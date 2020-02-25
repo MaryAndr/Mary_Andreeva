@@ -32,7 +32,7 @@ class   ServicesPresenter (val ctx: Context) : MviBasePresenter<ServicesPageView
             intent (ServicesPageView::changeServiceIntent)
                 .flatMap {
                     Observable.just(ServicesPartialState.ChangeAvailableService(it) as ServicesPartialState)
-                        .delay (5000, TimeUnit.MILLISECONDS)
+                        .delay (3000, TimeUnit.MILLISECONDS)
                         .startWith(ServicesPartialState.LoadingChangeService)
                 }
 

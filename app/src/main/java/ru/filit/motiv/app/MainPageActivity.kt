@@ -69,6 +69,7 @@ class MainPageActivity : AppCompatActivity() {
         supportActionBar!!.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
         supportActionBar!!.setCustomView(R.layout.abs_layout)
 
+
         val fragment = MainPageFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, fragment, fragment.javaClass.getSimpleName())

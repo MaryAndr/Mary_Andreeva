@@ -85,9 +85,21 @@ class SubscriberInteractor(val ctx: Context) {
     fun getTariffs(): Observable<ChangeTariffState> {
         val subTariff = subService.getSubTariff()
 
-        val subAvalTariff = subService.getAvailableTariffs()
+        val subAvalTariff = subService.getAvailableTariffs().onErrorReturn {
+            if (it is HttpException && it.code() == 404) {
+                mutableListOf()
+            } else {
+                throw  it
+            }
+        }
 
-        val subServices = subService.getServicesList()
+        val subServices = subService.getServicesList().onErrorReturn {
+            if (it is HttpException && it.code() == 404) {
+                mutableListOf()
+            } else {
+                throw  it
+            }
+        }
 
         return Observable.combineLatest(
             subTariff,
@@ -247,7 +259,13 @@ class SubscriberInteractor(val ctx: Context) {
         val subAllService = if (isExist) {
             Observable.just(mutableListOf<ServicesListResponse>())
         } else {
-            subService.getAllServicesList()
+            subService.getAllServicesList().onErrorReturn {
+                if (it is HttpException && it.code() == 404) {
+                    mutableListOf()
+                } else {
+                    throw  it
+                }
+            }
         }
 
         return Observable.combineLatest(
@@ -380,10 +398,20 @@ class SubscriberInteractor(val ctx: Context) {
         val subInfo = subService.getSubInfo()
 
         val subRemains = subService.getSubRemains().onErrorReturn {
-            listOf<RemainsResponse>()
+            if (it is HttpException && it.code() == 404) {
+                mutableListOf()
+            } else {
+                throw  it
+            }
         }
 
-        val transHistory = subService.getTransferedHistory().onErrorReturn { listOf() }
+        val transHistory = subService.getTransferedHistory().onErrorReturn {
+            if (it is HttpException && it.code() == 404) {
+                mutableListOf()
+            } else {
+                throw  it
+            }
+        }
 
         val exchangeInfo = subService.getExchangeInfo()
 
@@ -674,9 +702,12 @@ class SubscriberInteractor(val ctx: Context) {
                     if (it.amount != null && it.amount > 0) {
                         val rest = it.amount
                         val total = it.amount
-                        val dueDate = it.due_date
+                        var dueDate = ""
+                        if (it.due_date != "2999-12-31") {
+                            dueDate = it.due_date
+                        }
                         val name = "Перенесенные остатки"
-                        var indicatorData = IndicatorHolder(
+                        val indicatorData = IndicatorHolder(
                             rest,
                             total,
                             100,
@@ -690,7 +721,10 @@ class SubscriberInteractor(val ctx: Context) {
                     if (it.exchange != null && it.exchange > 0) {
                         val rest = it.exchange.toInt()
                         val total = it.exchange.toInt()
-                        val dueDate = it.due_date
+                        var dueDate = ""
+                        if (it.due_date != "2999-12-31") {
+                            dueDate = it.due_date
+                        }
                         val name = "Обменные ГБ"
                         var indicatorData = IndicatorHolder(
                             rest,
@@ -709,7 +743,10 @@ class SubscriberInteractor(val ctx: Context) {
                     if (it.amount != null && it.amount > 0) {
                         val rest = it.amount
                         val total = it.amount
-                        val dueDate = it.due_date
+                        var dueDate = ""
+                        if (it.due_date != "2999-12-31") {
+                            dueDate = it.due_date
+                        }
                         val name = "Перенесенные остатки"
                         var indicatorData = IndicatorHolder(
                             rest,
@@ -726,8 +763,11 @@ class SubscriberInteractor(val ctx: Context) {
                         val rest = it.exchange.toInt()
                         val total = it.exchange.toInt()
                         val name = "Обменные Мин."
-                        val dueDate = it.due_date
-                        var indicatorData = IndicatorHolder(
+                        var dueDate = ""
+                        if (it.due_date != "2999-12-31") {
+                            dueDate = it.due_date
+                        }
+                        val indicatorData = IndicatorHolder(
                             rest,
                             total,
                             100,
@@ -745,7 +785,10 @@ class SubscriberInteractor(val ctx: Context) {
                         val rest = it.amount
                         val total = it.amount
                         val name = "Перенесенные остатки"
-                        val dueDate = it.due_date
+                        var dueDate = ""
+                        if (it.due_date != "2999-12-31") {
+                            dueDate = it.due_date
+                        }
                         var indicatorData = IndicatorHolder(
                             rest,
                             total,
@@ -761,12 +804,16 @@ class SubscriberInteractor(val ctx: Context) {
                         val rest = it.exchange.toInt()
                         val total = it.exchange.toInt()
                         val name = "Обменные SMS"
-                        val dueDate = it.due_date
+                        var dueDate = ""
+                        if (it.due_date != "2999-12-31") {
+                            dueDate = it.due_date
+                        }
                         var indicatorData = IndicatorHolder(
                             rest,
                             total,
                             100,
                             false,
+                            dueDate = dueDate,
                             optionsName = name,
                             type = "SMS"
                         )
@@ -793,8 +840,9 @@ class SubscriberInteractor(val ctx: Context) {
                     if (remain.due_date != "2999-12-31") {
                         dueDate = remain.due_date
                     }
-                    var indicatorData: IndicatorHolder?
-                    indicatorData = if (rest != 0 && total != 0) {
+
+                    if (rest != 0 || total != 0) {
+                        val indicatorData=
                         IndicatorHolder(
                             rest,
                             total,
@@ -802,22 +850,13 @@ class SubscriberInteractor(val ctx: Context) {
                             false, optionsName = name, dueDate = dueDate,
                             type = "DATA"
                         )
-                    } else {
-                        IndicatorHolder(
-                            rest,
-                            total,
-                            0,
-                            false,
-                            optionsName = name,
-                            dueDate = dueDate,
-                            type = "DATA"
-                        )
+                        dataIndicators.add(indicatorData)
                     }
-                    dataIndicators.add(indicatorData)
+
                 }
                 remain.type == "VOICE" -> {
-                    var rest = remain.rest_amount
-                    var total = remain.total_amount
+                    val rest:Int = remain.rest_amount
+                    val total:Int = remain.total_amount
                     var name = if (remain.services.primary) {
                         "По условиям тарифа"
                     } else {
@@ -827,26 +866,17 @@ class SubscriberInteractor(val ctx: Context) {
                     if (remain.due_date != "2999-12-31") {
                         dueDate = remain.due_date
                     }
-                    var indicatorData: IndicatorHolder?
-                    indicatorData = if (rest != 0 && total != 0) {
-                        IndicatorHolder(
-                            rest,
-                            total,
-                            MathUtils().calculatePercent(rest, total),
-                            false, optionsName = name, dueDate = dueDate, type = "VOICE"
-                        )
-                    } else {
-                        IndicatorHolder(
-                            rest,
-                            total,
-                            0,
-                            false,
-                            optionsName = name,
-                            dueDate = dueDate,
-                            type = "VOICE"
-                        )
+                    if (rest != 0 || total != 0) {
+                        val indicatorData=
+                            IndicatorHolder(
+                                rest,
+                                total,
+                                MathUtils().calculatePercent(rest, total),
+                                false, optionsName = name, dueDate = dueDate,
+                                type = "VOICE"
+                            )
+                        voiceIndicators.add(indicatorData)
                     }
-                    voiceIndicators.add(indicatorData)
                 }
                 remain.type == "SMS" -> {
                     var rest = remain.rest_amount
@@ -861,26 +891,17 @@ class SubscriberInteractor(val ctx: Context) {
                         dueDate = remain.due_date
                     }
 
-                    var indicatorData: IndicatorHolder?
-                    indicatorData = if (rest != 0 && total != 0) {
-                        IndicatorHolder(
-                            rest,
-                            total,
-                            MathUtils().calculatePercent(rest, total),
-                            false, optionsName = name, dueDate = dueDate, type = "SMS"
-                        )
-                    } else {
-                        IndicatorHolder(
-                            rest,
-                            total,
-                            0,
-                            false,
-                            optionsName = name,
-                            dueDate = dueDate,
-                            type = "SMS"
-                        )
+                    if (rest != 0 || total != 0) {
+                        val indicatorData =
+                            IndicatorHolder(
+                                rest,
+                                total,
+                                MathUtils().calculatePercent(rest, total),
+                                false, optionsName = name, dueDate = dueDate,
+                                type = "SMS"
+                            )
+                        smsIndicators.add(indicatorData)
                     }
-                    smsIndicators.add(indicatorData)
                 }
             }
 
