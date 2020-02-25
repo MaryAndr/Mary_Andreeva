@@ -9,4 +9,6 @@ sealed class MainPagePartialState {
     data class ShowErrorMessage(val error: String?) : MainPagePartialState()
 
     object Loading : MainPagePartialState()
+
+    data class InternetState(val active: Boolean): MainPagePartialState()
 }

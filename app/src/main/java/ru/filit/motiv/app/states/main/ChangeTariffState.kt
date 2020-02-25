@@ -8,4 +8,8 @@ sealed class ChangeTariffState : BaseDialogState {
 
     object Loading : ChangeTariffState()
 
+    data class InternetState(val active: Boolean): ChangeTariffState()
+
+    data class ShowErrorMessage(val message:String): ChangeTariffState()
+
 }

@@ -31,7 +31,7 @@ class MyTariffPresenter(val ctx: Context) :
             intent (MyTariffView::changeServiceIntent)
                 .flatMap {
                     Observable.just(MyTariffPartialState.ChangeAvailableService(it) as MyTariffPartialState)
-                        .delay (5000, TimeUnit.MILLISECONDS)
+                        .delay (3000, TimeUnit.MILLISECONDS)
                         .startWith(MyTariffPartialState.Loading)
                 }
 
@@ -39,13 +39,18 @@ class MyTariffPresenter(val ctx: Context) :
             intent (MyTariffView::cancelChangeServiceIntent)
                 .flatMap {model-> Observable.just(MyTariffPartialState.CancelChange(model) as MyTariffPartialState)}
 
-        val initialState = MyTariffState(false, null, false, null, false, false,null)
+        val changeInternetConnectivity: Observable<MyTariffPartialState> =
+            intent ( MyTariffView::checkInternetConnectivityIntent )
+                .flatMap {Observable.just(MyTariffPartialState.InternetState(it))}
+
+        val initialState = MyTariffState(false, null, false, null, false, false,null, connectionLost = false, connectionResume = false)
 
 
         val allIntents = Observable.merge(
             mainDataLoadIntent
             ,cancelChange
-            ,changeServiceIntent)
+            ,changeServiceIntent,
+            changeInternetConnectivity)
             .observeOn(AndroidSchedulers.mainThread())
 
         val stateObservable = allIntents.scan(initialState, this::viewStateReducer)
@@ -101,6 +106,17 @@ class MyTariffPresenter(val ctx: Context) :
                 previousState.changeService = false
                 previousState.changeServiceMessage = null
                 previousState.mainData?.servicesList?.forEach{if (it.id==changes.idService)it.toggleState =ToggleButtonState.ActiveAndEnabled}
+                return previousState
+            }
+            is MyTariffPartialState.InternetState -> {
+                previousState.changeService = false
+                previousState.loading = false
+                previousState.errorShown = false
+                previousState.mainDataLoaded = false
+                previousState.mainData = null
+                previousState.changeServiceMessage = null
+                previousState.connectionLost = !changes.active
+                previousState.connectionResume = changes.active
                 return previousState
             }
         }

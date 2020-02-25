@@ -12,6 +12,7 @@ import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
 import ru.filit.motiv.app.states.main.TariffDialogState
 import ru.filit.motiv.app.views.main.TariffConfirmationDialogView
 import retrofit2.HttpException
+import ru.filit.motiv.app.utils.isConnect
 import java.util.concurrent.TimeUnit
 
 class TariffConfirmationDialogPresenter(val context: Context) :
@@ -23,6 +24,9 @@ class TariffConfirmationDialogPresenter(val context: Context) :
         val operationIntent: Observable<TariffDialogState> =
             intent(TariffConfirmationDialogView::operationIntent)
                 .flatMap { model ->
+                    if (!isConnect(context)){
+                        return@flatMap Observable.just(TariffDialogState.InternetState(false))
+                    }
                     SubscriberInteractor(context).subService.changeTariff(TariffChangeRequest(model))
                         .map<TariffDialogState> {
                             TariffDialogState.Loading
@@ -56,7 +60,7 @@ class TariffConfirmationDialogPresenter(val context: Context) :
 
 
     private fun delayTimer(): Observable<TariffDialogState> {
-        val start: Long = 10
+        val start: Long = 6
         return Observable.interval(0, 1, TimeUnit.SECONDS)
             .map { i -> start - i }
             .take(start + 1)

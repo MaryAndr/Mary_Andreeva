@@ -17,4 +17,6 @@ sealed class CostAndReplenishmentPartialState {
 
     data class ShowReplenishmentData(val payments: List<SubPaymentsResponse>) : CostAndReplenishmentPartialState()
 
+    data class InternetState(val active: Boolean): CostAndReplenishmentPartialState()
+
 }

@@ -4,11 +4,14 @@ package ru.filit.motiv.app.fragments.main
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,6 +31,7 @@ import ru.filit.motiv.app.models.main.ServiceDialogModel
 import ru.filit.motiv.app.models.main.ServicesListShow
 import ru.filit.motiv.app.presenters.main.ServicesPresenter
 import ru.filit.motiv.app.states.main.ServicesPartialState
+import ru.filit.motiv.app.utils.ConnectivityReceiver
 import ru.filit.motiv.app.utils.Constants
 import ru.filit.motiv.app.utils.TimeUtils
 import ru.filit.motiv.app.views.main.ServicesPageView
@@ -36,8 +40,16 @@ import java.util.*
 /**
  * A simple [Fragment] subclass.
  */
-class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), ServicesPageView, OnServiceToggleChangeListener {
+class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), ServicesPageView, OnServiceToggleChangeListener, ConnectivityReceiver.ConnectivityReceiverListener{
 
+
+    private val connectivityReceiver = ConnectivityReceiver()
+
+    private lateinit var networkAvailabilityTrigger : BehaviorSubject<Boolean>
+
+    override fun checkInternetConnectivityIntent(): Observable<Boolean> {
+        return networkAvailabilityTrigger
+    }
     override fun createPresenter() = ServicesPresenter(context!!)
 
     private lateinit var service:ServicesListShow
@@ -70,6 +82,7 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                   addedServicesLayout.visibility = View.VISIBLE
                   servicesGroup.visibility = View.VISIBLE
                   pgChangeService.visibility = View.GONE
+                  no_internet_view.visibility = View.GONE
                 allButton.isChecked = false
                 activeButton.isChecked = true
                   items = state.servicesList
@@ -86,12 +99,9 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                 allButton.isChecked = true
                 activeButton.isChecked = false
                 items = state.servicesList
+                no_internet_view.visibility = View.GONE
                 allServicesList.setAdapter(allServicesListAdapter)
                 allServicesListAdapter.setData(items)
-                /*servicesList.layoutManager = LinearLayoutManager(context!!)
-                servicesList.adapter = enabledServicesAdapter
-                enabledServicesAdapter.setData(items)
-                (servicesList.adapter as EnabledServicesAdapter).notifyDataSetChanged()*/
             }
             is ServicesPartialState.Loading -> {
                 allServicesLayout.visibility = View.GONE
@@ -99,6 +109,7 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                 pgData.visibility = View.VISIBLE
                 servicesGroup.visibility = View.VISIBLE
                 pgChangeService.visibility = View.GONE
+                no_internet_view.visibility = View.GONE
             }
 
             is ServicesPartialState.LoadingChangeService -> {
@@ -106,6 +117,7 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                 addedServicesLayout.visibility = View.GONE
                 servicesGroup.visibility = View.GONE
                 pgData.visibility = View.GONE
+                no_internet_view.visibility = View.GONE
                 pgChangeService.visibility = View.VISIBLE
             }
 
@@ -126,11 +138,27 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                   enabledServicesAdapter.cancelChanges(servicePosition)
               }else {allServicesListAdapter.setData(items)}
             }
+            is ServicesPartialState.InternetState -> {
+                if (state.active){
+                    changeRadioGroup.onNext(true)
+                }else {
+                    allServicesLayout.visibility = View.GONE
+                    addedServicesLayout.visibility = View.GONE
+                    servicesGroup.visibility = View.GONE
+                    pgData.visibility = View.GONE
+                    pgChangeService.visibility = View.GONE
+                    no_internet_view.visibility = View.VISIBLE
+                }
+            }
+            is ServicesPartialState.ShowErrorMessage -> {
+                Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+            }
         }
     }
 
     override fun onResume() {
         super.onResume()
+        ConnectivityReceiver.connectivityReceiverListener = this
         (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_backbutton_black)
@@ -145,6 +173,8 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
         triggerChangeService = BehaviorSubject.create()
         changeRadioGroup = BehaviorSubject.create()
         cancelChange = BehaviorSubject.create()
+        networkAvailabilityTrigger = BehaviorSubject.create()
+        activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         allServicesListAdapter = ExpandableServiceAdapter( onToggleChangeListener = this)
         enabledServicesAdapter =EnabledServicesAdapter(onToggleChangeListener = this)
         RxJavaPlugins.setErrorHandler { throwable ->
@@ -180,6 +210,7 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
             dataToPass.activationPrice = service.activPrice
             dataToPass.abonPay = service.subFee
             dataToPass.conDate = TimeUtils().dateToString(Calendar.getInstance())
+            dataToPass.interval = service.interval
             val dialog = ServiceConfirmationDialogMVI.newInstance(dataToPass)
             dialog.setTargetFragment(this,Constants.REQUEST_CODE_SERVICE)
             dialog.show(
@@ -202,5 +233,16 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
 
     override fun cancelChangeServiceIntent(): Observable<Boolean> {
         return cancelChange
+    }
+
+    override fun onNetworkConnectionChanged(isConnected: Boolean) {
+        if (isConnected) {
+            networkAvailabilityTrigger.onNext(true)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        activity!!.unregisterReceiver(connectivityReceiver)
     }
 }

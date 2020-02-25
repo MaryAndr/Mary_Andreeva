@@ -21,8 +21,7 @@ class UserInteractor(val ctx: Context) {
     }
 
     fun completeAuthorization(
-        authData: AuthModel,
-        ctx: Context
+        authData: AuthModel
     ): Observable<LoginPagePartialState> {
         return when {
             authData.username.length < 10 -> Observable.just(LoginPagePartialState.ErrorState("Введите корректный номер телефона"))
@@ -54,7 +53,7 @@ class UserInteractor(val ctx: Context) {
         }
     }
 
-    fun smsAuthorization(authData: AuthModel, ctx: Context): Observable<EnterSMSPagePartialState> {
+    fun smsAuthorization(authData: AuthModel): Observable<EnterSMSPagePartialState> {
         return when {
             authData.password.isBlank() -> Observable.just(EnterSMSPagePartialState.ErrorState("Пароль не может быть пустым"))
             else -> userService.auth(

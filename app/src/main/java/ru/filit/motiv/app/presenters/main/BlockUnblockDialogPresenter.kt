@@ -12,6 +12,7 @@ import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
 import ru.filit.motiv.app.states.main.BlockUnblockDialogState
 import ru.filit.motiv.app.views.main.BlockUnblockDialogView
 import retrofit2.HttpException
+import ru.filit.motiv.app.utils.isConnect
 
 class BlockUnblockDialogPresenter(val ctx: Context) :
     MviBasePresenter<BlockUnblockDialogView, BlockUnblockDialogState>() {
@@ -23,6 +24,9 @@ class BlockUnblockDialogPresenter(val ctx: Context) :
         val processRequestIntent: Observable<BlockUnblockDialogState> =
             intent(BlockUnblockDialogView::processIntent)
                 .flatMap {
+                    if (!isConnect(ctx= ctx)){
+                        return@flatMap Observable.just(BlockUnblockDialogState.InternetState(false))
+                    }
                     val request = BlockUnblockRequest()
                     if (it.isBlock) {
                         request.block = "true"

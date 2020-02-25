@@ -7,6 +7,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
 import ru.filit.motiv.app.states.main.ChangeTariffState
+import ru.filit.motiv.app.utils.isConnect
 import ru.filit.motiv.app.views.main.ChangeTariffView
 
 class ChangeTariffPresenter(val ctx: Context) :
@@ -17,11 +18,19 @@ class ChangeTariffPresenter(val ctx: Context) :
     override fun bindIntents() {
         val mainDataIntent: Observable<ChangeTariffState> =
             intent(ChangeTariffView::showMainDataIntent).flatMap {
+                if (!isConnect(ctx)){
+                    return@flatMap Observable.just(ChangeTariffState.InternetState(false))
+                }
                 subService.getTariffs()
                     .startWith(ChangeTariffState.Loading)
                     .subscribeOn(Schedulers.io())
             }
-        val allIntents = mainDataIntent
+
+        val changeInternetConnectionIntent: Observable<ChangeTariffState> =
+            intent (ChangeTariffView::checkInternetConnectivityIntent).flatMap {
+                Observable.just(ChangeTariffState.InternetState(it))
+            }
+        val allIntents = Observable.merge(mainDataIntent, changeInternetConnectionIntent)
             .observeOn(AndroidSchedulers.mainThread())
 
 

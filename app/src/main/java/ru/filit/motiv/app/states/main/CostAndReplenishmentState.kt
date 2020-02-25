@@ -12,5 +12,7 @@ data class CostAndReplenishmentState (
     var errorText: String? = null,
     var replenishmentDataLoaded: Boolean,
     var replenishmentData: List<SubPaymentsResponse>? = null,
-    var loading: Boolean
+    var loading: Boolean,
+    var connectionLost: Boolean,
+    var connectionResume: Boolean
 )

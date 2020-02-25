@@ -9,5 +9,6 @@ data class ServiceDialogModel(
     var abonPay: String? = null,
     var conDate: String? = null,
     var isConnection: Boolean = true,
-    var itemHolder: Any? = null
+    var itemHolder: Any? = null,
+    var interval: String? = null
 )

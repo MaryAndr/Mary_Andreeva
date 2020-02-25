@@ -17,16 +17,19 @@ import ru.filit.motiv.app.R
 import ru.filit.motiv.app.adapters.ExpandableServiceAdapter
 import ru.filit.motiv.app.adapters.ServicesViewHolder
 import ru.filit.motiv.app.adapters.ViewHolder
+import ru.filit.motiv.app.fragments.InternetLostFragment
 import ru.filit.motiv.app.models.main.ServiceDialogModel
 import ru.filit.motiv.app.presenters.main.ServiceDialogPresenter
 import ru.filit.motiv.app.states.main.ServiceDialogState
+import ru.filit.motiv.app.utils.ConnectivityReceiver
 import ru.filit.motiv.app.utils.Constants
 import ru.filit.motiv.app.views.main.ServiceConfirmationDialogView
 
 
 class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
     BaseBottomDialogMVI<ServiceConfirmationDialogView, ServiceDialogState, ServiceDialogPresenter>(),
-    ServiceConfirmationDialogView {
+    ServiceConfirmationDialogView{
+
 
     override fun createPresenter() = ServiceDialogPresenter(context!!)
 
@@ -54,6 +57,14 @@ class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
             is ServiceDialogState.ErrorShown -> {
                 Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
             }
+            is ServiceDialogState.InternetState -> {
+                val fragment = InternetLostFragment()
+                activity!!.supportFragmentManager.beginTransaction()
+                    .addToBackStack("internetlost")
+                    .replace(R.id.container, fragment)
+                    .commit()
+                dismiss()
+            }
         }
     }
 
@@ -75,8 +86,12 @@ class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
         tvConDateValue.text = data.conDate
 
         tvCostValue.text = data.activationPrice?.substringBefore(".0") + resources.getString(R.string.rub_value)
-        tvAbonValue.text = data.abonPay?.substringBefore(".0") + resources.getString(R.string.rub_value)
-
+        if (data.abonPay!=null&&!data.abonPay!!.contains("0.0")) {
+            tvAbonValue.text =
+                data.abonPay?.substringBefore(".0") + resources.getString(R.string.rub_value) + "/${data.interval}"
+        }else{
+            abonLayout.visibility = View.GONE
+        }
         ivClose.setOnClickListener {
             val intent = activity?.intent
             intent?.putExtra(Constants.SERVICE_ID, data.serv_id)

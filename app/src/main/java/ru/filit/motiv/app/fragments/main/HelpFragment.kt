@@ -87,5 +87,4 @@ class HelpFragment: MviFragment<HelpView, HelpPresenter>(), HelpView{
         intent.setData(Uri.parse(uri))
         startActivity(intent)
     }
-
 }

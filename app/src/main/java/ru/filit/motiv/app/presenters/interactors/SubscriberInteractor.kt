@@ -1,12 +1,15 @@
 package ru.filit.motiv.app.presenters.interactors
 
 import android.content.Context
+import android.net.ConnectivityManager
 import android.util.Log
+import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import io.reactivex.functions.Function4
 import io.reactivex.functions.Function5
+import retrofit2.HttpException
 import ru.filit.motiv.app.api.AuthServices
 import ru.filit.motiv.app.api.SubscriberServices
 import ru.filit.motiv.app.models.*
@@ -15,8 +18,9 @@ import ru.filit.motiv.app.models.main.*
 import ru.filit.motiv.app.states.main.*
 import ru.filit.motiv.app.utils.*
 import java.util.*
+import java.util.concurrent.TimeUnit
 
-class SubscriberInteractor(ctx: Context) {
+class SubscriberInteractor(val ctx: Context) {
 
 
     val subService by lazy {
@@ -27,6 +31,8 @@ class SubscriberInteractor(ctx: Context) {
         AuthServices.create(ctx)
     }
 
+    val gson = Gson()
+
     private val mapOfRegions =
         mapOf(
             0 to "СврдО",
@@ -35,25 +41,21 @@ class SubscriberInteractor(ctx: Context) {
             5 to "ЯНАО"
         )
 
-    fun getSettingsMainData(): Observable<SettingsDataModel> {
+    fun getSettingsMainData(): Observable<SettingsState> {
 
-        val subInfo = subService.subscriberInfo().onErrorReturn {
-            null
-        }
+        val subInfo = subService.subscriberInfo()
 
-        val subStatus = subService.subscriberStatus().onErrorReturn {
-            null
-        }
+        val subStatus = subService.subscriberStatus().onErrorReturn { null }
 
 
         return Observable.combineLatest(
             subInfo,
             subStatus,
-            BiFunction { subInfoResponse, subStatusResponse ->
+            BiFunction<SubscriberInfoResponse, SubscriberStatusResponse, Observable<SettingsState>> { subInfoResponse, subStatusResponse ->
                 val contract = if (subInfoResponse.contract_date != null) {
                     "${subInfoResponse.contract_number} от ${subInfoResponse.contract_date}"
                 } else {
-                    "${subInfoResponse.contract_number}"
+                    subInfoResponse.contract_number
                 }
 
                 val dataModel = SettingsDataModel(
@@ -64,28 +66,46 @@ class SubscriberInteractor(ctx: Context) {
                     contract,
                     subInfoResponse.region.name
                 )
-                dataModel
-            })
+                Observable.just(SettingsState.MainDataLoaded(dataModel))
+            }).flatMap { it }.onErrorReturn { error->
+            if (error is HttpException) {
+                val errorBody = error.response()!!.errorBody()
+                val adapter =
+                    gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                val errorObj = adapter.fromJson(errorBody!!.string())
+                SettingsState.ShowErrorMessage(errorObj.error_description)
+            }else {
+                SettingsState.ShowErrorMessage("Что-то пошло не так, возможно у вас пропало интернет соединение.")
+            }
+        }.retry()
 
     }
 
 
     fun getTariffs(): Observable<ChangeTariffState> {
-        val subTariff = subService.getSubTariff().onErrorReturn {
-            null
-        }
+        val subTariff = subService.getSubTariff()
 
         val subAvalTariff = subService.getAvailableTariffs().onErrorReturn {
-            mutableListOf()
+            if (it is HttpException && it.code() == 404) {
+                mutableListOf()
+            } else {
+                throw  it
+            }
         }
 
-        val subServices = subService.getServicesList().onErrorReturn { mutableListOf() }
+        val subServices = subService.getServicesList().onErrorReturn {
+            if (it is HttpException && it.code() == 404) {
+                mutableListOf()
+            } else {
+                throw  it
+            }
+        }
 
         return Observable.combineLatest(
             subTariff,
             subAvalTariff,
             subServices,
-            Function3 { subTariffResp, subAvalTariffResp, subServicesResponse ->
+            Function3<TariffResponse, List<AvailableTariffs>, List<ServicesListResponse>, Observable<ChangeTariffState>> { subTariffResp, subAvalTariffResp, subServicesResponse ->
 
                 val currentTariff = TariffShow()
                 var allTariffsInfo: CatalogTariffResponse? = null
@@ -195,7 +215,7 @@ class SubscriberInteractor(ctx: Context) {
                         changeTariffMainData.add(curTariff)
                     }
                     Observable.just(ChangeTariffState.MainDataLoaded(changeTariffMainData))
-                }.blockingFirst()
+                }
 
 //                currentTariff.id = subTariffResp.tariff.id.toString()
 //                currentTariff.category =
@@ -217,28 +237,42 @@ class SubscriberInteractor(ctx: Context) {
 
 
             }
-        )
+        ).flatMap { it }.onErrorReturn { error->
+            if (error is HttpException) {
+                val errorBody = error.response()!!.errorBody()
+                val adapter =
+                    gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                val errorObj = adapter.fromJson(errorBody!!.string())
+                ChangeTariffState.ShowErrorMessage(errorObj.error_description)
+            }else {
+                ChangeTariffState.ShowErrorMessage("Что-то пошло не так, возможно у вас пропало интернет соединение.")
+            }
+        }.retry()
 
     }
 
-    fun getEnabledServices(isExist: Boolean): Observable<MutableList<ServicesListShow>> {
-        val subInfo = subService.getSubInfo().onErrorReturn {
-            null
-        }
+    fun getEnabledServices(isExist: Boolean):  Observable<ServicesPartialState> {
+        val subInfo = subService.getSubInfo()
 
-        val subServices = subService.getServicesList().onErrorReturn { mutableListOf() }
+        val subServices = subService.getServicesList()
 
         val subAllService = if (isExist) {
             Observable.just(mutableListOf<ServicesListResponse>())
         } else {
-            subService.getAllServicesList().onErrorReturn { mutableListOf() }
+            subService.getAllServicesList().onErrorReturn {
+                if (it is HttpException && it.code() == 404) {
+                    mutableListOf()
+                } else {
+                    throw  it
+                }
+            }
         }
 
         return Observable.combineLatest(
             subInfo,
             subServices,
             subAllService,
-            Function3 { subInfoResponse, subServiceResponse, subAllServiceResponse ->
+            Function3<SubInfoResponse, List<ServicesListResponse>, List<ServicesListResponse>, Observable<MutableList<ServicesListShow>>> { subInfoResponse, subServiceResponse, subAllServiceResponse ->
 
                 val servicesList: MutableList<ServicesListShow> = mutableListOf()
 
@@ -331,28 +365,54 @@ class SubscriberInteractor(ctx: Context) {
                     servicesList
                 }.subscribe()
 
-                servicesList
-            })
+                Observable.just(servicesList)
+            }).flatMap {it}
+            .flatMap {it.sortByDescending{servicesListShow -> servicesListShow.price}
+                if (isExist) {
 
+                    Observable.just(ServicesPartialState.FetchEnabledService(it))
+                } else {
+                    Observable.just(ServicesPartialState.FetchAllService(it))
+                }
+
+        }.onErrorReturn { error->
+                if (error is HttpException) {
+                    val errorBody = error.response()!!.errorBody()
+                    val adapter =
+                        gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                    val errorObj = adapter.fromJson(errorBody!!.string())
+                    ServicesPartialState.ShowErrorMessage(errorObj.error_description)
+                }else {
+                    ServicesPartialState.ShowErrorMessage("Что-то пошло не так, возможно у вас пропало интернет соединение.")
+                }
+            }.retry()
     }
 
 
     fun getMyTariffMainData(): Observable<MyTariffPartialState> {
-        val subTariff = subService.getSubTariff().onErrorReturn {
-            null
+        if (!isConnect(ctx)){
+            return Observable.just(MyTariffPartialState.InternetState(false))
         }
+        val subTariff = subService.getSubTariff()
 
-        val subInfo = subService.getSubInfo().onErrorReturn {
-            null
-        }
+        val subInfo = subService.getSubInfo()
 
         val subRemains = subService.getSubRemains().onErrorReturn {
-            mutableListOf()
+            if (it is HttpException && it.code() == 404) {
+                mutableListOf()
+            } else {
+                throw  it
+            }
         }
 
         val transHistory = subService.getTransferedHistory().onErrorReturn {
-            mutableListOf()
+            if (it is HttpException && it.code() == 404) {
+                mutableListOf()
+            } else {
+                throw  it
+            }
         }
+
         val exchangeInfo = subService.getExchangeInfo()
 
 //        subTariff.flatMap { subTariffResponse ->
@@ -374,7 +434,7 @@ class SubscriberInteractor(ctx: Context) {
             transHistory,
             subRemains,
             exchangeInfo,
-            Function5 { subTariffResponse, subInfoResponse, transHistoryResponse, subRemainsResponse, exResponse ->
+            Function5<TariffResponse, SubInfoResponse, List<TransferredHistoryResponse>, List<RemainsResponse>, ExchangeResponse, Observable<MyTariffPartialState>> { subTariffResponse, subInfoResponse, transHistoryResponse, subRemainsResponse, exResponse ->
                 val mainData = MyTariffMainData(subTariffResponse)
                 mainData.exchangeInfo = exResponse
                 userService.getCatalogTariff(subTariffResponse.tariff.id.toString()).flatMap {
@@ -385,7 +445,7 @@ class SubscriberInteractor(ctx: Context) {
                     mainData
                 }.blockingFirst()
 
-                subService.getServicesList().subscribe { list ->
+                subService.getServicesList().subscribe ({ list ->
                     mainData.servicesListOriginal = list
                     userService.getCatalogService(
                         list.joinToString { it.id.toString() },
@@ -405,7 +465,7 @@ class SubscriberInteractor(ctx: Context) {
                             }else{ serviceShow.toggleState = ToggleButtonState.ActiveAndDisabled}
                             serviceShow.interval = when(list.firstOrNull{pred->
                                 pred.id == it.id}?.interval?.type){
-                                "day" -> "день"
+                                "day" -> "сутки"
                                 "month" -> "месяц"
                                 else -> "подключение"
                             }
@@ -419,7 +479,8 @@ class SubscriberInteractor(ctx: Context) {
                         mainData.servicesList = mutableListOf()
                         mainData
                     }.blockingFirst()
-                }
+
+                },{error->MyTariffPartialState.ShowErrorMessage(error.localizedMessage)})
 
                 mainData.indicatorHolder = calculateIndicators(null, subRemainsResponse, null)
                 mainData.indicatorModels =
@@ -429,13 +490,26 @@ class SubscriberInteractor(ctx: Context) {
                         transHistoryResponse
                     )
 
-                MyTariffPartialState.MainDataLoadedState(mainData)
-            })
+                Observable.just(MyTariffPartialState.MainDataLoadedState(mainData))
+            }).flatMap { it }.onErrorReturn { error->
+            if (error is HttpException) {
+                val errorBody = error.response()!!.errorBody()
+                val adapter =
+                    gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                val errorObj = adapter.fromJson(errorBody!!.string())
+                MyTariffPartialState.ShowErrorMessage(errorObj.error_description)
+            }else {
+                MyTariffPartialState.ShowErrorMessage("Что-то пошло не так, возможно у вас пропало интернет соединение.")
+            }
+        }.retry()
 
     }
 
 
     fun getReplenishmentData(period: String): Observable<CostAndReplenishmentPartialState> {
+        if (!isConnect(ctx = ctx)){
+            return Observable.just(CostAndReplenishmentPartialState.InternetState(active = false))
+        }
         val dates = period.split("-")
         var dateFrom: String?
         var dateTo: String?
@@ -490,79 +564,69 @@ class SubscriberInteractor(ctx: Context) {
 
     fun msisdnLoad(): Observable<CostsEmailState> {
 
-          val subInfo = subService.getSubInfo().onErrorReturn { null }
-          val servises = subService.getAllServicesList().onErrorReturn { null }
-
-
-        return Observable.zip(subInfo,servises, BiFunction<SubInfoResponse,List<ServicesListResponse>, CostsEmailState> {subInfoResponse,services->
-            var costDetalization:Double = 0.0
-            val monthAgo = Calendar.getInstance()
-            monthAgo.add(Calendar.DAY_OF_MONTH, -30)
-            val period =
-                "${TimeUtils().dateToString(monthAgo)}-${TimeUtils().dateToString(Calendar.getInstance())}"
-            subInfoResponse.msisdn
-                costDetalization =
-                    services.firstOrNull() { pred -> pred.id == 1322 }?.price_on ?: 0.0
-
-
-
-                CostsEmailState.MsisdnShown(subInfoResponse.msisdn, period, costsDetalization = costDetalization)
-            })
-        }
+        val monthAgo = Calendar.getInstance()
+        monthAgo.add(Calendar.DAY_OF_MONTH, -30)
+        val period =
+        "${TimeUtils().dateToString(monthAgo)}-${TimeUtils().dateToString(Calendar.getInstance())}"
+        return  Observable.just(CostsEmailState.MsisdnShown(period))
+    }
 
 
 
     fun costsMainData(): Observable<CostAndReplenishmentPartialState> {
-        val subInfo = subService.getSubInfo().onErrorReturn {
-            null
+        if (!isConnect(ctx = ctx)){
+            return Observable.just(CostAndReplenishmentPartialState.InternetState(false))
         }
+        val subInfo = subService.getSubInfo()
 
-        val subBalance = subService.getSubBalance().onErrorReturn {
-            null
-        }
+        val subBalance = subService.getSubBalance()
 
-        val subTariff = subService.getSubTariff().onErrorReturn {
-            null
-        }
+        val subTariff = subService.getSubTariff()
 
-        val subServices = subService.getAllServicesList().onErrorReturn {
-            mutableListOf()
-        }
+        val subServices = subService.getAllServicesList()
 
         return Observable.combineLatest(
             subInfo,
             subTariff,
             subBalance,
             subServices,
-            Function4 { subInfo, subT, subBal, subServiceResponse ->
+            Function4<SubInfoResponse, TariffResponse,SubBalanceResponse, List<ServicesListResponse>, Observable<CostAndReplenishmentPartialState>> {subInfo, subT, subBal, subServiceResponse ->
                 val accumData = MainPagaAccumData()
                 accumData.tariffData = subT
                 accumData.phoneNumber = subInfo.msisdn
                 accumData.balance = subBal.value
                 accumData.isDetalization = subServiceResponse.any { it.id == 1322 }
-                CostAndReplenishmentPartialState.ShowMainDataState(accumData)
-            })
+                if (accumData.isDetalization) {
+                    accumData.costDetalization = subServiceResponse.first { it.id == 1322 }.price_on
+                }
+                Observable.just(CostAndReplenishmentPartialState.ShowMainDataState(accumData) as CostAndReplenishmentPartialState)
+            }).flatMap { it }.onErrorReturn { error->
+            if (error is HttpException) {
+                val errorBody = error.response()!!.errorBody()
+                val adapter =
+                    gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                val errorObj = adapter.fromJson(errorBody!!.string())
+                CostAndReplenishmentPartialState.ShowErrorState(errorObj.error_description)
+            }else {
+                CostAndReplenishmentPartialState.ShowErrorState("Что-то пошло не так, возможно у вас пропало интернет соединение.")
+            }
+        }.retry()
 
     }
 
 
     fun preLoadData(): Observable<MainPagePartialState> {
-
-        val subInfo = subService.getSubInfo().onErrorReturn {
-            null
+        if (!isConnect(ctx)){
+            return Observable.just(MainPagePartialState.InternetState(false))
         }
 
-        val subTariff = subService.getSubTariff().onErrorReturn {
-            null
-        }
+        val subInfo = subService.getSubInfo()
 
-        val subBalance = subService.getSubBalance().onErrorReturn {
-            null
-        }
+        val subTariff = subService.getSubTariff()
 
-        val subRemains = subService.getSubRemains().onErrorReturn {
-            mutableListOf()
-        }
+        val subBalance = subService.getSubBalance()
+
+        val subRemains = subService.getSubRemains().onErrorReturn { listOf() }
 
         val exchangeInfo = subService.getExchangeInfo()
 
@@ -573,7 +637,7 @@ class SubscriberInteractor(ctx: Context) {
             subBalance,
             subRemains,
             exchangeInfo,
-            Function5 { subInfo, subT, subBal, subRem, subEx ->
+            Function5<SubInfoResponse,TariffResponse, SubBalanceResponse, List<RemainsResponse>,ExchangeResponse, Observable<MainPagePartialState>> { subInfo, subT, subBal, subRem, subEx ->
                 val accumData = MainPagaAccumData()
                 accumData.subExchange = subEx
                 accumData.phoneNumber = subInfo.msisdn
@@ -589,16 +653,26 @@ class SubscriberInteractor(ctx: Context) {
                     userService.getCatalogTariff(subT.tariff.id.toString()).flatMap { catTar ->
                         Log.d("DEBUG", "HERE")
                         accumData.indicatorHolder = calculateIndicators(subT, subRem, catTar)
-                        Observable.just(MainPagePartialState.ShowDataState(accumData))
+                       Observable.just(MainPagePartialState.ShowDataState(accumData) as MainPagePartialState)
                     }.onErrorReturn {
                         accumData.indicatorHolder = calculateIndicators(subT, subRem, null)
-                        MainPagePartialState.ShowDataState(accumData)
-                    }.blockingFirst()
+                        MainPagePartialState.ShowDataState(accumData)as MainPagePartialState
+                    }
                 } else {
                     accumData.indicatorHolder = calculateIndicators(subT, subRem, null)
-                    MainPagePartialState.ShowDataState(accumData)
+                    Observable.just(MainPagePartialState.ShowDataState(accumData))
                 }
-            })
+            }).flatMap { it }.onErrorReturn { error->
+            if (error is HttpException) {
+                val errorBody = error.response()!!.errorBody()
+                val adapter =
+                    gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                val errorObj = adapter.fromJson(errorBody!!.string())
+                MainPagePartialState.ShowErrorMessage(errorObj.error_description)
+            }else {
+                MainPagePartialState.ShowErrorMessage("Что-то пошло не так, возможно у вас пропало интернет соединение.")
+            }
+        }.retry()
 
     }
 
@@ -618,9 +692,12 @@ class SubscriberInteractor(ctx: Context) {
                     if (it.amount != null && it.amount > 0) {
                         val rest = it.amount
                         val total = it.amount
-                        val dueDate = it.due_date
+                        var dueDate = ""
+                        if (it.due_date != "2999-12-31") {
+                            dueDate = it.due_date
+                        }
                         val name = "Перенесенные остатки"
-                        var indicatorData = IndicatorHolder(
+                        val indicatorData = IndicatorHolder(
                             rest,
                             total,
                             100,
@@ -634,7 +711,10 @@ class SubscriberInteractor(ctx: Context) {
                     if (it.exchange != null && it.exchange > 0) {
                         val rest = it.exchange.toInt()
                         val total = it.exchange.toInt()
-                        val dueDate = it.due_date
+                        var dueDate = ""
+                        if (it.due_date != "2999-12-31") {
+                            dueDate = it.due_date
+                        }
                         val name = "Обменные ГБ"
                         var indicatorData = IndicatorHolder(
                             rest,
@@ -653,7 +733,10 @@ class SubscriberInteractor(ctx: Context) {
                     if (it.amount != null && it.amount > 0) {
                         val rest = it.amount
                         val total = it.amount
-                        val dueDate = it.due_date
+                        var dueDate = ""
+                        if (it.due_date != "2999-12-31") {
+                            dueDate = it.due_date
+                        }
                         val name = "Перенесенные остатки"
                         var indicatorData = IndicatorHolder(
                             rest,
@@ -670,8 +753,11 @@ class SubscriberInteractor(ctx: Context) {
                         val rest = it.exchange.toInt()
                         val total = it.exchange.toInt()
                         val name = "Обменные Мин."
-                        val dueDate = it.due_date
-                        var indicatorData = IndicatorHolder(
+                        var dueDate = ""
+                        if (it.due_date != "2999-12-31") {
+                            dueDate = it.due_date
+                        }
+                        val indicatorData = IndicatorHolder(
                             rest,
                             total,
                             100,
@@ -689,7 +775,10 @@ class SubscriberInteractor(ctx: Context) {
                         val rest = it.amount
                         val total = it.amount
                         val name = "Перенесенные остатки"
-                        val dueDate = it.due_date
+                        var dueDate = ""
+                        if (it.due_date != "2999-12-31") {
+                            dueDate = it.due_date
+                        }
                         var indicatorData = IndicatorHolder(
                             rest,
                             total,
@@ -705,12 +794,16 @@ class SubscriberInteractor(ctx: Context) {
                         val rest = it.exchange.toInt()
                         val total = it.exchange.toInt()
                         val name = "Обменные SMS"
-                        val dueDate = it.due_date
+                        var dueDate = ""
+                        if (it.due_date != "2999-12-31") {
+                            dueDate = it.due_date
+                        }
                         var indicatorData = IndicatorHolder(
                             rest,
                             total,
                             100,
                             false,
+                            dueDate = dueDate,
                             optionsName = name,
                             type = "SMS"
                         )
@@ -737,8 +830,9 @@ class SubscriberInteractor(ctx: Context) {
                     if (remain.due_date != "2999-12-31") {
                         dueDate = remain.due_date
                     }
-                    var indicatorData: IndicatorHolder?
-                    indicatorData = if (rest != 0 && total != 0) {
+
+                    if (rest != 0 || total != 0) {
+                        val indicatorData=
                         IndicatorHolder(
                             rest,
                             total,
@@ -746,22 +840,13 @@ class SubscriberInteractor(ctx: Context) {
                             false, optionsName = name, dueDate = dueDate,
                             type = "DATA"
                         )
-                    } else {
-                        IndicatorHolder(
-                            rest,
-                            total,
-                            0,
-                            false,
-                            optionsName = name,
-                            dueDate = dueDate,
-                            type = "DATA"
-                        )
+                        dataIndicators.add(indicatorData)
                     }
-                    dataIndicators.add(indicatorData)
+
                 }
                 remain.type == "VOICE" -> {
-                    var rest = remain.rest_amount
-                    var total = remain.total_amount
+                    val rest:Int = remain.rest_amount
+                    val total:Int = remain.total_amount
                     var name = if (remain.services.primary) {
                         "По условиям тарифа"
                     } else {
@@ -771,26 +856,17 @@ class SubscriberInteractor(ctx: Context) {
                     if (remain.due_date != "2999-12-31") {
                         dueDate = remain.due_date
                     }
-                    var indicatorData: IndicatorHolder?
-                    indicatorData = if (rest != 0 && total != 0) {
-                        IndicatorHolder(
-                            rest,
-                            total,
-                            MathUtils().calculatePercent(rest, total),
-                            false, optionsName = name, dueDate = dueDate, type = "VOICE"
-                        )
-                    } else {
-                        IndicatorHolder(
-                            rest,
-                            total,
-                            0,
-                            false,
-                            optionsName = name,
-                            dueDate = dueDate,
-                            type = "VOICE"
-                        )
+                    if (rest != 0 || total != 0) {
+                        val indicatorData=
+                            IndicatorHolder(
+                                rest,
+                                total,
+                                MathUtils().calculatePercent(rest, total),
+                                false, optionsName = name, dueDate = dueDate,
+                                type = "VOICE"
+                            )
+                        voiceIndicators.add(indicatorData)
                     }
-                    voiceIndicators.add(indicatorData)
                 }
                 remain.type == "SMS" -> {
                     var rest = remain.rest_amount
@@ -805,26 +881,17 @@ class SubscriberInteractor(ctx: Context) {
                         dueDate = remain.due_date
                     }
 
-                    var indicatorData: IndicatorHolder?
-                    indicatorData = if (rest != 0 && total != 0) {
-                        IndicatorHolder(
-                            rest,
-                            total,
-                            MathUtils().calculatePercent(rest, total),
-                            false, optionsName = name, dueDate = dueDate, type = "SMS"
-                        )
-                    } else {
-                        IndicatorHolder(
-                            rest,
-                            total,
-                            0,
-                            false,
-                            optionsName = name,
-                            dueDate = dueDate,
-                            type = "SMS"
-                        )
+                    if (rest != 0 || total != 0) {
+                        val indicatorData =
+                            IndicatorHolder(
+                                rest,
+                                total,
+                                MathUtils().calculatePercent(rest, total),
+                                false, optionsName = name, dueDate = dueDate,
+                                type = "SMS"
+                            )
+                        smsIndicators.add(indicatorData)
                     }
-                    smsIndicators.add(indicatorData)
                 }
             }
 
@@ -965,4 +1032,5 @@ class SubscriberInteractor(ctx: Context) {
         }
         return outputMap
     }
+
 }

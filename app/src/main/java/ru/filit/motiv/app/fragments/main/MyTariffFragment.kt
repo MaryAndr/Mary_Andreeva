@@ -3,16 +3,22 @@ package ru.filit.motiv.app.fragments.main
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Paint
+import android.graphics.drawable.ColorDrawable
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import io.reactivex.Observable
@@ -33,6 +39,7 @@ import ru.filit.motiv.app.models.main.ServiceDialogModel
 import ru.filit.motiv.app.models.main.ServicesListShow
 import ru.filit.motiv.app.presenters.main.MyTariffPresenter
 import ru.filit.motiv.app.states.main.MyTariffState
+import ru.filit.motiv.app.utils.ConnectivityReceiver
 import ru.filit.motiv.app.utils.Constants
 import ru.filit.motiv.app.utils.TextConverter
 import ru.filit.motiv.app.utils.TimeUtils
@@ -40,13 +47,19 @@ import ru.filit.motiv.app.views.main.MyTariffView
 import java.util.*
 
 class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
-    MyTariffView, OnServiceToggleChangeListener {
+    MyTariffView, OnServiceToggleChangeListener, ConnectivityReceiver.ConnectivityReceiverListener {
 
     override fun createPresenter() = MyTariffPresenter(context!!)
 
     private lateinit var preLoadTrigger: BehaviorSubject<Int>
     private lateinit var triggerChangeService: BehaviorSubject<String>
     private lateinit var cancelChange: BehaviorSubject<String>
+    private lateinit var networkAvailabilityTrigger : BehaviorSubject<Boolean>
+    private val connectivityReceiver = ConnectivityReceiver()
+
+    override fun checkInternetConnectivityIntent(): Observable<Boolean> {
+        return networkAvailabilityTrigger
+    }
 
     override fun preLoadIntent(): Observable<Int> {
         return preLoadTrigger
@@ -66,8 +79,10 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
                 Log.d("loading", "triggered")
                 mainConstraint.visibility = View.GONE
                 pgMainData.visibility = View.VISIBLE
+                no_internet_view.visibility = View.GONE
             }
             state.mainDataLoaded -> {
+                no_internet_view.visibility = View.GONE
                 pgMainData.visibility = View.GONE
                 mainConstraint.visibility = View.VISIBLE
 
@@ -116,6 +131,14 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
                     }
                     .create()
                     .show()
+                preLoadTrigger.onNext(1)
+            }
+            state.connectionLost -> {
+                mainConstraint.visibility = View.GONE
+                pgMainData.visibility = View.GONE
+                no_internet_view.visibility = View.VISIBLE
+            }
+            state.connectionResume -> {
                 preLoadTrigger.onNext(1)
             }
         }
@@ -215,9 +238,9 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
     }
 
     private fun renderNewIndicators(indicatorsModel: IndicatorsModel) {
-        val indicatorSMS = indicatorsModel.smsIndicators.filter{it.rest!=0&&it.total!=0}.toMutableList()
-        val indicatorVoice =indicatorsModel.voiceIndicators.filter{it.rest!=0&&it.total!=0}.toMutableList()
-        val indicatorData = indicatorsModel.dataIndicators.filter{it.rest!=0&&it.total!=0}.toMutableList()
+        val indicatorSMS = indicatorsModel.smsIndicators
+        val indicatorVoice =indicatorsModel.voiceIndicators
+        val indicatorData = indicatorsModel.dataIndicators
 
         if (indicatorData.size > 0) {
             dataRecyclerView.layoutManager = LinearLayoutManager(context!!)
@@ -316,29 +339,22 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        RxJavaPlugins.setErrorHandler { throwable ->
-            throwable.printStackTrace()
-        }
         preLoadTrigger = BehaviorSubject.create()
         triggerChangeService = BehaviorSubject.create()
         cancelChange = BehaviorSubject.create()
+        networkAvailabilityTrigger = BehaviorSubject.create()
+        activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 
     override fun onResume() {
         super.onResume()
-        preLoadTrigger.onNext(1)
+        ConnectivityReceiver.connectivityReceiverListener = this
         (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         activity!!.nav_view.visibility = View.VISIBLE
-        var tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
+        val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         tvTitle.setTextColor(resources.getColor(R.color.black))
         tvTitle.text = "Мой Тариф"
-
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -347,6 +363,11 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
     ): View? {
 
         return inflater.inflate(R.layout.fragment_my_tariff, container, false)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        preLoadTrigger.onNext(0)
     }
 
     override fun onToggleClick(item: ServicesListShow, isChecked: Boolean, position: Int) {
@@ -375,5 +396,14 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         }
     }
 
+    override fun onNetworkConnectionChanged(isConnected: Boolean) {
+        if (isConnected) {
+            networkAvailabilityTrigger.onNext(true)
+        }
+    }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        activity!!.unregisterReceiver(connectivityReceiver)
+    }
 }

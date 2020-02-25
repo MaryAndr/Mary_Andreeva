@@ -27,13 +27,14 @@ import ru.filit.motiv.app.utils.TextConverter
 import ru.filit.motiv.app.views.LoginPageView
 
 
-
 class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPageView,
     TextView.OnEditorActionListener {
 
     private lateinit var checkAuthTrigger: BehaviorSubject<Int>
 
     private lateinit var login: BehaviorSubject<AuthModel>
+
+    private lateinit var viewTreeObserver: ViewTreeObserver.OnGlobalLayoutListener
 
 
     override fun checkAuthIntent(): Observable<Int> {
@@ -79,7 +80,7 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
             state.successFullyAuthorized -> {
                 mainView.isClickable = true
                 loading.visibility = View.GONE
-                val intent = Intent (activity, MainPageActivity::class.java)
+                val intent = Intent(activity, MainPageActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 activity?.startActivity(intent)
@@ -89,7 +90,9 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
                 loading.visibility = View.GONE
                 if (etLoginPhone.text.isNullOrEmpty()) {
                     layoutTextInputPhone.hint = context?.getString(R.string.phone_hint)
-                }else{layoutTextInputPhone.hint = context?.getString(R.string.phone_number)}
+                } else {
+                    layoutTextInputPhone.hint = context?.getString(R.string.phone_number)
+                }
                 layoutTextInputPhone.boxStrokeColor = Color.parseColor("#fa6600")
                 layoutTextInput.boxStrokeColor = Color.parseColor("#fa6600")
                 layoutTextInputPhone.error = ""
@@ -114,11 +117,6 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
         return view
     }
 
-    override fun onStart() {
-        super.onStart()
-
-    }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
@@ -135,17 +133,15 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
 
         etLoginPhone.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                val y = (+buttonAuth.y - etLoginPhone.y).toInt()
                 layoutTextInputPhone.hint = context?.getString(R.string.phone_number)
-                scrollView.scrollTo(0, y)
+                scrollToBottom()
             }
         }
 
         etPassword.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                val y = (+buttonAuth.y - etPassword.x).toInt()
-                scrollView.scrollTo(0, y)
-                if (etLoginPhone.text.isNullOrEmpty()&&!layoutTextInputPhone.isErrorEnabled) {
+                scrollToBottom()
+                if (etLoginPhone.text.isNullOrEmpty() && !layoutTextInputPhone.isErrorEnabled) {
                     layoutTextInputPhone.hint = context?.getString(R.string.phone_hint)
                 }
             }
@@ -168,18 +164,41 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
     }
 
     override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
-        if(actionId==EditorInfo.IME_ACTION_NEXT){
+        if (actionId == EditorInfo.IME_ACTION_NEXT) {
             etPassword.requestFocus()
             return true
         }
 
-        if (actionId==EditorInfo.IME_ACTION_DONE)
-        {
-            login.onNext(AuthModel(
-            TextConverter().getOnlyDigits(etLoginPhone.text.toString()),
-            etPassword.text.toString()))
-        return true
+        if (actionId == EditorInfo.IME_ACTION_DONE) {
+            login.onNext(
+                AuthModel(
+                    TextConverter().getOnlyDigits(etLoginPhone.text.toString()),
+                    etPassword.text.toString()
+                )
+            )
+            return true
         }
         return false
+    }
+
+    private fun scrollToBottom() {
+        viewTreeObserver = ViewTreeObserver.OnGlobalLayoutListener {
+            val scrollViewHeight = scrollView.getHeight()
+            if (scrollViewHeight > 0) {
+                val lastView =
+                    scrollView.getChildAt(scrollView.getChildCount() - 1)
+                val lastViewBottom =
+                    lastView.getBottom() + scrollView.getPaddingBottom()
+                val deltaScrollY =
+                    lastViewBottom - scrollViewHeight - scrollView.getScrollY()
+                /* If you want to see the scroll animation, call this. */
+                scrollView.smoothScrollBy(0, deltaScrollY)
+                /* If you don't want, call this. */
+                scrollView.scrollBy(0, deltaScrollY)
+                scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(viewTreeObserver)
+            }
+        }
+        scrollView.getViewTreeObserver()
+            .addOnGlobalLayoutListener(viewTreeObserver)
     }
 }

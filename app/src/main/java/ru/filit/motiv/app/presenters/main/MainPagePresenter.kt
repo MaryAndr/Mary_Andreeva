@@ -9,7 +9,6 @@ import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
 import ru.filit.motiv.app.states.main.MainPagePartialState
 import ru.filit.motiv.app.states.main.MainPageState
 import ru.filit.motiv.app.views.main.MainPageView
-
 class MainPagePresenter(val ctx: Context) :
     MviBasePresenter<MainPageView, MainPageState>() {
 
@@ -19,25 +18,30 @@ class MainPagePresenter(val ctx: Context) :
 
     override fun bindIntents() {
 
-        var preLoadIntent: Observable<MainPagePartialState> =
+        val preLoadIntent: Observable<MainPagePartialState> =
             intent(MainPageView::preLoadIntent)
                 .flatMap {
                     subService.preLoadData()
-                        .onErrorReturn {MainPagePartialState.ShowErrorMessage(it.message) }
                         .startWith(
                             MainPagePartialState.Loading
                         ).subscribeOn(Schedulers.io())
 
                 }
 
+        val internetConnectionState : Observable<MainPagePartialState> = intent(MainPageView::checkInternetConnectivityIntent)
+            .flatMap { Observable.just(MainPagePartialState.InternetState(it)) }
+
 
         val initialState = MainPageState(
             mainDataLoaded = false,
             errorShown = false,
-            loading = false
+            loading = false,
+            connectionLost = false,
+            connectionResume = false
         )
 
-        val allIntents = preLoadIntent
+        val allIntents = Observable.merge(preLoadIntent,
+            internetConnectionState)
             .observeOn(AndroidSchedulers.mainThread())
 
 
@@ -74,6 +78,16 @@ class MainPagePresenter(val ctx: Context) :
                 previousState.mainDataLoaded = false
                 previousState.mainData = null
                 previousState.loading = true
+                return previousState
+            }
+            is MainPagePartialState.InternetState -> {
+                previousState.errorShown = false
+                previousState.errorText = null
+                previousState.mainDataLoaded = false
+                previousState.mainData = null
+                previousState.loading = false
+                previousState.connectionLost = !changes.active
+                previousState.connectionResume = changes.active
                 return previousState
             }
         }

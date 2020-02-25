@@ -2,6 +2,8 @@ package ru.filit.motiv.app.fragments.main
 
 
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -20,6 +22,7 @@ import ru.filit.motiv.app.MainActivity
 import ru.filit.motiv.app.R
 import ru.filit.motiv.app.presenters.main.SettingsPresenter
 import ru.filit.motiv.app.states.main.SettingsState
+import ru.filit.motiv.app.utils.ConnectivityReceiver
 import ru.filit.motiv.app.utils.Constants
 import ru.filit.motiv.app.utils.PreferenceHelper
 import ru.filit.motiv.app.utils.PreferenceHelper.set
@@ -29,13 +32,27 @@ import ru.filit.motiv.app.views.main.SettingsView
 /**
  * A simple [Fragment] subclass.
  */
-class SettingsFragment() : MviFragment<SettingsView, SettingsPresenter>(), SettingsView {
+class SettingsFragment() : MviFragment<SettingsView, SettingsPresenter>(), SettingsView, ConnectivityReceiver.ConnectivityReceiverListener {
+
+    private lateinit var preLoadTrigger: BehaviorSubject<Int>
+
+    private val connectivityReceiver = ConnectivityReceiver()
+
+    private lateinit var networkAvailabilityTrigger : BehaviorSubject<Boolean>
+
+    override fun checkInternetConnectivityIntent(): Observable<Boolean> {
+        return networkAvailabilityTrigger
+    }
+
+    override fun onNetworkConnectionChanged(isConnected: Boolean) {
+        if (isConnected) {
+            networkAvailabilityTrigger.onNext(true)
+        }
+    }
 
     override fun logoutIntent(): Observable<Any> {
         return RxView.clicks(viewExit)
     }
-
-    private lateinit var preLoadTrigger: BehaviorSubject<Int>
 
     override fun createPresenter() = SettingsPresenter(context!!)
 
@@ -58,10 +75,12 @@ class SettingsFragment() : MviFragment<SettingsView, SettingsPresenter>(), Setti
             is SettingsState.Loading -> {
                 mainDataHolder.visibility = View.GONE
                 pgMainData.visibility = View.VISIBLE
+                no_internet_view.visibility = View.GONE
             }
             is SettingsState.MainDataLoaded -> {
                 pgMainData.visibility = View.GONE
                 mainDataHolder.visibility = View.VISIBLE
+                no_internet_view.visibility = View.GONE
                 tvName.text = state.data.full_name
                 val textConverter = TextConverter()
                 tvPhoneValue.text =textConverter.getFormattedPhone(state.data.msisdn!!)
@@ -82,7 +101,7 @@ class SettingsFragment() : MviFragment<SettingsView, SettingsPresenter>(), Setti
                 viewBlockUnblockPass.setOnClickListener {
                     val fr = BlockUnblockFragment(state.data)
                     val fm = activity!!.supportFragmentManager
-                    val fragmentTransaction = fm!!.beginTransaction().addToBackStack("Settings_tag")
+                    val fragmentTransaction = fm.beginTransaction().addToBackStack("Settings_tag")
                     fragmentTransaction.replace(R.id.container, fr)
                     fragmentTransaction.commit()
                 }
@@ -96,12 +115,28 @@ class SettingsFragment() : MviFragment<SettingsView, SettingsPresenter>(), Setti
                 }
 
             }
+            is SettingsState.InternetState -> {
+                if (state.active){
+                    preLoadTrigger.onNext(1)
+                }else{
+                    mainDataHolder.visibility = View.GONE
+                    pgMainData.visibility = View.GONE
+                    no_internet_view.visibility = View.VISIBLE
+                }
+            }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         preLoadTrigger = BehaviorSubject.create()
+        networkAvailabilityTrigger = BehaviorSubject.create()
+        activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+    }
+
+    override fun onStart() {
+        super.onStart()
+        preLoadTrigger.onNext(1)
     }
 
     override fun onCreateView(
@@ -115,6 +150,7 @@ class SettingsFragment() : MviFragment<SettingsView, SettingsPresenter>(), Setti
 
     override fun onResume() {
         super.onResume()
+        ConnectivityReceiver.connectivityReceiverListener = this
         (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_backbutton_black)
@@ -122,6 +158,10 @@ class SettingsFragment() : MviFragment<SettingsView, SettingsPresenter>(), Setti
         activity!!.nav_view.visibility = View.INVISIBLE
         tvTitle.setTextColor(resources.getColor(R.color.black))
         tvTitle.text = "Настройки абонента"
-        preLoadTrigger.onNext(1)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        activity!!.unregisterReceiver(connectivityReceiver)
     }
 }

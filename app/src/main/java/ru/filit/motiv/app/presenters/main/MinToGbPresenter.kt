@@ -12,6 +12,7 @@ import ru.filit.motiv.app.presenters.interactors.SubscriberInteractor
 import ru.filit.motiv.app.states.main.MinToGbState
 import ru.filit.motiv.app.views.main.MinToGbView
 import retrofit2.HttpException
+import ru.filit.motiv.app.utils.isConnect
 import java.util.concurrent.TimeUnit
 
 class MinToGbPresenter(val ctx: Context) :
@@ -34,11 +35,14 @@ class MinToGbPresenter(val ctx: Context) :
 
         val exchangeIntent: Observable<MinToGbState> =
             intent(MinToGbView::exchangeMinsIntent).flatMap {
+                if (!isConnect(ctx = ctx)){
+                    return@flatMap Observable.just(MinToGbState.InternetState(false))
+                }
                 SubscriberInteractor(ctx).subService.exchangeMins(ExchangeRequest(it))
                     .subscribeOn(Schedulers.io())
                     .flatMap {
                         Observable.just(MinToGbState.Exchanged("Обмен Мин на ГБ успешно произведен") as MinToGbState)
-                            .delay (5000, TimeUnit.MILLISECONDS)
+                            .delay (3000, TimeUnit.MILLISECONDS)
                             .startWith(MinToGbState.Loading)
                     }.onErrorReturn { error: Throwable ->
                         var errMessage = error.localizedMessage
@@ -60,13 +64,23 @@ class MinToGbPresenter(val ctx: Context) :
 
         val fetchData: Observable<MinToGbState> =
             intent(MinToGbView::getExchangeDataIntent).flatMap {
+                if (!isConnect(ctx = ctx)){
+                    return@flatMap Observable.just(MinToGbState.InternetState(false))
+                }
                 SubscriberInteractor(ctx).subService.getExchangeInfo().flatMap {
                     Observable.just(MinToGbState.ExchangeData(it))
                 }.subscribeOn(Schedulers.io())
             }
 
+        val changeInternetConnectionIntent: Observable<MinToGbState> =
+            intent (MinToGbView::checkInternetConnectivityIntent).flatMap {
+                Observable.just(MinToGbState.InternetState(it))
+            }
+
+        val partialIntents = Observable.merge(changeExchangeIntent,exchangeIntent,changeIndicatorIntent)
+
         val allIntents =
-            Observable.merge(changeExchangeIntent, fetchData, exchangeIntent, changeIndicatorIntent)
+            Observable.merge(partialIntents, fetchData, changeInternetConnectionIntent)
                 .observeOn(AndroidSchedulers.mainThread())
 
 
