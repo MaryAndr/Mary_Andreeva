@@ -596,7 +596,9 @@ class SubscriberInteractor(val ctx: Context) {
                 accumData.phoneNumber = subInfo.msisdn
                 accumData.balance = subBal.value
                 accumData.isDetalization = subServiceResponse.any { it.id == 1322 }
-                accumData.costDetalization = subServiceResponse.first{ it.id == 1322 }.price_on
+                if (accumData.isDetalization) {
+                    accumData.costDetalization = subServiceResponse.first { it.id == 1322 }.price_on
+                }
                 Observable.just(CostAndReplenishmentPartialState.ShowMainDataState(accumData) as CostAndReplenishmentPartialState)
             }).flatMap { it }.onErrorReturn { error->
             if (error is HttpException) {
