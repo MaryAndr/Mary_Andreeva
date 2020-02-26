@@ -77,9 +77,4 @@ class MainPageActivity : AppCompatActivity() {
 
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
-
-    override fun onBackPressed() {
-
-        super.onBackPressed()
-    }
 }

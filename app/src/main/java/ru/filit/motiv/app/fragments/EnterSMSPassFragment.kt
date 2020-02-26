@@ -4,9 +4,12 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +26,7 @@ import ru.filit.motiv.app.presenters.EnterSMSPassPagePresenter
 import ru.filit.motiv.app.states.EnterSMSPageState
 import ru.filit.motiv.app.utils.TextConverter
 import ru.filit.motiv.app.utils.TimeUtils
+import ru.filit.motiv.app.utils.hideKeyboard
 import ru.filit.motiv.app.views.EnterSMSPassView
 import java.util.concurrent.TimeUnit
 
@@ -31,14 +35,14 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
 
     private lateinit var firstAttemptTrigger: BehaviorSubject<Int>
 
+    private lateinit var authorizationTrigger: BehaviorSubject<AuthModel>
+
     override fun firstAttemptIntent(): Observable<Int> {
         return firstAttemptTrigger
     }
 
     override fun authorizeIntent(): Observable<AuthModel> {
-        return RxView.clicks(buttonEnterSms).map<AuthModel> {
-            AuthModel(TextConverter().getOnlyDigits(userName), etEnterPassSms.text.toString())
-        }
+        return authorizationTrigger
     }
 
     private lateinit var userName: String
@@ -91,6 +95,7 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
 
     override fun onCreate(savedInstanceState: Bundle?) {
         firstAttemptTrigger = BehaviorSubject.createDefault(0)
+        authorizationTrigger = BehaviorSubject.create()
         super.onCreate(savedInstanceState)
     }
 
@@ -116,11 +121,18 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
         super.onViewCreated(view, savedInstanceState)
         userName = arguments!!.getString("username")
         tvPhoneSmsSend.text = "Пароль отправлен на номер $userName"
+        buttonEnterSms.setOnClickListener { authorizationTrigger.onNext(AuthModel(TextConverter().getOnlyDigits(userName), etEnterPassSms.text.toString())) }
+        etEnterPassSms.setOnEditorActionListener{ v: TextView?, actionId: Int?, keyEvent: KeyEvent? ->
+            if (actionId == EditorInfo.IME_ACTION_DONE){
+                authorizationTrigger.onNext(AuthModel(TextConverter().getOnlyDigits(userName), etEnterPassSms.text.toString()))
+                hideKeyboard()
+                return@setOnEditorActionListener true
+            }
+            false
+        }
 
         Log.d("debug", userName)
     }
-
-
 
     private fun errorDialog(errorMessage: String) {
         val builder = AlertDialog.Builder(context!!)

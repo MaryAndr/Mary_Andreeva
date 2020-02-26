@@ -5,11 +5,13 @@ import android.app.AlertDialog
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import com.hannesdorfmann.mosby3.mvi.MviFragment
@@ -27,6 +29,7 @@ import ru.filit.motiv.app.presenters.main.MinToGbPresenter
 import ru.filit.motiv.app.states.main.MinToGbState
 import ru.filit.motiv.app.utils.ConnectivityReceiver
 import ru.filit.motiv.app.utils.MinMaxFilterValue
+import ru.filit.motiv.app.utils.hideKeyboard
 import ru.filit.motiv.app.views.main.MinToGbView
 import java.math.RoundingMode
 import java.util.concurrent.TimeUnit
@@ -41,6 +44,7 @@ class MinToGbFragment(private var exchangeInfo: ExchangeResponse?) :
     private val connectivityReceiver = ConnectivityReceiver()
     private lateinit var preLoadTrigger: BehaviorSubject<Int>
     private lateinit var networkAvailabilityTrigger : BehaviorSubject<Boolean>
+    private lateinit var exchangeMinsTrigger: BehaviorSubject<Int>
 
     override fun checkInternetConnectivityIntent(): Observable<Boolean> {
         return networkAvailabilityTrigger
@@ -58,18 +62,7 @@ class MinToGbFragment(private var exchangeInfo: ExchangeResponse?) :
     }
 
     override fun exchangeMinsIntent(): Observable<Int> {
-        return RxView.clicks(btnExchange).flatMap {
-            val mins = if (etMin.text.isNullOrEmpty()) { 0 }else {
-                etMin.text.toString().replace("[^0-9]".toRegex(), "").toInt()}
-
-                if (0 < mins && mins <= exchangeInfo!!.max_minutes) {
-                    Observable.just(mins)
-                } else {
-                    Observable.just(0)
-
-            }
-
-        }
+        return exchangeMinsTrigger
     }
 
     override fun getExchangeDataIntent(): Observable<Int> {
@@ -174,6 +167,7 @@ class MinToGbFragment(private var exchangeInfo: ExchangeResponse?) :
         super.onCreate(savedInstanceState)
         preLoadTrigger = BehaviorSubject.create()
         networkAvailabilityTrigger = BehaviorSubject.create()
+        exchangeMinsTrigger= BehaviorSubject.create()
         activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 
@@ -186,6 +180,35 @@ class MinToGbFragment(private var exchangeInfo: ExchangeResponse?) :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        etMin.setOnEditorActionListener{ v: TextView?, actionId:Int?, event: KeyEvent? ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                val mins = if (etMin.text.isNullOrEmpty()) { 0 }else {
+                    etMin.text.toString().replace("[^0-9]".toRegex(), "").toInt()}
+
+                if (0 < mins && mins <= exchangeInfo!!.max_minutes) {
+                    exchangeMinsTrigger.onNext(mins)
+                } else {
+                    exchangeMinsTrigger.onNext(0)
+
+                }
+                hideKeyboard()
+                return@setOnEditorActionListener true
+            }
+             false
+        }
+        btnExchange.setOnClickListener {
+            val mins = if (etMin.text.isNullOrEmpty()) {0} else {
+                etMin.text.toString().replace("[^0-9]".toRegex(), "").toInt()
+            }
+
+            if (0 < mins && mins <= exchangeInfo!!.max_minutes) {
+                exchangeMinsTrigger.onNext(mins)
+            } else {
+                exchangeMinsTrigger.onNext(0)
+
+            }
+        }
 
         //Для сохранения курсора при изменение значения в editText минут
         minToGbSeekBar.setOnTouchListener { view, motionEvent ->

@@ -28,6 +28,7 @@
             android:layout_height="45dp"
             android:digits="1234567890+- "
             android:ems="10"
+            android:imeOptions="actionDone"
             android:inputType="phone"
             android:maxLength="18"
             android:padding="10dp" />
