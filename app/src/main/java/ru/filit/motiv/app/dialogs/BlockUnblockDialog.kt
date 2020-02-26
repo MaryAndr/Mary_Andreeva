@@ -4,9 +4,13 @@ import android.content.DialogInterface
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import android.widget.Toast
 import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
@@ -19,14 +23,17 @@ import ru.filit.motiv.app.models.main.SettingsDataModel
 import ru.filit.motiv.app.presenters.main.BlockUnblockDialogPresenter
 import ru.filit.motiv.app.states.main.BlockUnblockDialogState
 import ru.filit.motiv.app.utils.ConnectivityReceiver
+import ru.filit.motiv.app.utils.hideKeyboard
 import ru.filit.motiv.app.views.main.BlockUnblockDialogView
 
 class BlockUnblockDialog(val data: SettingsDataModel, val message: String? = null) :
     BaseBottomDialogMVI<BlockUnblockDialogView, BlockUnblockDialogState, BlockUnblockDialogPresenter>(),
-    BlockUnblockDialogView{
+    BlockUnblockDialogView {
 
 
     private lateinit var networkAvailabilityTrigger : BehaviorSubject<Boolean>
+
+    private lateinit var processIntentTrigger: BehaviorSubject<BlockUnblockDataModel>
 
     override fun checkInternetConnectivityIntent(): Observable<Boolean> {
         return networkAvailabilityTrigger
@@ -35,14 +42,7 @@ class BlockUnblockDialog(val data: SettingsDataModel, val message: String? = nul
     override fun createPresenter() = BlockUnblockDialogPresenter(context!!)
 
     override fun processIntent(): Observable<BlockUnblockDataModel> {
-        return RxView.clicks(btnBlockUnlock)
-            .map<BlockUnblockDataModel> {
-                if (data.statusId == 1) {
-                    BlockUnblockDataModel(true, null, message)
-                } else {
-                    BlockUnblockDataModel(false, etKeyWord.text.toString(), null)
-                }
-            }
+        return processIntentTrigger
     }
 
     override fun render(state: BlockUnblockDialogState) {
@@ -93,25 +93,42 @@ class BlockUnblockDialog(val data: SettingsDataModel, val message: String? = nul
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         networkAvailabilityTrigger = BehaviorSubject.create()
+        processIntentTrigger = BehaviorSubject.create()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         if (data.statusId == 1) {
-            tvPhoneNumber.text = "+7${data.msisdn!!}"
+            tvPhoneNumber.text = "+7${data.msisdn}"
             title.text = "Блокировка номера"
             viewUnblock.visibility = View.GONE
             btnBlockUnlock.text = "Блокировать номер"
         } else if (data.statusId == 4) {
-            tvPhoneNumber.text = "+7${data.msisdn!!}"
+            tvPhoneNumber.text = "+7${data.msisdn}"
             title.text = "Разблокировка номера"
             viewUnblock.visibility = View.VISIBLE
             etKeyWord.visibility = View.VISIBLE
             btnBlockUnlock.text = "Разблокировать номер"
         }
         ivClose.setOnClickListener{dismiss()}
+        btnBlockUnlock.setOnClickListener{
+            if (data.statusId == 1) {
+                processIntentTrigger.onNext(BlockUnblockDataModel(true, null, message))
+            } else {
+                processIntentTrigger.onNext(BlockUnblockDataModel(false, etKeyWord.text.toString(), null))
+            }
+        }
+
+        etKeyWord.setOnEditorActionListener{v: TextView?, actionId: Int?, event: KeyEvent? ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                processIntentTrigger.onNext(BlockUnblockDataModel(false, v?.text.toString(), null))
+                hideKeyboard()
+                 true
+            }else false
+        }
     }
+
 
 
 
@@ -125,5 +142,4 @@ class BlockUnblockDialog(val data: SettingsDataModel, val message: String? = nul
             return BlockUnblockDialog(data, message)
         }
     }
-
 }

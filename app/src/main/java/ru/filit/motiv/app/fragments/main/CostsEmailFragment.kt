@@ -5,9 +5,12 @@ import android.app.AlertDialog
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import com.hannesdorfmann.mosby3.mvi.MviFragment
@@ -24,6 +27,7 @@ import ru.filit.motiv.app.states.main.CostsEmailState
 import ru.filit.motiv.app.utils.CalendarView
 import ru.filit.motiv.app.utils.ConnectivityReceiver
 import ru.filit.motiv.app.utils.TextConverter
+import ru.filit.motiv.app.utils.hideKeyboard
 import ru.filit.motiv.app.views.main.CostsEmailView
 import ru.slybeaver.slycalendarview.SlyCalendarDialog
 
@@ -35,6 +39,8 @@ class CostsEmailFragment (private val phoneNumber: String, private val costDetal
     private val connectivityReceiver = ConnectivityReceiver()
 
     private lateinit var networkAvailabilityTrigger : BehaviorSubject<Boolean>
+
+    private lateinit var sendEmailTrigger: BehaviorSubject<EmailDetalModel>
 
     override fun checkInternetConnectivityIntent(): Observable<Boolean> {
         return networkAvailabilityTrigger
@@ -99,8 +105,6 @@ class CostsEmailFragment (private val phoneNumber: String, private val costDetal
         (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_backbutton_black)
         val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         activity!!.nav_view.visibility = View.INVISIBLE
-        tvTitle.setTextColor(resources.getColor(R.color.black))
-        tvTitle.text = "Заказать детализацию"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,6 +112,7 @@ class CostsEmailFragment (private val phoneNumber: String, private val costDetal
         msisdnLoadTrigger = BehaviorSubject.create()
         networkAvailabilityTrigger = BehaviorSubject.create()
         msisdnLoadTrigger.onNext(1)
+        sendEmailTrigger = BehaviorSubject.create()
         activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 
@@ -127,6 +132,15 @@ class CostsEmailFragment (private val phoneNumber: String, private val costDetal
                 .setFirstMonday(false)
                 .setCallback(CalendarView(tvPeriod))
                 .show(activity!!.supportFragmentManager, "TAG_SLYCALENDAR")
+        }
+        btnSend.setOnClickListener{sendEmailTrigger.onNext(EmailDetalModel(etEnterEmail.text.toString(), tvPeriod.text.toString()))}
+        etEnterEmail.setOnEditorActionListener{ v: TextView?, actionId: Int?, keyEvent: KeyEvent? ->
+            if (actionId == EditorInfo.IME_ACTION_DONE){
+                sendEmailTrigger.onNext(EmailDetalModel(etEnterEmail.text.toString(), tvPeriod.text.toString()))
+                hideKeyboard()
+                return@setOnEditorActionListener true
+            }
+            false
         }
     }
 

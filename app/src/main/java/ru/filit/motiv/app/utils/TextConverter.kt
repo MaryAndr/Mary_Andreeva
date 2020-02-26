@@ -34,4 +34,12 @@ class TextConverter {
             "+7 ${phoneNumber.substring(0,3)} ${phoneNumber.substring(3,6)}-${phoneNumber.substring(6,8)}-${phoneNumber.substring(8,10)}"
         }
     }
+
+    fun getFormattedDate(date:String):String{
+        return  if (date.length==10){
+            "${date.substring(8,10)}.${date.substring(5,7)}.${date.substring(0,4)}"
+        }else{
+            ""
+        }
+    }
 }

@@ -1,9 +1,12 @@
 package ru.filit.motiv.app.fragments
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.navigation.NavController
@@ -18,6 +21,7 @@ import ru.filit.motiv.app.presenters.SendSMSPagePresenter
 import ru.filit.motiv.app.states.SendSMSPageState
 import ru.filit.motiv.app.utils.PhoneTextWatcher
 import ru.filit.motiv.app.utils.TextConverter
+import ru.filit.motiv.app.utils.hideKeyboard
 import ru.filit.motiv.app.views.SendSMSScreenView
 
 
@@ -25,17 +29,18 @@ class SendSMSFragment : MviFragment<SendSMSScreenView, SendSMSPagePresenter>(), 
 
     private lateinit var defaultStateTrigger: BehaviorSubject<Int>
 
+    private lateinit var sendSMSTrigger: BehaviorSubject<String>
+
     override fun defaultIntent(): Observable<Int> {
         return defaultStateTrigger
     }
 
     override fun createPresenter() = SendSMSPagePresenter(context!!)
+
     private var navController : NavController? = null
 
     override fun sendSMSButtonIntent(): Observable<String> {
-        return RxView.clicks(buttonGetPass).map {
-            TextConverter().getOnlyDigits(etSendSMSPhone.text.toString())
-        }
+        return sendSMSTrigger
     }
 
     override fun render(state: SendSMSPageState) {
@@ -78,6 +83,7 @@ class SendSMSFragment : MviFragment<SendSMSScreenView, SendSMSPagePresenter>(), 
         savedInstanceState: Bundle?
     ): View? {
         defaultStateTrigger =  BehaviorSubject.createDefault(0)
+        sendSMSTrigger = BehaviorSubject.create()
 
         return inflater.inflate(R.layout.fragment_send_sms, container, false)
     }
@@ -90,5 +96,14 @@ class SendSMSFragment : MviFragment<SendSMSScreenView, SendSMSPagePresenter>(), 
             }
         }
         etSendSMSPhone.addTextChangedListener(PhoneTextWatcher(etSendSMSPhone))
+        etSendSMSPhone.setOnEditorActionListener{v:TextView?, actionId: Int?, keyEvent: KeyEvent? ->
+            if (actionId == EditorInfo.IME_ACTION_DONE){
+                sendSMSTrigger.onNext(TextConverter().getOnlyDigits(etSendSMSPhone.text.toString()))
+                hideKeyboard()
+                return@setOnEditorActionListener true
+            }
+            false
+        }
+        buttonGetPass.setOnClickListener{sendSMSTrigger.onNext(TextConverter().getOnlyDigits(etSendSMSPhone.text.toString()))}
     }
 }

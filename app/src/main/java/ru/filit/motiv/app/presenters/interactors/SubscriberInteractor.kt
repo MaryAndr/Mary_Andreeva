@@ -53,7 +53,7 @@ class SubscriberInteractor(val ctx: Context) {
             subStatus,
             BiFunction<SubscriberInfoResponse, SubscriberStatusResponse, Observable<SettingsState>> { subInfoResponse, subStatusResponse ->
                 val contract = if (subInfoResponse.contract_date != null) {
-                    "${subInfoResponse.contract_number} от ${subInfoResponse.contract_date}"
+                    "${subInfoResponse.contract_number} от ${TextConverter().getFormattedDate(subInfoResponse.contract_date)}"
                 } else {
                     subInfoResponse.contract_number
                 }
@@ -684,6 +684,7 @@ class SubscriberInteractor(val ctx: Context) {
         var dataIndicators = mutableListOf<IndicatorHolder>()
         var voiceIndicators = mutableListOf<IndicatorHolder>()
         var smsIndicators = mutableListOf<IndicatorHolder>()
+        val textConverter = TextConverter()
 
 
         transferredHistory?.forEach {
@@ -694,7 +695,7 @@ class SubscriberInteractor(val ctx: Context) {
                         val total = it.amount
                         var dueDate = ""
                         if (it.due_date != "2999-12-31") {
-                            dueDate = it.due_date
+                            dueDate = textConverter.getFormattedDate(it.due_date)
                         }
                         val name = "Перенесенные остатки"
                         val indicatorData = IndicatorHolder(
@@ -713,7 +714,7 @@ class SubscriberInteractor(val ctx: Context) {
                         val total = it.exchange.toInt()
                         var dueDate = ""
                         if (it.due_date != "2999-12-31") {
-                            dueDate = it.due_date
+                            dueDate = textConverter.getFormattedDate(it.due_date)
                         }
                         val name = "Обменные ГБ"
                         var indicatorData = IndicatorHolder(
@@ -735,7 +736,7 @@ class SubscriberInteractor(val ctx: Context) {
                         val total = it.amount
                         var dueDate = ""
                         if (it.due_date != "2999-12-31") {
-                            dueDate = it.due_date
+                            dueDate = textConverter.getFormattedDate(it.due_date)
                         }
                         val name = "Перенесенные остатки"
                         var indicatorData = IndicatorHolder(
@@ -755,7 +756,7 @@ class SubscriberInteractor(val ctx: Context) {
                         val name = "Обменные Мин."
                         var dueDate = ""
                         if (it.due_date != "2999-12-31") {
-                            dueDate = it.due_date
+                            dueDate = textConverter.getFormattedDate(it.due_date)
                         }
                         val indicatorData = IndicatorHolder(
                             rest,
@@ -777,7 +778,7 @@ class SubscriberInteractor(val ctx: Context) {
                         val name = "Перенесенные остатки"
                         var dueDate = ""
                         if (it.due_date != "2999-12-31") {
-                            dueDate = it.due_date
+                            dueDate = textConverter.getFormattedDate(it.due_date)
                         }
                         var indicatorData = IndicatorHolder(
                             rest,
@@ -796,7 +797,7 @@ class SubscriberInteractor(val ctx: Context) {
                         val name = "Обменные SMS"
                         var dueDate = ""
                         if (it.due_date != "2999-12-31") {
-                            dueDate = it.due_date
+                            dueDate = textConverter.getFormattedDate(it.due_date)
                         }
                         var indicatorData = IndicatorHolder(
                             rest,
@@ -828,7 +829,7 @@ class SubscriberInteractor(val ctx: Context) {
                     }
                     var dueDate = ""
                     if (remain.due_date != "2999-12-31") {
-                        dueDate = remain.due_date
+                        dueDate = textConverter.getFormattedDate(remain.due_date)
                     }
 
                     if (rest != 0 || total != 0) {
@@ -854,7 +855,7 @@ class SubscriberInteractor(val ctx: Context) {
                     }
                     var dueDate = ""
                     if (remain.due_date != "2999-12-31") {
-                        dueDate = remain.due_date
+                        dueDate = textConverter.getFormattedDate(remain.due_date)
                     }
                     if (rest != 0 || total != 0) {
                         val indicatorData=
@@ -878,7 +879,7 @@ class SubscriberInteractor(val ctx: Context) {
                     }
                     var dueDate = ""
                     if (remain.due_date != "2999-12-31") {
-                        dueDate = remain.due_date
+                        dueDate = textConverter.getFormattedDate(remain.due_date)
                     }
 
                     if (rest != 0 || total != 0) {

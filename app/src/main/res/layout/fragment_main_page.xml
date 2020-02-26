@@ -252,9 +252,6 @@
             app:layout_constraintTop_toBottomOf="@+id/tvSMSRestAmount" />
 
 
-
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
@@ -339,7 +336,6 @@
                 android:id="@+id/tvservices"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
                 android:gravity="center"
                 android:text="Управляй\nУслугами" />
         </LinearLayout>
