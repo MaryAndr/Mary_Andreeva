@@ -30,6 +30,7 @@ import ru.filit.motiv.app.utils.TextConverter
 import ru.filit.motiv.app.utils.hideKeyboard
 import ru.filit.motiv.app.views.main.CostsEmailView
 import ru.slybeaver.slycalendarview.SlyCalendarDialog
+import java.text.NumberFormat
 
 
 class CostsEmailFragment (private val phoneNumber: String, private val costDetalization: Double) :
@@ -63,7 +64,7 @@ class CostsEmailFragment (private val phoneNumber: String, private val costDetal
             is CostsEmailState.MsisdnShown -> {
                 tvPhoneNumber.text = TextConverter().getFormattedPhone(phoneNumber)
                 tvPeriod.text = state.defPeriod
-                costs_service.text = "Стоимость услуги - $costDetalization руб"
+                costs_service.text = "Стоимость услуги - ${NumberFormat.getInstance().format(costDetalization)} руб"
             }
 
             is CostsEmailState.ErrorShown -> {

@@ -124,7 +124,7 @@ class ChangeTariff : MviFragment<ChangeTariffView, ChangeTariffPresenter>(), Cha
 
         if (child.price != null) {
             tvPrice.text =
-                "${child.price} ${resources.getString(R.string.rub_value)}/месяц"
+                "${child.price} ${resources.getString(R.string.rub_value)}/${child.interval}"
         } else {
             tvPrice.visibility = View.INVISIBLE
         }

@@ -11,5 +11,6 @@ data class TariffShow(
     var smsValueUnit: String? = null,
     var price: String? = null,
     var aboutData: MyTariffAboutData? = null,
-    var isNew: Boolean = false
+    var isNew: Boolean = false,
+    var interval: String = "месяц"
 )

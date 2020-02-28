@@ -166,6 +166,12 @@ class SubscriberInteractor(val ctx: Context) {
                             curTariff.price =
                                 tariff.attributes?.firstOrNull { it.system_name == "subscription_fee" }
                                     ?.value
+                            curTariff.interval = when(tariff.attributes?.firstOrNull { it.system_name == "write_off_period" }?.value) {
+                                "Посуточно" -> "сутки"
+                                "Ежемесячно" -> "месяц"
+                                else -> "месяц"
+                            }
+
 
                             curTariff.description =
                                 tariff.attributes?.firstOrNull { it.system_name == "short_description" }

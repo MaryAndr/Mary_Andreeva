@@ -130,7 +130,7 @@ class ExpandableTariffsCategories internal constructor(
 
         if (child.price != null) {
             viewHolder.tvPrice.text =
-                "${child.price} ${context.resources.getString(R.string.rub_value)}/месяц"
+                "${child.price} ${context.resources.getString(R.string.rub_value)}/${child.interval}"
         } else {
             viewHolder.tvPrice.visibility = View.INVISIBLE
         }
