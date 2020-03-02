@@ -105,6 +105,7 @@ class CostsEmailFragment (private val phoneNumber: String, private val costDetal
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_backbutton_black)
         val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
+        tvTitle.text = "Заказать детализацию"
         activity!!.nav_view.visibility = View.INVISIBLE
     }
 

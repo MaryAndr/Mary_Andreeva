@@ -9,6 +9,7 @@ import android.widget.TextView
 import ru.filit.motiv.app.R
 import ru.filit.motiv.app.models.main.SubPaymentsResponse
 import ru.filit.motiv.app.utils.TimeUtils
+import java.text.NumberFormat
 
 class RepAdapter(var context: Context, var payments: List<SubPaymentsResponse>) : BaseAdapter() {
 
@@ -70,7 +71,7 @@ class RepAdapter(var context: Context, var payments: List<SubPaymentsResponse>) 
 
         viewHolder.date.text = TimeUtils().getDateForListView(payment.date)
         viewHolder.gateway.text = payment.gateway
-        viewHolder.sum.text = payment.amount.toString() + context.resources.getString(R.string.rub_value)
+        viewHolder.sum.text = NumberFormat.getInstance().format(payment.amount).toString() + context.resources.getString(R.string.rub_value)
 
         return rowView as View
     }

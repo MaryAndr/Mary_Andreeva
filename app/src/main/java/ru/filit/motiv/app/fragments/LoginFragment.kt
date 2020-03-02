@@ -68,6 +68,7 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
             state.errorStateShown -> {
                 mainView.isClickable = true
                 loading.visibility = View.GONE
+                scrollToBottom()
                 if (state.errorMessage == "Номер не может быть пустым" || state.errorMessage == "Введите корректный номер телефона") {
                     layoutTextInputPhone.error = state.errorMessage
                     layoutTextInput.error = " "
@@ -191,8 +192,6 @@ class LoginFragment : MviFragment<LoginPageView, LoginPagePresenter>(), LoginPag
                     lastView.getBottom() + scrollView.getPaddingBottom()
                 val deltaScrollY =
                     lastViewBottom - scrollViewHeight - scrollView.getScrollY()
-                /* If you want to see the scroll animation, call this. */
-                scrollView.smoothScrollBy(0, deltaScrollY)
                 /* If you don't want, call this. */
                 scrollView.scrollBy(0, deltaScrollY)
                 scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(viewTreeObserver)

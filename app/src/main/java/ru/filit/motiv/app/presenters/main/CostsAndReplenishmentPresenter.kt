@@ -13,6 +13,7 @@ import ru.filit.motiv.app.states.main.CostAndReplenishmentPartialState
 import ru.filit.motiv.app.states.main.CostAndReplenishmentState
 import ru.filit.motiv.app.views.main.CostAndReplenishmentView
 import retrofit2.HttpException
+import ru.filit.motiv.app.models.main.SubPaymentsResponse
 import java.util.concurrent.TimeUnit
 
 class CostsAndReplenishmentPresenter(val ctx: Context) :
@@ -50,18 +51,33 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
                     subService.getReplenishmentData(it).subscribeOn(Schedulers.io()).onErrorReturn { error: Throwable ->
                         var errMessage = error.localizedMessage
                         if (error is HttpException) {
-                            errMessage = if (error.code() == 409) {
+                            when(error.code()){
+                                409 -> errMessage = "Вы не являетесь пользователем мобильной связи"
+                                404 -> return@onErrorReturn CostAndReplenishmentPartialState.ShowReplenishmentData(
+                                    mutableListOf())
+                                else -> {
+                                    val errorBody = error.response()!!.errorBody()
+
+                                    val adapter =
+                                        gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                                    val errorObj = adapter.fromJson(errorBody!!.string())
+                                    errMessage = errorObj.error_description
+                                }
+
+                            }
+                            /*errMessage = if (error.code() == 409) {
                                 "Вы не являетесь пользователем мобильной связи"
-                            } else {
+                            } else
+                             {
                                 val errorBody = error.response()!!.errorBody()
 
                                 val adapter =
                                     gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
                                 val errorObj = adapter.fromJson(errorBody!!.string())
                                 errorObj.error_description
-                            }
+                            }*/
                         }
-                        CostAndReplenishmentPartialState.ShowErrorState(errMessage)
+                        CostAndReplenishmentPartialState.ShowErrorState(errMessage)as CostAndReplenishmentPartialState
                     }
                 }
         val checkInternetIntent: Observable<CostAndReplenishmentPartialState> =

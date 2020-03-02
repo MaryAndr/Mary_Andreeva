@@ -32,8 +32,15 @@ class BlockUnblockDialogPresenter(val ctx: Context) :
                         request.block = "true"
                         request.reason_desc = it.reason
                     } else {
+                        if (!it.codeword.isNullOrEmpty()){
                         request.block = "false"
                         request.codeword = it.codeword
+                        }else{
+                           return@flatMap Observable.just(BlockUnblockDialogState.RequestProcessed(
+                                message = "Введите кодовое слово",
+                               isProcessed = false
+                            ))
+                        }
                     }
                     subService.subService.changeStatus(request)
                         .map<BlockUnblockDialogState> {

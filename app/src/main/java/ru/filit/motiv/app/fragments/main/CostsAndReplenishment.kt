@@ -146,7 +146,6 @@ class CostsAndReplenishment :
         tvPhoneNumber.visibility = View.VISIBLE
         tvBalance.visibility = View.VISIBLE
         tvTariff.visibility = View.VISIBLE
-        tvDescTitle.visibility = View.VISIBLE
         tvDesc.visibility = View.VISIBLE
         tvPhoneNumber.text = TextConverter().getFormattedPhone(state.mainData!!.phoneNumber!!)
         tvBalance.text =
