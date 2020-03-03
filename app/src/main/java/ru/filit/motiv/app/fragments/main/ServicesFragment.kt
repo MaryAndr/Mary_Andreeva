@@ -151,7 +151,13 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
                 }
             }
             is ServicesPartialState.ShowErrorMessage -> {
-                Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+                val dialogBuilder = AlertDialog.Builder(this.context)
+                dialogBuilder
+                    .setMessage(state.message)
+                    .setPositiveButton("OK") { _, _ ->
+                    }
+                    .create()
+                    .show()
             }
         }
     }

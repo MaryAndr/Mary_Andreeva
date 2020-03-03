@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/ic_frame_tariff"
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="20dp"
-        android:orientation="horizontal">
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="30dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/tvName"
@@ -37,12 +42,14 @@
     <LinearLayout
         android:id="@+id/addHolder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
         android:orientation="horizontal"
-        android:visibility="visible">
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
         <LinearLayout
             android:id="@+id/addDataView"
@@ -63,18 +70,16 @@
                 android:layout_height="20dp"
                 android:layout_marginLeft="5dp"
                 android:maxLines="1"
+                android:text="TextView"
                 app:autoSizeMaxTextSize="14sp"
-
                 app:autoSizeMinTextSize="10sp"
                 app:autoSizeStepGranularity="1sp"
-                app:autoSizeTextType="uniform"
-                android:text="TextView" />
+                app:autoSizeTextType="uniform" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/addVoiceView"
             android:layout_width="0dp"
-
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
@@ -91,18 +96,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
                 android:maxLines="1"
+                android:text="TextView"
                 app:autoSizeMaxTextSize="14sp"
-
                 app:autoSizeMinTextSize="10sp"
                 app:autoSizeStepGranularity="1sp"
-                app:autoSizeTextType="uniform"
-                android:text="TextView" />
+                app:autoSizeTextType="uniform" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/addSMSView"
             android:layout_width="0dp"
-
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="horizontal">
@@ -120,7 +123,6 @@
                 android:layout_marginLeft="5dp"
                 android:maxLines="1"
                 app:autoSizeMaxTextSize="14sp"
-
                 app:autoSizeMinTextSize="10sp"
                 app:autoSizeStepGranularity="1sp"
                 app:autoSizeTextType="uniform" />
@@ -132,20 +134,27 @@
     <TextView
         android:id="@+id/tvDescription"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="20dp"
-        android:text="TextView" />
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="17dp"
+        android:layout_marginBottom="25dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addHolder" />
 
     <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginStart="20dp"
         android:layout_marginBottom="15dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/tvPrice"
@@ -168,4 +177,4 @@
             android:textSize="18sp"
             android:textStyle="bold" />
     </LinearLayout>
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

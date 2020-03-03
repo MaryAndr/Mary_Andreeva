@@ -1,6 +1,6 @@
 package ru.filit.motiv.app.fragments.main
 
-import android.content.Context
+import android.app.AlertDialog
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
@@ -9,7 +9,6 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import io.reactivex.Observable
@@ -64,7 +63,13 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
 
             }
             state.errorShown -> {
-                Toast.makeText(context,state.errorText,Toast.LENGTH_LONG).show()
+                val dialogBuilder = AlertDialog.Builder(this.context)
+                dialogBuilder
+                    .setMessage(state.errorText)
+                    .setPositiveButton("OK") { _, _ ->
+                    }
+                    .create()
+                    .show()
             }
             state.connectionLost -> {
                     dataView.visibility = View.GONE

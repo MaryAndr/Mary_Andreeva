@@ -96,7 +96,13 @@ class TariffConfirmationDialogMVI(val data: TariffDialogModelData, private val r
             is TariffDialogState.ErrorShown -> {
                 btnProcess.visibility = View.VISIBLE
                 progressBar.visibility = View.GONE
-                Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
+                val dialogBuilder = AlertDialog.Builder(this.context)
+                dialogBuilder
+                    .setMessage(state.error)
+                    .setPositiveButton("OK") { _, _ ->
+                    }
+                    .create()
+                    .show()
                 dismiss()
             }
             is TariffDialogState.InternetState -> {

@@ -22,6 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:fontFamily="@font/roboto_bold"
             android:text="TextView"
             android:textColor="#000000"
             android:textSize="16sp"
@@ -40,9 +41,9 @@
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
+            android:fontFamily="@font/roboto"
             android:text="@string/blankText"
             android:textColor="#000000"
-            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/tvDescription"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -59,15 +60,16 @@
             android:id="@+id/tvValue"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
             android:gravity="end"
             android:maxWidth="150dp"
             android:maxLines="2"
             android:text="TextView"
             android:textColor="#000000"
-            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

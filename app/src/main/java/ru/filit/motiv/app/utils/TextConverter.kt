@@ -2,6 +2,13 @@ package ru.filit.motiv.app.utils
 
 class TextConverter {
 
+    val declensionOfAttempt = mapOf(
+        1 to "попытка",
+        2 to "попытки",
+        3 to "попытки",
+        4 to "попытки"
+    )
+
     fun getOnlyDigits(text: String) : String {
         var out = text.replace("+7", "")
         out = out.replace("[^\\d]".toRegex(), "")
@@ -41,5 +48,11 @@ class TextConverter {
         }else{
             ""
         }
+    }
+
+    fun getDeclensionOfAttempt (count:Int?):String?{
+       return if (count!=null&&count<=4){
+            declensionOfAttempt[count]
+        }else "попыток"
     }
 }

@@ -1,18 +1,14 @@
 package ru.filit.motiv.app.dialogs
 
+import android.app.AlertDialog
 import android.content.DialogInterface
-import android.content.IntentFilter
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
-import android.widget.Toast
-import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.dialog_block_unblock.*
@@ -22,7 +18,7 @@ import ru.filit.motiv.app.models.main.BlockUnblockDataModel
 import ru.filit.motiv.app.models.main.SettingsDataModel
 import ru.filit.motiv.app.presenters.main.BlockUnblockDialogPresenter
 import ru.filit.motiv.app.states.main.BlockUnblockDialogState
-import ru.filit.motiv.app.utils.ConnectivityReceiver
+import ru.filit.motiv.app.utils.TextConverter
 import ru.filit.motiv.app.utils.hideKeyboard
 import ru.filit.motiv.app.views.main.BlockUnblockDialogView
 
@@ -51,15 +47,27 @@ class BlockUnblockDialog(val data: SettingsDataModel, val message: String? = nul
                 viewUnblock.visibility = View.VISIBLE
                 no_internet_view.visibility = View.GONE
                 if (state.isProcessed) {
-                    Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+                    val dialogBuilder = AlertDialog.Builder(this.context)
+                    dialogBuilder
+                        .setMessage(state.message)
+                        .setPositiveButton("OK") { _, _ ->
+                        }
+                        .create()
+                        .show()
                     targetFragment?.activity?.onBackPressed()
                     dismiss()
                 } else {
-                    Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+                    val dialogBuilder = AlertDialog.Builder(this.context)
+                    dialogBuilder
+                        .setMessage(state.message)
+                        .setPositiveButton("OK") { _, _ ->
+                        }
+                        .create()
+                        .show()
                     if (state.incorrectCounter != null) {
                         if (state.incorrectCounter > 0) {
                             layoutTextInput.error =
-                                "Неверное кодовое слово! У вас осталось ${state.incorrectCounter} попыток"
+                                "Неверное кодовое слово! У вас осталось ${state.incorrectCounter} ${TextConverter().getDeclensionOfAttempt(state.incorrectCounter)}"
                         } else {
                             layoutTextInput.visibility = View.GONE
                             tvWrongKeyTitle.visibility = View.VISIBLE

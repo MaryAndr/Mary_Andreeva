@@ -362,11 +362,13 @@ class MyTariffAboutDialog(
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     DownloadHelper().performDownload(PDF_URL, tariffName, activity!!)
                 } else {
-                    Toast.makeText(
-                        context,
-                        "Вы не дали разрешение, файл не будет скачан.",
-                        Toast.LENGTH_LONG
-                    )
+                    val dialogBuilder = AlertDialog.Builder(this.context)
+                    dialogBuilder
+                        .setMessage("Вы не дали разрешение, файл не будет скачан.")
+                        .setPositiveButton("OK") { _, _ ->
+                        }
+                        .create()
+                        .show()
                 }
             }
         }

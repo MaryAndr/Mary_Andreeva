@@ -28,4 +28,5 @@
     <string name="phone_number_support_service">8 800 240 0000</string>
     <string name="call_is_free">Звонок бесплатный</string>
     <string name="enter_code">Введите код для входа</string>
+    <string name="about_tariff">О тарифе</string>
 </resources>

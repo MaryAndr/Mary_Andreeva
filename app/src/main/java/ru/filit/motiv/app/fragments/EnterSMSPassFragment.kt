@@ -50,7 +50,13 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
     override fun render(state: EnterSMSPageState) {
         when {
             state.smsResended -> {
-                Toast.makeText(context!!, "Sms resended", Toast.LENGTH_SHORT).show()
+                val dialogBuilder = android.app.AlertDialog.Builder(this.context)
+                dialogBuilder
+                    .setMessage(state.errorMessage)
+                    .setPositiveButton("OK") { _, _ ->
+                    }
+                    .create()
+                    .show()
             }
             state.showError -> {
 //                errorDialog(state.errorMessage!!)

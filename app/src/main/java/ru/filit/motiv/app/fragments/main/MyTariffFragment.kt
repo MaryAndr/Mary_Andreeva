@@ -121,7 +121,13 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
                 mainDataHolder.visibility = View.VISIBLE
             }
             state.errorShown -> {
-                Toast.makeText(context, state.errorText, Toast.LENGTH_LONG).show()
+                val dialogBuilder = AlertDialog.Builder(this.context)
+                dialogBuilder
+                    .setMessage(state.errorText)
+                    .setPositiveButton("OK") { _, _ ->
+                    }
+                    .create()
+                    .show()
             }
             state.changeService -> {
                 val dialogBuilder = AlertDialog.Builder(this.context)

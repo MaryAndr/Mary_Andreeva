@@ -1,6 +1,7 @@
 package ru.filit.motiv.app.fragments.main
 
 
+import android.app.AlertDialog
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
@@ -8,7 +9,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.FragmentActivity
@@ -17,7 +17,6 @@ import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.activity_main_page.*
 import kotlinx.android.synthetic.main.fragment_change_tariff.*
-import kotlinx.android.synthetic.main.info_item.*
 
 import ru.filit.motiv.app.R
 import ru.filit.motiv.app.adapters.ExpandableTariffsCategories
@@ -82,7 +81,13 @@ class ChangeTariff : MviFragment<ChangeTariffView, ChangeTariffPresenter>(), Cha
                 }
             }
             is ChangeTariffState.ShowErrorMessage -> {
-                Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+                val dialogBuilder = AlertDialog.Builder(this.context)
+                dialogBuilder
+                    .setMessage(state.message)
+                    .setPositiveButton("OK") { _, _ ->
+                    }
+                    .create()
+                    .show()
             }
         }
     }

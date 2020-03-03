@@ -55,7 +55,13 @@ class ServiceConfirmationDialogMVI(val data: ServiceDialogModel) :
                 dismiss()
             }
             is ServiceDialogState.ErrorShown -> {
-                Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
+                val dialogBuilder = AlertDialog.Builder(this.context)
+                dialogBuilder
+                    .setMessage(state.error)
+                    .setPositiveButton("OK") { _, _ ->
+                    }
+                    .create()
+                    .show()
             }
             is ServiceDialogState.InternetState -> {
                 val fragment = InternetLostFragment()

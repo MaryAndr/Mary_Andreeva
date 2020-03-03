@@ -1,19 +1,17 @@
 package ru.filit.motiv.app.fragments.main
 
 
+import android.app.AlertDialog
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
-import android.widget.Toast
 import com.hannesdorfmann.mosby3.mvi.MviFragment
-import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.fragment_change_pass.*
@@ -46,7 +44,13 @@ class ChangePassFragment : MviFragment<ChangePassView, ChangePassPresenter>(), C
                 btnChangePass.isEnabled = true
                 etCurrentPass.isEnabled = true
                 etNewPass.isEnabled = true
-                Toast.makeText(context, state.result, Toast.LENGTH_LONG).show()
+                val dialogBuilder = AlertDialog.Builder(this.context)
+                dialogBuilder
+                    .setMessage(state.result)
+                    .setPositiveButton("OK") { _, _ ->
+                    }
+                    .create()
+                    .show()
             }
             is ChangePassState.Loading -> {
                 btnChangePass.isEnabled = false

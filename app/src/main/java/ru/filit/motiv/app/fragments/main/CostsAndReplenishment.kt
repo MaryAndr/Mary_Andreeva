@@ -1,7 +1,7 @@
 package ru.filit.motiv.app.fragments.main
 
+import android.app.AlertDialog
 import android.content.IntentFilter
-import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
@@ -9,8 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
-import android.widget.Toast
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.navigation.NavController
@@ -100,7 +98,13 @@ class CostsAndReplenishment :
             }
             state.errorShown -> {
                 Log.d("debug", "fixed")
-                Toast.makeText(context, state.errorText, Toast.LENGTH_LONG).show()
+                val dialogBuilder = AlertDialog.Builder(this.context)
+                dialogBuilder
+                    .setMessage(state.errorText)
+                    .setPositiveButton("OK") { _, _ ->
+                    }
+                    .create()
+                    .show()
                 tvRepPeriod.text = TimeUtils().returnPeriodMinusThreeMonth()
             }
             state.loading -> {
