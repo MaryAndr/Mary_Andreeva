@@ -3,12 +3,14 @@ package ru.filit.motiv.app.fragments.main
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -125,6 +127,25 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
                 dialogBuilder
                     .setMessage(state.errorText)
                     .setPositiveButton("OK") { _, _ ->
+                        if (state.appIsDeprecated){
+                            val appPackageName = activity?.packageName
+
+                            try {
+                                startActivity(
+                                    Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("market://details?id=$appPackageName")
+                                    )
+                                )
+                            } catch (anfe: ActivityNotFoundException) {
+                                startActivity(
+                                    Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")
+                                    )
+                                )
+                            }
+                        }
                     }
                     .create()
                     .show()
