@@ -20,7 +20,7 @@
             android:id="@+id/mainDataView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/currentTariffView"
@@ -90,6 +90,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:layout_gravity="top"
                         android:gravity="start"
                         android:orientation="horizontal">
 
@@ -113,7 +114,7 @@
                         android:id="@+id/addVoiceView"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
+                        android:layout_gravity="top"
                         android:layout_weight="1"
                         android:gravity="start"
                         android:layout_marginStart="15dp"
@@ -139,6 +140,7 @@
                         android:id="@+id/addSMSView"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="top"
                         android:layout_weight="1"
                         android:gravity="start"
                         android:layout_marginStart="15dp"
@@ -155,9 +157,10 @@
                             android:id="@+id/tvAddSMS"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
                             android:maxLines="2"
-                            android:maxWidth="70dp"/>
+                            android:layout_marginStart="4dp"
+                            android:text="TextView"
+                            android:maxWidth="70dp" />
                     </LinearLayout>
 
 

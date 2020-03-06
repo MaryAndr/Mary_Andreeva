@@ -106,7 +106,7 @@ class ChangeTariff : MviFragment<ChangeTariffView, ChangeTariffPresenter>(), Cha
             addDataView.visibility = View.VISIBLE
             tvAddData.text = text
         } else {
-            addDataView.visibility = View.INVISIBLE
+            addDataView.visibility = View.GONE
         }
 
         if (child.voiceValueUnit != null) {
@@ -115,7 +115,7 @@ class ChangeTariff : MviFragment<ChangeTariffView, ChangeTariffPresenter>(), Cha
             if (isSelfTariff)text+=" Мин"
             tvAddVoice.text = text
         } else {
-            addVoiceView.visibility = View.INVISIBLE
+            addVoiceView.visibility = View.GONE
         }
 
         if (child.smsValueUnit != null) {
@@ -124,20 +124,20 @@ class ChangeTariff : MviFragment<ChangeTariffView, ChangeTariffPresenter>(), Cha
             if (isSelfTariff)text+=" SMS"
             tvAddSMS.text = text
         } else {
-            addSMSView.visibility = View.INVISIBLE
+            addSMSView.visibility = View.GONE
         }
 
         if (child.price != null) {
             tvPrice.text =
                 "${child.price} ${resources.getString(R.string.rub_value)}/${child.interval}"
         } else {
-            tvPrice.visibility = View.INVISIBLE
+            tvPrice.visibility = View.GONE
         }
 
         if (child.description != null) {
             tvDescription.text = child.description
         } else {
-            tvDescription.visibility = View.INVISIBLE
+            tvDescription.visibility = View.GONE
         }
 
         if (child.aboutData != null) {
