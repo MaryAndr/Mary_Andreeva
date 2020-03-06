@@ -9,6 +9,7 @@ data class CostAndReplenishmentState (
     var costsShown: Boolean,
     var replenishmentShown: Boolean,
     var errorShown: Boolean,
+    var appIsDeprecated: Boolean,
     var errorText: String? = null,
     var replenishmentDataLoaded: Boolean,
     var replenishmentData: List<SubPaymentsResponse>? = null,

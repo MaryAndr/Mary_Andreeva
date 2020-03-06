@@ -10,5 +10,6 @@ class MyTariffState (var mainDataLoaded: Boolean,
                      var changeService: Boolean,
                      var changeServiceMessage: String?,
                      var connectionLost: Boolean,
-                     var connectionResume: Boolean
+                     var connectionResume: Boolean,
+                     var appIsDeprecated: Boolean
                      )

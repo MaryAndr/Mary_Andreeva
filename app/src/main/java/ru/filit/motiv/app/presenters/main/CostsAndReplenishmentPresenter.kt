@@ -61,7 +61,11 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
                                     val adapter =
                                         gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
                                     val errorObj = adapter.fromJson(errorBody!!.string())
-                                    errMessage = errorObj.error_description
+                                    if (error.code()==403&&errorObj.error_code=="99999"){
+                                        CostAndReplenishmentPartialState.ShowErrorState(errorObj.error_description, appIsDeprecated = true)
+                                    } else {
+                                        errMessage = errorObj.error_description
+                                    }
                                 }
 
                             }
@@ -94,7 +98,8 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
             replenishmentData = null,
             loading = false,
             connectionResume = false,
-            connectionLost = false
+            connectionLost = false,
+            appIsDeprecated = false
             )
         val partialIntents =Observable.merge(mainDataLoadIntent, checkInternetIntent)
 
@@ -163,6 +168,7 @@ class CostsAndReplenishmentPresenter(val ctx: Context) :
                 previousState.costsShown = false
                 previousState.mainDataLoaded = false
                 previousState.replenishmentShown = false
+                previousState.appIsDeprecated = changes.appIsDeprecated
                 Log.d("debug", "fixed")
                 return previousState
             }

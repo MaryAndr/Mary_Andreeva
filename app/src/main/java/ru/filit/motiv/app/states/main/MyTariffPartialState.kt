@@ -6,7 +6,7 @@ sealed class MyTariffPartialState {
 
     data class MainDataLoadedState(val data : MyTariffMainData) : MyTariffPartialState()
 
-    data class ShowErrorMessage(val error: String) : MyTariffPartialState()
+    data class ShowErrorMessage(val error: String, val appIsDeprecated: Boolean = false) : MyTariffPartialState()
 
     data class ChangeAvailableService(val dialogMessage: String): MyTariffPartialState()
 

@@ -37,7 +37,8 @@ class MainPagePresenter(val ctx: Context) :
             errorShown = false,
             loading = false,
             connectionLost = false,
-            connectionResume = false
+            connectionResume = false,
+            appIsDeprecated = false
         )
 
         val allIntents = Observable.merge(preLoadIntent,
@@ -67,6 +68,7 @@ class MainPagePresenter(val ctx: Context) :
             is MainPagePartialState.ShowErrorMessage -> {
                 previousState.errorShown = true
                 previousState.errorText = changes.error
+                previousState.appIsDeprecated = changes.appIsDeprecated
                 previousState.mainDataLoaded = false
                 previousState.mainData = null
                 previousState.loading = false

@@ -7,7 +7,7 @@ sealed class CostAndReplenishmentPartialState {
 
     data class ShowMainDataState(val data: MainPagaAccumData) : CostAndReplenishmentPartialState()
 
-    data class ShowErrorState(val error: String) : CostAndReplenishmentPartialState()
+    data class ShowErrorState(val error: String, val appIsDeprecated: Boolean = false) : CostAndReplenishmentPartialState()
 
     object ShowCostsLayout : CostAndReplenishmentPartialState()
 

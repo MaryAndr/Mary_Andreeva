@@ -41,6 +41,8 @@ class SubscriberInteractor(val ctx: Context) {
             5 to "ЯНАО"
         )
 
+    private val appIsDeprecated = "99999"
+
     fun getSettingsMainData(): Observable<SettingsState> {
 
         val subInfo = subService.subscriberInfo()
@@ -503,8 +505,15 @@ class SubscriberInteractor(val ctx: Context) {
                 val adapter =
                     gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
                 val errorObj = adapter.fromJson(errorBody!!.string())
-                MyTariffPartialState.ShowErrorMessage(errorObj.error_description)
-            }else {
+                if (error.code() == 403 && errorObj.error_code == appIsDeprecated) {
+                    MyTariffPartialState.ShowErrorMessage(
+                        errorObj.error_description,
+                        appIsDeprecated = true
+                    )
+                } else {
+                    MyTariffPartialState.ShowErrorMessage(errorObj.error_description)
+                }
+            } else {
                 MyTariffPartialState.ShowErrorMessage("Что-то пошло не так, возможно у вас пропало интернет соединение.")
             }
         }.retry()
@@ -612,7 +621,11 @@ class SubscriberInteractor(val ctx: Context) {
                 val adapter =
                     gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
                 val errorObj = adapter.fromJson(errorBody!!.string())
-                CostAndReplenishmentPartialState.ShowErrorState(errorObj.error_description)
+                if (error.code()==403&&errorObj.error_code==appIsDeprecated){
+                    CostAndReplenishmentPartialState.ShowErrorState(errorObj.error_description, appIsDeprecated = true)
+                }else {
+                    CostAndReplenishmentPartialState.ShowErrorState(errorObj.error_description)
+                }
             }else {
                 CostAndReplenishmentPartialState.ShowErrorState("Что-то пошло не так, возможно у вас пропало интернет соединение.")
             }
@@ -674,6 +687,9 @@ class SubscriberInteractor(val ctx: Context) {
                 val adapter =
                     gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
                 val errorObj = adapter.fromJson(errorBody!!.string())
+                if (error.code()==403&&errorObj.error_code==appIsDeprecated){
+                    MainPagePartialState.ShowErrorMessage(errorObj.error_description, appIsDeprecated = true)
+                }
                 MainPagePartialState.ShowErrorMessage(errorObj.error_description)
             }else {
                 MainPagePartialState.ShowErrorMessage("Что-то пошло не так, возможно у вас пропало интернет соединение.")

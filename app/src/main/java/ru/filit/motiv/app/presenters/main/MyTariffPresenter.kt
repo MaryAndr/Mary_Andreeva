@@ -43,7 +43,7 @@ class MyTariffPresenter(val ctx: Context) :
             intent ( MyTariffView::checkInternetConnectivityIntent )
                 .flatMap {Observable.just(MyTariffPartialState.InternetState(it))}
 
-        val initialState = MyTariffState(false, null, false, null, false, false,null, connectionLost = false, connectionResume = false)
+        val initialState = MyTariffState(false, null, false, null, false, false,null, connectionLost = false, connectionResume = false, appIsDeprecated= false)
 
 
         val allIntents = Observable.merge(
@@ -76,6 +76,7 @@ class MyTariffPresenter(val ctx: Context) :
                 previousState.changeService = false
                 previousState.errorShown = true
                 previousState.errorText = changes.error
+                previousState.appIsDeprecated = changes.appIsDeprecated
                 previousState.mainDataLoaded = false
                 previousState.mainData = null
                 previousState.changeServiceMessage = null
