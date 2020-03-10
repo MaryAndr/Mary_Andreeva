@@ -3,6 +3,7 @@ package ru.filit.motiv.app.fragments.main
 
 import android.app.AlertDialog
 import android.content.IntentFilter
+import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.KeyEvent
@@ -12,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import com.hannesdorfmann.mosby3.mvi.MviFragment
@@ -154,9 +156,14 @@ class MinToGbFragment(private var exchangeInfo: ExchangeResponse?) :
     override fun onResume() {
         super.onResume()
         ConnectivityReceiver.connectivityReceiverListener = this
-        (activity as AppCompatActivity).supportActionBar?.show()
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_backbutton_black)
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.costs)))
+            displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
+            setCustomView(R.layout.abs_layout)
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_backbutton_black)
+            elevation = resources.getDimension(R.dimen.elevation)
+        }
         var tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         activity!!.nav_view.visibility = View.INVISIBLE
         tvTitle.setTextColor(resources.getColor(R.color.black))

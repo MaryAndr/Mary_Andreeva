@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
@@ -13,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatImageView
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
@@ -272,7 +274,20 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
     override fun onResume() {
         super.onResume()
         activity!!.nav_view.visibility = View.VISIBLE
-        (activity as AppCompatActivity).supportActionBar?.hide()
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            setCustomView(R.layout.appbar_main_page)
+            elevation = 0f
+            setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.colorPrimary)))
+            val ivProfilePic: AppCompatImageView = activity!!.findViewById(R.id.ivProfilePic)
+            ivProfilePic.setOnClickListener {
+                val fr = SettingsFragment()
+                val fm = activity!!.supportFragmentManager
+                val fragmentTransaction = fm!!.beginTransaction().addToBackStack("settings")
+                fragmentTransaction.replace(R.id.container, fr)
+                fragmentTransaction.commit()
+
+            }
+        }
         ConnectivityReceiver.connectivityReceiverListener = this
     }
 
@@ -310,13 +325,6 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
 
         tvTariffName.setOnClickListener {
             activity!!.nav_view.selectedItemId = R.id.navigation_tariff
-        }
-        ivProfilePic.setOnClickListener {
-            val fr = SettingsFragment()
-            val fm = activity!!.supportFragmentManager
-            val fragmentTransaction = fm!!.beginTransaction().addToBackStack("settings")
-            fragmentTransaction.replace(R.id.container, fr)
-            fragmentTransaction.commit()
         }
 
         visibilityDataGroup(View.INVISIBLE)

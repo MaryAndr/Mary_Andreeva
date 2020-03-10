@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
@@ -12,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.navigation.NavController
@@ -211,8 +213,13 @@ class CostsAndReplenishment :
 
     override fun onResume() {
         super.onResume()
-        (activity as AppCompatActivity).supportActionBar?.show()
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.costs)))
+            displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
+            setCustomView(R.layout.abs_layout)
+            elevation = resources.getDimension(R.dimen.elevation)
+            setDisplayHomeAsUpEnabled(false)
+        }
         val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         tvTitle.setTextColor(resources.getColor(R.color.black))
         tvTitle.text = "Расходы"

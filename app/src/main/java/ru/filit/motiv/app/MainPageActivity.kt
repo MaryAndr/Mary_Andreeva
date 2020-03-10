@@ -77,4 +77,9 @@ class MainPageActivity : AppCompatActivity() {
 
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
+
+    override fun onStart() {
+        super.onStart()
+
+    }
 }

@@ -376,8 +376,14 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
     override fun onResume() {
         super.onResume()
         ConnectivityReceiver.connectivityReceiverListener = this
-        (activity as AppCompatActivity).supportActionBar?.show()
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.costs)))
+            displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
+            setCustomView(R.layout.abs_layout)
+            setDisplayHomeAsUpEnabled(false)
+            elevation = resources.getDimension(R.dimen.elevation)
+        }
+
         activity!!.nav_view.visibility = View.VISIBLE
         val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         tvTitle.setTextColor(resources.getColor(R.color.black))

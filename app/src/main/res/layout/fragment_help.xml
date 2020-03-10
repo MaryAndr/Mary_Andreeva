@@ -27,7 +27,7 @@
         android:id="@+id/help_logo"
         android:layout_width="220dp"
         android:layout_height="60dp"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="102dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline35"
         app:layout_constraintStart_toStartOf="@+id/guideline34"
         app:layout_constraintTop_toTopOf="parent"

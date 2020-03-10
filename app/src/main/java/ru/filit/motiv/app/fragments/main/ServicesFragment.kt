@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -12,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -165,10 +167,15 @@ class ServicesFragment : MviFragment<ServicesPageView, ServicesPresenter>(), Ser
     override fun onResume() {
         super.onResume()
         ConnectivityReceiver.connectivityReceiverListener = this
-        (activity as AppCompatActivity).supportActionBar?.show()
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_backbutton_black)
-        var tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.costs)))
+            displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
+            setCustomView(R.layout.abs_layout)
+            elevation = resources.getDimension(R.dimen.elevation)
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_backbutton_black)
+        }
+        val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         activity!!.nav_view.visibility = View.INVISIBLE
         tvTitle.setTextColor(resources.getColor(R.color.black))
         tvTitle.text = "Услуги"

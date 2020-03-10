@@ -1,12 +1,14 @@
 package ru.filit.motiv.app.fragments.main
 
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
@@ -37,7 +39,13 @@ class HelpFragment: MviFragment<HelpView, HelpPresenter>(), HelpView{
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            setCustomView(R.layout.abs_layout)
+            val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
+            tvTitle.text = ""
+            elevation = 0f
+            setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.colorPrimary)))
+        }
         version_app.text = "${resources.getText(R.string.version_app)} ${BuildConfig.VERSION_NAME}"
     }
     override fun render(state: HelpState){

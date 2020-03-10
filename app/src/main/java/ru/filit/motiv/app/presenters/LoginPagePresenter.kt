@@ -35,7 +35,7 @@ class LoginPagePresenter(val ctx: Context) : MviBasePresenter<LoginPageView, Log
 
                                     val adapter =
                                         gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
-                                    val errorObj = adapter.fromJson(errorBody!!.string())
+                                    val errorObj = adapter.fromJson(errorBody?.string())
                                     if (errorObj.error_description == "Некорректный запрос") {
                                         "Неверный пароль"
                                     } else {

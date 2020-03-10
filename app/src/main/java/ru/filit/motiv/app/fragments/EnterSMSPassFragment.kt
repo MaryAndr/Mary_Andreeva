@@ -107,9 +107,13 @@ class EnterSMSPassFragment : MviFragment<EnterSMSPassView, EnterSMSPassPagePrese
 
     override fun onResume() {
         super.onResume()
-        (activity as AppCompatActivity).supportActionBar?.show()
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_backbutton)
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            elevation = resources.getDimension(R.dimen.elevation)
+            show()
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_backbutton)
+        }
+
         var tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         tvTitle.text = "Вход по паролю из SMS"
     }
