@@ -116,6 +116,7 @@ class CostsAndReplenishment :
                                         Intent.ACTION_VIEW,
                                         Uri.parse("market://details?id=$appPackageName")
                                     )
+
                                 )
                             } catch (anfe: ActivityNotFoundException) {
                                 startActivity(
