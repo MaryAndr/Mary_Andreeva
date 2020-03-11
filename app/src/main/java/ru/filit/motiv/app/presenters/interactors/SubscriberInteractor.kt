@@ -681,7 +681,7 @@ class SubscriberInteractor(val ctx: Context) {
                     accumData.indicatorHolder = calculateIndicators(subT, subRem, null)
                     Observable.just(MainPagePartialState.ShowDataState(accumData))
                 }
-            }).flatMap { it }.onErrorReturn { error->
+            }).flatMap { it }.onErrorReturn{ error->
             if (error is HttpException) {
                 val errorBody = error.response()!!.errorBody()
                 val adapter =
@@ -689,6 +689,7 @@ class SubscriberInteractor(val ctx: Context) {
                 val errorObj = adapter.fromJson(errorBody!!.string())
                 if (error.code()==403&&errorObj.error_code==appIsDeprecated){
                     MainPagePartialState.ShowErrorMessage(errorObj.error_description, appIsDeprecated = true)
+
                 }else {
                     MainPagePartialState.ShowErrorMessage(errorObj.error_description)
                 }

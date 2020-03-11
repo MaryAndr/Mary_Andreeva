@@ -148,6 +148,7 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
                             activity?.finish()
                         }
                     }
+                    .setCancelable(false)
                     .create()
                     .show()
 

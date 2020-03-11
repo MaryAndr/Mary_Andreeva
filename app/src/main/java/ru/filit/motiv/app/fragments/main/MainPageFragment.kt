@@ -71,29 +71,15 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                 dialogBuilder
                     .setMessage(state.errorText)
                     .setPositiveButton("OK") { _, _ ->
-                        if (state.appIsDeprecated){
-                            val appPackageName = activity?.packageName
-
-                            try {
-                                startActivity(
-                                    Intent(
-                                        Intent.ACTION_VIEW,
-                                        Uri.parse("market://details?id=$appPackageName")
-                                    )
-                                )
-                            } catch (anfe: ActivityNotFoundException) {
-                                startActivity(
-                                    Intent(
-                                        Intent.ACTION_VIEW,
-                                        Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")
-                                    )
-                                )
-                            }
-                            activity?.finish()
+                        if (state.appIsDeprecated) {
+                            goToGooglePlay()
                         }
                     }
+                    .setCancelable(false)
                     .create()
                     .show()
+
+
             }
             state.connectionLost -> {
                     dataView.visibility = View.GONE
@@ -363,5 +349,26 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         pbInternet.visibility = visibility
         tvDataRestAmount.visibility = visibility
         tvDataTotalAmount.visibility = visibility
+    }
+
+    private fun goToGooglePlay(){
+        val appPackageName = activity?.packageName
+
+        try {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("market://details?id=$appPackageName")
+                )
+            )
+        } catch (anfe: ActivityNotFoundException) {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")
+                )
+            )
+        }
+        activity?.finish()
     }
 }

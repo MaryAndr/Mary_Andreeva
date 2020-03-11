@@ -129,6 +129,7 @@ class CostsAndReplenishment :
                             activity?.finish()
                         }
                     }
+                    .setCancelable(false)
                     .create()
                     .show()
                 tvRepPeriod.text = TimeUtils().returnPeriodMinusThreeMonth()
