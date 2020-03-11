@@ -277,6 +277,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         (activity as AppCompatActivity).supportActionBar?.apply {
             setCustomView(R.layout.appbar_main_page)
             elevation = 0f
+            setDisplayHomeAsUpEnabled(false)
             setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.colorPrimary)))
             val ivProfilePic: AppCompatImageView = activity!!.findViewById(R.id.ivProfilePic)
             ivProfilePic.setOnClickListener {
