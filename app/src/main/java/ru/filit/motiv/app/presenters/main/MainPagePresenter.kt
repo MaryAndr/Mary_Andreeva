@@ -63,6 +63,7 @@ class MainPagePresenter(val ctx: Context) :
                 previousState.mainDataLoaded = true
                 previousState.mainData = changes.data
                 previousState.loading = false
+                previousState.appIsDeprecated = false
                 return previousState
             }
             is MainPagePartialState.ShowErrorMessage -> {

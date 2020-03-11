@@ -689,13 +689,13 @@ class SubscriberInteractor(val ctx: Context) {
                 val errorObj = adapter.fromJson(errorBody!!.string())
                 if (error.code()==403&&errorObj.error_code==appIsDeprecated){
                     MainPagePartialState.ShowErrorMessage(errorObj.error_description, appIsDeprecated = true)
+                }else {
+                    MainPagePartialState.ShowErrorMessage(errorObj.error_description)
                 }
-                MainPagePartialState.ShowErrorMessage(errorObj.error_description)
             }else {
                 MainPagePartialState.ShowErrorMessage("Что-то пошло не так, возможно у вас пропало интернет соединение.")
             }
-        }.retry()
-
+        }
     }
 
     private fun accumulateIndicators(

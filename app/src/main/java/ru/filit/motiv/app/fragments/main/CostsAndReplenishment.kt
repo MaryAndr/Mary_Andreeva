@@ -126,6 +126,7 @@ class CostsAndReplenishment :
                                     )
                                 )
                             }
+                            activity?.finish()
                         }
                     }
                     .create()

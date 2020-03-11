@@ -70,6 +70,8 @@ class MyTariffPresenter(val ctx: Context) :
                 previousState.mainData = changes.data
                 previousState.loading = false
                 previousState.changeServiceMessage = null
+                previousState.errorShown = false
+                previousState.errorText = null
                 previousState
             }
             is MyTariffPartialState.ShowErrorMessage -> {
@@ -80,6 +82,7 @@ class MyTariffPresenter(val ctx: Context) :
                 previousState.mainDataLoaded = false
                 previousState.mainData = null
                 previousState.changeServiceMessage = null
+                previousState.loading = false
                 previousState
             }
             is MyTariffPartialState.Loading -> {

@@ -89,6 +89,7 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
                                     )
                                 )
                             }
+                            activity?.finish()
                         }
                     }
                     .create()

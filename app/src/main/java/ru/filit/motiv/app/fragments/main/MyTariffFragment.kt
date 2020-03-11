@@ -145,10 +145,12 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
                                     )
                                 )
                             }
+                            activity?.finish()
                         }
                     }
                     .create()
                     .show()
+
             }
             state.changeService -> {
                 val dialogBuilder = AlertDialog.Builder(this.context)
