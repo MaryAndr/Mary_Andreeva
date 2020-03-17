@@ -1,33 +1,23 @@
 package ru.filit.motiv.app.fragments.main
 
-import android.content.Intent
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
-import com.hannesdorfmann.mosby3.mvi.MviFragment
-import io.reactivex.Observable
-import io.reactivex.subjects.BehaviorSubject
+import androidx.fragment.app.Fragment
+
+import kotlinx.android.synthetic.main.activity_main_page.*
 import kotlinx.android.synthetic.main.fragment_help.*
-import ru.filit.motiv.app.BuildConfig
 import ru.filit.motiv.app.R
-import ru.filit.motiv.app.presenters.main.HelpPresenter
-import ru.filit.motiv.app.states.main.HelpState
-import ru.filit.motiv.app.views.main.HelpView
 
-class HelpFragment: MviFragment<HelpView, HelpPresenter>(), HelpView{
 
-    private var startHelp = BehaviorSubject.create<Boolean>()
+class HelpFragment: Fragment(){
 
-    override fun createPresenter() = HelpPresenter(context)
 
-    override fun getMessengersIntent(): Observable<Boolean> {
-        return startHelp
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,59 +30,44 @@ class HelpFragment: MviFragment<HelpView, HelpPresenter>(), HelpView{
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.apply {
+            setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.costs)))
+            displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
             setCustomView(R.layout.abs_layout)
-            val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
-            tvTitle.text = ""
-            elevation = 0f
-            setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.colorPrimary)))
+            setDisplayHomeAsUpEnabled(false)
+            elevation = resources.getDimension(R.dimen.elevation)
         }
-        version_app.text = "${resources.getText(R.string.version_app)} ${BuildConfig.VERSION_NAME}"
-    }
-    override fun render(state: HelpState){
-        when (state ){
-            is HelpState.NoMessengers ->{
-                visibilityNoMessengersText(View.VISIBLE)
-                bt_whatsapp.visibility = View.GONE
-                bt_viber.visibility = View.GONE
-                delimiter.visibility = View.GONE
-            }
-            is HelpState.BothMessengers-> {
-                visibilityNoMessengersText(View.GONE)
-                bt_whatsapp.visibility = View.VISIBLE
-                bt_viber.visibility = View.VISIBLE
-                delimiter.visibility = View.VISIBLE
-            }
-            is HelpState.ViberMessengers->{
-                visibilityNoMessengersText(View.GONE)
-                bt_viber.visibility = View.VISIBLE
-                bt_whatsapp.visibility = View.GONE
-                delimiter.visibility = View.GONE
-            }
-            is HelpState.WhatsappMessengers-> {
-                visibilityNoMessengersText(View.GONE)
-                bt_viber.visibility = View.GONE
-                delimiter.visibility = View.GONE
-                bt_whatsapp.visibility = View.VISIBLE
-            }
+
+        activity!!.nav_view.visibility = View.VISIBLE
+        val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
+        tvTitle.setTextColor(resources.getColor(R.color.black))
+        tvTitle.text = resources.getText(R.string.help)
+
+        ll_questions_answers.setOnClickListener{
+            val faqFragment = FaqFragment.newInstance()
+            val fm = fragmentManager
+            fm?.beginTransaction()
+                ?.addToBackStack("help fragment")
+                ?.replace(R.id.container, faqFragment)
+                ?.commit()
         }
-        bt_whatsapp.setOnClickListener {onClick("https://api.whatsapp.com/send?phone=+79002111211")}
-        bt_viber.setOnClickListener {onClick("viber://add?number=79536037033")}
-    }
 
-    override fun onResume() {
-        super.onResume()
-        startHelp.onNext(true)
-    }
+        ll_support.setOnClickListener {
+            val supportFragment = SupportFragment()
+            val fm = fragmentManager
+            fm?.beginTransaction()
+                ?.addToBackStack("help fragment")
+                ?.replace(R.id.container, supportFragment)
+                ?.commit()
+        }
 
-    private fun visibilityNoMessengersText(visibility:Int){
-        request_install_app.visibility = visibility
-        tv_phone_number_support_service.visibility = visibility
-        tv_call_is_free.visibility = visibility
-    }
+        ll_offices.setOnClickListener {
+            val officesFragment = OfficesFragment.newInstance()
+            val fm = fragmentManager
+            fm?.beginTransaction()
+                ?.addToBackStack("help fragment")
+                ?.replace(R.id.container, officesFragment)
+                ?.commit()
+        }
 
-    private fun onClick (uri:String){
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.setData(Uri.parse(uri))
-        startActivity(intent)
     }
 }

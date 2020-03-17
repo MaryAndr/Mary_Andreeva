@@ -371,4 +371,5 @@ class MainPageFragment : MviFragment<MainPageView, MainPagePresenter>(),
         }
         activity?.finish()
     }
+
 }

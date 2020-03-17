@@ -16,15 +16,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import io.reactivex.Observable
-import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.activity_main_page.*
 import kotlinx.android.synthetic.main.fragment_my_tariff.*
@@ -261,7 +258,7 @@ class MyTariffFragment : MviFragment<MyTariffView, MyTariffPresenter>(),
         addedRecyclerView.layoutManager = LinearLayoutManager(context!!)
         Log.d("tag", "service size: " + state.mainData?.servicesList!!.size)
         addedRecyclerView.adapter =
-            MyTariffServicesAdapter(state.mainData?.servicesList, context!!, this)
+            MyTariffServicesAdapter(state.mainData?.servicesList, activity!!.applicationContext, this)
 
         renderNewIndicators(state.mainData?.indicatorModels!!)
 //                renderIndicators(state.mainData?.indicatorHolder, subTariff?.charge_date)

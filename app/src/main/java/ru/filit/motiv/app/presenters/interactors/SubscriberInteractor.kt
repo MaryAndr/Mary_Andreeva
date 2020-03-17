@@ -699,6 +699,34 @@ class SubscriberInteractor(val ctx: Context) {
         }
     }
 
+    fun getFAQ (): Observable<FAQState>{
+        if (!isConnect(ctx)){
+            return Observable.just(FAQState.InternetState(false))
+        }
+        return subService.getFAQ().flatMap {
+            val categoryQuestionsList = mutableListOf<CategoryQuestions>()
+            it.forEach{faqResponse->
+                categoryQuestionsList.add(faqResponse.toCategoryQuestionList())
+            }
+            Observable.just(FAQState.QuestionsLoaded(categoryQuestionsList) as FAQState)
+        }.onErrorReturn{ error->
+            if (error is HttpException) {
+                val errorBody = error.response()!!.errorBody()
+                val adapter =
+                    gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
+                val errorObj = adapter.fromJson(errorBody!!.string())
+                if (error.code()==403&&errorObj.error_code==appIsDeprecated){
+                    FAQState.ShowErrorMessage(errorObj.error_description)
+
+                }else {
+                    FAQState.ShowErrorMessage(errorObj.error_description)
+                }
+            }else {
+                FAQState.ShowErrorMessage("Что-то пошло не так, возможно у вас пропало интернет соединение.")
+            }
+        }
+    }
+
     private fun accumulateIndicators(
         tariffs: TariffResponse?,
         remains: List<RemainsResponse>?,
@@ -822,7 +850,7 @@ class SubscriberInteractor(val ctx: Context) {
                         if (it.due_date != "2999-12-31") {
                             dueDate = textConverter.getFormattedDate(it.due_date)
                         }
-                        var indicatorData = IndicatorHolder(
+                        val indicatorData = IndicatorHolder(
                             rest,
                             total,
                             100,
@@ -843,9 +871,9 @@ class SubscriberInteractor(val ctx: Context) {
         remains?.forEach { remain ->
             when {
                 remain.type == "DATA" -> {
-                    var rest = remain.rest_amount
-                    var total = remain.total_amount
-                    var name = if (remain.services.primary) {
+                    val rest = remain.rest_amount
+                    val total = remain.total_amount
+                    val name = if (remain.services.primary) {
                         "По условиям тарифа"
                     } else {
                         remain.services.name.orEmpty()
