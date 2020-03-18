@@ -703,7 +703,7 @@ class SubscriberInteractor(val ctx: Context) {
         if (!isConnect(ctx)){
             return Observable.just(FAQState.InternetState(false))
         }
-        return subService.getFAQ().flatMap {
+        return userService.getFAQ().flatMap {
             val categoryQuestionsList = mutableListOf<CategoryQuestions>()
             it.forEach{faqResponse->
                 categoryQuestionsList.add(faqResponse.toCategoryQuestionList())
@@ -715,14 +715,33 @@ class SubscriberInteractor(val ctx: Context) {
                 val adapter =
                     gson.getAdapter<ErrorJson>(ErrorJson::class.java!!)
                 val errorObj = adapter.fromJson(errorBody!!.string())
-                if (error.code()==403&&errorObj.error_code==appIsDeprecated){
                     FAQState.ShowErrorMessage(errorObj.error_description)
-
-                }else {
-                    FAQState.ShowErrorMessage(errorObj.error_description)
-                }
             }else {
                 FAQState.ShowErrorMessage("Что-то пошло не так, возможно у вас пропало интернет соединение.")
+            }
+        }
+    }
+
+    fun getAnswerFAQ (questionId: Int?): Observable<AnswerFAQState> {
+        if (!isConnect(ctx)) {
+            return Observable.just(AnswerFAQState.InternetState(false))
+        }
+        return subService.getSubInfo().flatMap {
+            val regionId = it.region.id
+            userService.getFAQ(regionId, questionId).flatMap {
+                val questionText = it.first().questions.first().question_text
+                val answerText = it.first().questions.first().answer_text!!
+                Observable.just(AnswerFAQState.QuestionsLoaded(questionText = questionText,answerText =  answerText) as AnswerFAQState)
+            }
+        }.onErrorReturn { error ->
+            if (error is HttpException) {
+                val errorBody = error.response()!!.errorBody()
+                val adapter =
+                    gson.getAdapter<ErrorJson>(ErrorJson::class.java)
+                val errorObj = adapter.fromJson(errorBody!!.string())
+                AnswerFAQState.ShowErrorMessage(errorObj.error_description)
+            } else {
+                AnswerFAQState.ShowErrorMessage("Что-то пошло не так, возможно у вас пропало интернет соединение.")
             }
         }
     }

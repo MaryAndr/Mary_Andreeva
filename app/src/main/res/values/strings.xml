@@ -34,4 +34,6 @@
     <string name="support">Поддержка</string>
     <string name="help">Помощь</string>
     <string name="questions_and_answers">Вопросы и Ответы</string>
+    <string name="category_name">Category Name</string>
+    <string name="question">Вопрос</string>
 </resources>

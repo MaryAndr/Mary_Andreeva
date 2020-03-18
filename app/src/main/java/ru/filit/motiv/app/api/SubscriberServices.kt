@@ -76,9 +76,6 @@ interface SubscriberServices {
     @POST("/lk/v1/user/logout")
     fun logout(): Observable<Unit>
 
-    @GET("/lk/v1/catalog/faq")
-    fun getFAQ(@Query ("region_id") regionId: Int? = null, @Query("question_id") questionId:Int? = null): Observable<List<FAQResponse>>
-
     companion object {
         fun create(ctx: Context): SubscriberServices {
             val logging = HttpLoggingInterceptor()

@@ -32,7 +32,7 @@ class OfficesFragment : Fragment() {
         }
         val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         tvTitle.setTextColor(resources.getColor(R.color.black))
-        tvTitle.text = getString(R.string.support)
+        tvTitle.text = getString(R.string.offices_motiv)
     }
 
     companion object {

@@ -15,59 +15,70 @@ import com.hannesdorfmann.mosby3.mvi.MviFragment
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.activity_main_page.*
-import kotlinx.android.synthetic.main.fragment_faq.*
-
+import kotlinx.android.synthetic.main.fragment_answer_faq.*
 import ru.filit.motiv.app.R
-import ru.filit.motiv.app.adapters.ExpandableCategoryQuestionsAdapter
-import ru.filit.motiv.app.listeners.OnQuestionClickListener
-import ru.filit.motiv.app.presenters.main.FAQPresenter
-import ru.filit.motiv.app.states.main.FAQState
+import ru.filit.motiv.app.presenters.main.AnswerFAQPresenter
+import ru.filit.motiv.app.states.main.AnswerFAQState
 import ru.filit.motiv.app.utils.ConnectivityReceiver
-import ru.filit.motiv.app.views.main.FAQView
+import ru.filit.motiv.app.views.main.AnswerFAQView
 
-class FaqFragment : MviFragment<FAQView, FAQPresenter>(), FAQView,
-    ConnectivityReceiver.ConnectivityReceiverListener, OnQuestionClickListener {
+private const val region = "region"
+private const val question = "questionFAQ"
 
-    private var expandableCategoryList: List<Int>? = null
+class AnswerFAQFragment: MviFragment<AnswerFAQView, AnswerFAQPresenter>(), AnswerFAQView,
+    ConnectivityReceiver.ConnectivityReceiverListener {
+
+    var myHtml =
+        "<!-- STATIC HEADER START --><!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>Help</title><style type=\"text/css\">* {-webkit-touch-callout: none;-webkit-user-select: none; /* Disable selection/copy in UIWebView */}</style><style>/* HTML5 display-role reset for older browsers */article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {display: block;}.container {color: #000;font-size: 16px;font-family: Roboto-Regular;}.header {color: #000;font-size: 30px; font-family: Roboto-Bold;} block_frame_orange {display: block; border-radius: 12px; border: 1.4px solid orange; margin: 5px; margin-top: 1em; padding: 15px; } </style></head> <body> <!-- STATIC HEADER END --> <div class=\\\"header\\\"><b>question from backend</b><br/></div><div class=\\\"container\\\">answer from backend</div> <!-- STATIC TAIL START --></body></html> <!-- STATIC HEADER END -->"
+
+    private  var questionId: Int =0
+
+    companion object {
+        @JvmStatic
+        fun newInstance(questionId: Int) = AnswerFAQFragment().apply {
+            arguments = Bundle().apply {
+                putInt(question, questionId)
+            }
+            this.questionId = questionId
+        }
+    }
 
     private lateinit var preLoadTrigger: BehaviorSubject<Int>
 
-    override fun createPresenter() = FAQPresenter(context!!)
+    override fun createPresenter() = AnswerFAQPresenter(context!!)
 
-    override fun getFAQIntent(): Observable<Int> {
+    override fun getAnswerIntent(): Observable<Int> {
         return preLoadTrigger
     }
 
-    override fun render(state: FAQState) {
+    override fun render(state: AnswerFAQState) {
         when(state){
-            is FAQState.QuestionsLoaded -> {
-                val expanableCategoryQuestionsAdapter = ExpandableCategoryQuestionsAdapter(this)
-                rv_category_questions.setAdapter(expanableCategoryQuestionsAdapter)
-                expanableCategoryQuestionsAdapter.setData(state.faq)
-                if (expandableCategoryList != null){
-                    (expandableCategoryList as List).forEach { rv_category_questions.expandGroup(it) }
-                }
+            is AnswerFAQState.QuestionsLoaded ->{
+                webview.visibility = View.VISIBLE
                 pgData.visibility = View.GONE
-                rv_category_questions.visibility = View.VISIBLE
+                webview.loadDataWithBaseURL(null,
+                    getHtml(state.answerText,state.questionText),
+                    "text/html",
+                    "utf-8",
+                    null)
             }
-
-            is FAQState.Loading -> {
+            is AnswerFAQState.Loading -> {
                 pgData.visibility = View.VISIBLE
-                rv_category_questions.visibility = View.GONE
+                webview.visibility = View.GONE
             }
 
-            is FAQState.InternetState -> {
+            is AnswerFAQState.InternetState -> {
                 if (state.active){
-                    rv_category_questions.visibility = View.VISIBLE
                     no_internet_view.visibility = View.GONE
-                }else {
+                    webview.visibility = View.VISIBLE
+                } else {
                     pgData.visibility = View.GONE
-                    rv_category_questions.visibility = View.GONE
+                    webview.visibility = View.GONE
                     no_internet_view.visibility = View.VISIBLE
                 }
             }
 
-            is FAQState.ShowErrorMessage -> {
+            is AnswerFAQState.ShowErrorMessage -> {
                 val dialogBuilder = AlertDialog.Builder(this.context)
                 dialogBuilder
                     .setMessage(state.message)
@@ -76,21 +87,27 @@ class FaqFragment : MviFragment<FAQView, FAQPresenter>(), FAQView,
                     .create()
                     .show()
             }
+
         }
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (savedInstanceState!=null) {
+            questionId =  savedInstanceState.getInt(question)
+        }
+
         preLoadTrigger = BehaviorSubject.create()
         networkAvailabilityTrigger = BehaviorSubject.create()
         activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_faq, container, false)
+        return inflater.inflate(R.layout.fragment_answer_faq, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -105,35 +122,17 @@ class FaqFragment : MviFragment<FAQView, FAQPresenter>(), FAQView,
         }
         val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
         tvTitle.setTextColor(resources.getColor(R.color.black))
-        tvTitle.text = getString(R.string.questions_and_answers)
-        activity?.nav_view?.visibility = View.VISIBLE
+        tvTitle.text = getString(R.string.question)
+        activity!!.nav_view.visibility = View.INVISIBLE
 
-        if (savedInstanceState != null){
-            expandableCategoryList = savedInstanceState.getIntArray("expandable category Id list")?.toList()
-        }
 
-        preLoadTrigger.onNext(1)
+        preLoadTrigger.onNext(questionId)
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance() = FaqFragment()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.apply {
-            putIntArray("expandable category Id list", expandableCategoryList?.toIntArray())
-        }
-    }
-
-    override fun onClick(questionId: Int, expandableCategoriesId: List<Int>) {
-        val frAnswer = AnswerFAQFragment.newInstance(questionId = questionId)
-        val fm = activity!!.supportFragmentManager
-        val fragmentTransaction = fm.beginTransaction().addToBackStack("faq")
-        fragmentTransaction.replace(R.id.container, frAnswer)
-        fragmentTransaction.commit()
-        this.expandableCategoryList = expandableCategoriesId
+    private fun getHtml(answer: String, question: String): String{
+        myHtml = myHtml.replace("answer from backend", answer, true)
+        myHtml = myHtml.replace("question from backend", question, true)
+        return myHtml
     }
 
     //check internet

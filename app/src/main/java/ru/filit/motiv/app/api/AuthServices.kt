@@ -15,6 +15,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.http.*
+import ru.filit.motiv.app.models.main.FAQResponse
 import ru.filit.motiv.app.utils.IdentificatorsInterceptor
 
 
@@ -41,6 +42,9 @@ interface AuthServices {
         @Part("grant_type") grantType: RequestBody, @Part("username") username: RequestBody?,
         @Part("password") password: RequestBody?, @Part("refresh_token") refreshToken: RequestBody?
     ): Observable<OAuthModel>
+
+    @GET("/lk/v1/catalog/faq")
+    fun getFAQ(@Query ("region_id") regionId: Int? = null, @Query("question_id") questionId:Int? = null): Observable<List<FAQResponse>>
 
 
 //    @POST("/oauth/token")

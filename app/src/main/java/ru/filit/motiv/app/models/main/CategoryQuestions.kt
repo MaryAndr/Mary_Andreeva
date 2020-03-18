@@ -1,8 +1,8 @@
 package ru.filit.motiv.app.models.main
 
 class CategoryQuestions (
-    val questionId: Int,
-    val questionRank: Int,
-    val questionText: String,
+    val categoryId: Int,
+    val categoryRank: Int,
+    val categoryName: String,
     val questions: List<QuestionModel>
 )

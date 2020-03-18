@@ -210,7 +210,6 @@ class CostsAndReplenishment :
         showReplenishmentTrigger = BehaviorSubject.create()
         showReplenishmentDataTrigger = BehaviorSubject.create()
         networkAvailabilityTrigger = BehaviorSubject.create()
-        networkAvailabilityTrigger = BehaviorSubject.create()
         activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 
