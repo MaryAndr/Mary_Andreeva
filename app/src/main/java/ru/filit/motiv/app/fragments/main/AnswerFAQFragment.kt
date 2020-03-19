@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
@@ -29,7 +30,7 @@ class AnswerFAQFragment: MviFragment<AnswerFAQView, AnswerFAQPresenter>(), Answe
     ConnectivityReceiver.ConnectivityReceiverListener {
 
     var myHtml =
-        "<!-- STATIC HEADER START --><!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>Help</title><style type=\"text/css\">* {-webkit-touch-callout: none;-webkit-user-select: none; /* Disable selection/copy in UIWebView */}</style><style>/* HTML5 display-role reset for older browsers */article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {display: block;}.container {color: #000;font-size: 16px;font-family: Roboto-Regular;}.header {color: #000;font-size: 30px; font-family: Roboto-Bold;} block_frame_orange {display: block; border-radius: 12px; border: 1.4px solid orange; margin: 5px; margin-top: 1em; padding: 15px; } </style></head> <body> <!-- STATIC HEADER END --> <div class=\\\"header\\\"><b>question from backend</b><br/></div><div class=\\\"container\\\">answer from backend</div> <!-- STATIC TAIL START --></body></html> <!-- STATIC HEADER END -->"
+        "<!-- STATIC HEADER START --><!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>Help</title><style type=\"text/css\">* {-webkit-touch-callout: none;-webkit-user-select: none; /* Disable selection/copy in UIWebView */}</style><style>/* HTML5 display-role reset for older browsers */article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {display: block;}.container {color: #000;font-size: 14px;font-family: Roboto-Regular; margin-left: 20px; margin-right: 17px; margin-top: 20px }.header {color: #000; font-size: 18px; margin-left: 20px; margin-top: 20px; margin-right: 17px; font-family: Roboto-Bold;} block_frame_orange {display: block; border-radius: 12px; border: 1.4px solid orange; margin-top: 20px; margin-bottom: 17px; padding: 15px; } </style></head> <body> <!-- STATIC HEADER END --> <div class=\"header\"><b>question from backend</b><br/></div><div class=\"container\">answer from backend</div> <!-- STATIC TAIL START --></body></html> <!-- STATIC HEADER END -->"
 
     private  var questionId: Int =0
 
@@ -112,22 +113,10 @@ class AnswerFAQFragment: MviFragment<AnswerFAQView, AnswerFAQPresenter>(), Answe
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.apply {
-            setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.costs)))
-            displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
-            setCustomView(R.layout.abs_layout)
-            elevation = resources.getDimension(R.dimen.elevation)
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_backbutton_black)
-        }
-        val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
-        tvTitle.setTextColor(resources.getColor(R.color.black))
-        tvTitle.text = getString(R.string.question)
-        activity!!.nav_view.visibility = View.INVISIBLE
-
-
         preLoadTrigger.onNext(questionId)
     }
+
+
 
     private fun getHtml(answer: String, question: String): String{
         myHtml = myHtml.replace("answer from backend", answer, true)
@@ -153,10 +142,27 @@ class AnswerFAQFragment: MviFragment<AnswerFAQView, AnswerFAQPresenter>(), Answe
     override fun onResume() {
         super.onResume()
         ConnectivityReceiver.connectivityReceiverListener = this
+        (activity as AppCompatActivity).supportActionBar?.apply {
+            setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.costs)))
+            displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
+            setCustomView(R.layout.abs_layout)
+            elevation = resources.getDimension(R.dimen.elevation)
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_close_black)
+        }
+        val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
+        tvTitle.setTextColor(resources.getColor(R.color.black))
+        tvTitle.text = getString(R.string.question)
+        activity!!.nav_view.visibility = View.INVISIBLE
     }
 
     override fun onDestroy() {
         super.onDestroy()
         activity!!.unregisterReceiver(connectivityReceiver)
+        val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
+        tvTitle.setTextColor(resources.getColor(R.color.black))
+        tvTitle.text = getString(R.string.questions_and_answers)
+        activity?.nav_view?.visibility = View.VISIBLE
+        (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_backbutton_black)
     }
 }

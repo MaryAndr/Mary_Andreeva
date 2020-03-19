@@ -39,12 +39,12 @@ class FaqFragment : MviFragment<FAQView, FAQPresenter>(), FAQView,
     }
 
     override fun render(state: FAQState) {
-        when(state){
+        when (state) {
             is FAQState.QuestionsLoaded -> {
                 val expanableCategoryQuestionsAdapter = ExpandableCategoryQuestionsAdapter(this)
                 rv_category_questions.setAdapter(expanableCategoryQuestionsAdapter)
                 expanableCategoryQuestionsAdapter.setData(state.faq)
-                if (expandableCategoryList != null){
+                if (expandableCategoryList != null) {
                     (expandableCategoryList as List).forEach { rv_category_questions.expandGroup(it) }
                 }
                 pgData.visibility = View.GONE
@@ -57,10 +57,10 @@ class FaqFragment : MviFragment<FAQView, FAQPresenter>(), FAQView,
             }
 
             is FAQState.InternetState -> {
-                if (state.active){
+                if (state.active) {
                     rv_category_questions.visibility = View.VISIBLE
                     no_internet_view.visibility = View.GONE
-                }else {
+                } else {
                     pgData.visibility = View.GONE
                     rv_category_questions.visibility = View.GONE
                     no_internet_view.visibility = View.VISIBLE
@@ -84,8 +84,12 @@ class FaqFragment : MviFragment<FAQView, FAQPresenter>(), FAQView,
         super.onCreate(savedInstanceState)
         preLoadTrigger = BehaviorSubject.create()
         networkAvailabilityTrigger = BehaviorSubject.create()
-        activity!!.registerReceiver(connectivityReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+        activity!!.registerReceiver(
+            connectivityReceiver,
+            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        )
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -102,14 +106,15 @@ class FaqFragment : MviFragment<FAQView, FAQPresenter>(), FAQView,
             elevation = resources.getDimension(R.dimen.elevation)
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_backbutton_black)
-        }
-        val tvTitle: AppCompatTextView = activity!!.findViewById(R.id.tvTitle)
-        tvTitle.setTextColor(resources.getColor(R.color.black))
-        tvTitle.text = getString(R.string.questions_and_answers)
-        activity?.nav_view?.visibility = View.VISIBLE
+            val tvTitle: AppCompatTextView? = activity?.findViewById(R.id.tvTitle)
+            tvTitle?.text = getString(R.string.questions_and_answers)
+            activity?.nav_view?.visibility = View.VISIBLE
 
-        if (savedInstanceState != null){
-            expandableCategoryList = savedInstanceState.getIntArray("expandable category Id list")?.toList()
+        }
+
+        if (savedInstanceState != null) {
+            expandableCategoryList =
+                savedInstanceState.getIntArray("expandable category Id list")?.toList()
         }
 
         preLoadTrigger.onNext(1)
@@ -127,11 +132,20 @@ class FaqFragment : MviFragment<FAQView, FAQPresenter>(), FAQView,
         }
     }
 
+
+    override fun onStop() {
+        super.onStop()
+    }
+
+    override fun onPause() {
+        super.onPause()
+    }
+
     override fun onClick(questionId: Int, expandableCategoriesId: List<Int>) {
         val frAnswer = AnswerFAQFragment.newInstance(questionId = questionId)
         val fm = activity!!.supportFragmentManager
         val fragmentTransaction = fm.beginTransaction().addToBackStack("faq")
-        fragmentTransaction.replace(R.id.container, frAnswer)
+        fragmentTransaction.add(R.id.container, frAnswer, "faq")
         fragmentTransaction.commit()
         this.expandableCategoryList = expandableCategoriesId
     }
@@ -139,7 +153,7 @@ class FaqFragment : MviFragment<FAQView, FAQPresenter>(), FAQView,
     //check internet
     private val connectivityReceiver = ConnectivityReceiver()
 
-    private lateinit var networkAvailabilityTrigger : BehaviorSubject<Boolean>
+    private lateinit var networkAvailabilityTrigger: BehaviorSubject<Boolean>
 
     override fun checkInternetConnectivityIntent(): Observable<Boolean> {
         return networkAvailabilityTrigger
