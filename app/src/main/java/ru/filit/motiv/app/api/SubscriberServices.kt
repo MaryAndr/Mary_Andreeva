@@ -100,6 +100,7 @@ interface SubscriberServices {
                     GsonConverterFactory.create()
                 )
                 .client(client)
+                //.baseUrl("https://mptest.motivtelecom.ru")
                 .baseUrl("https://mptest.motivtelecom.ru")
                 .build()
 
