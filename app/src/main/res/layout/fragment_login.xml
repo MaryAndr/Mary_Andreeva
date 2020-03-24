@@ -128,7 +128,7 @@
             android:layout_marginTop="25dp"
             android:gravity="center"
             android:text="@string/send_sms"
-            android:textColor="#fa6600"
+            android:textColor="#252C1505"
             android:textSize="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/right_vertical_guideline"
